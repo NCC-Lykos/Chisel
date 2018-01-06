@@ -446,7 +446,32 @@ namespace Chisel.Editor.Tools.TextureTool
             var flag = (FaceFlags)checkbox.Tag;
 
             var faces = Document.Selection.GetSelectedFaces().ToList();
-            faces.ForEach((x) => { if (checkbox.Checked) { x.Flags |= flag; } else { x.Flags ^= flag; } });
+            faces.ForEach((x) => 
+            {
+                if (checkbox.Checked){
+                    x.Flags |= flag;
+                } else {
+                    x.Flags ^= flag;
+                }
+            });
+
+            if (flag == FaceFlags.TextureLocked)
+            {
+                faces.ForEach((x) =>
+                {
+                    if (checkbox.Checked)
+                    {
+                        OnTextureAlign(TextureTool.AlignMode.Face);
+                    }
+                    else
+                    {
+                        OnTextureAlign(TextureTool.AlignMode.World);
+                    }
+                });
+            }
+            if (flag == FaceFlags.Mirror) { this.PropertiesChanged(); }
+            if (flag == FaceFlags.Transparent) { this.PropertiesChanged(); }
+            
         }
 
         private void ScaleXValueChanged(object sender, EventArgs e)
@@ -546,12 +571,12 @@ namespace Chisel.Editor.Tools.TextureTool
 
         private void AlignToWorldClicked(object sender, EventArgs e)
         {
-            OnTextureAlign(TextureTool.AlignMode.World);
+            //OnTextureAlign(TextureTool.AlignMode.World);
         }
 
         private void AlignToFaceClicked(object sender, EventArgs e)
         {
-            OnTextureAlign(TextureTool.AlignMode.Face);
+            //OnTextureAlign(TextureTool.AlignMode.Face);
         }
 
         private void BrowseButtonClicked(object sender, EventArgs e)

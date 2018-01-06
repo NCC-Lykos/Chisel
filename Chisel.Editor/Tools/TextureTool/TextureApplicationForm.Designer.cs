@@ -73,17 +73,17 @@ namespace Chisel.Editor.Tools.TextureTool
             this.RecentTexturesList = new Chisel.Editor.UI.TextureListPanel();
             this.SelectedTexturesList = new Chisel.Editor.UI.TextureListPanel();
             this.gbspGroup = new System.Windows.Forms.GroupBox();
-            this.chkMirror = new System.Windows.Forms.CheckBox();
-            this.chkFullBright = new System.Windows.Forms.CheckBox();
-            this.chkTransparent = new System.Windows.Forms.CheckBox();
-            this.chkSky = new System.Windows.Forms.CheckBox();
-            this.chkLight = new System.Windows.Forms.CheckBox();
-            this.chkFixedHull = new System.Windows.Forms.CheckBox();
-            this.chkGouraud = new System.Windows.Forms.CheckBox();
-            this.chkFlat = new System.Windows.Forms.CheckBox();
-            this.chkTextureLocked = new System.Windows.Forms.CheckBox();
-            this.chkVisible = new System.Windows.Forms.CheckBox();
             this.chkSheet = new System.Windows.Forms.CheckBox();
+            this.chkVisible = new System.Windows.Forms.CheckBox();
+            this.chkTextureLocked = new System.Windows.Forms.CheckBox();
+            this.chkFlat = new System.Windows.Forms.CheckBox();
+            this.chkGouraud = new System.Windows.Forms.CheckBox();
+            this.chkFixedHull = new System.Windows.Forms.CheckBox();
+            this.chkLight = new System.Windows.Forms.CheckBox();
+            this.chkSky = new System.Windows.Forms.CheckBox();
+            this.chkTransparent = new System.Windows.Forms.CheckBox();
+            this.chkFullBright = new System.Windows.Forms.CheckBox();
+            this.chkMirror = new System.Windows.Forms.CheckBox();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RotationValue)).BeginInit();
@@ -93,6 +93,7 @@ namespace Chisel.Editor.Tools.TextureTool
             ((System.ComponentModel.ISupportInitialize)(this.ShiftXValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ShiftYValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LightmapValue)).BeginInit();
+            this.gbspGroup.SuspendLayout();
             this.SuspendLayout();
             // 
             // label11
@@ -174,6 +175,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // AlignToFaceCheckbox
             // 
             this.AlignToFaceCheckbox.AutoSize = true;
+            this.AlignToFaceCheckbox.Enabled = false;
             this.AlignToFaceCheckbox.Location = new System.Drawing.Point(63, 22);
             this.AlignToFaceCheckbox.Name = "AlignToFaceCheckbox";
             this.AlignToFaceCheckbox.Size = new System.Drawing.Size(50, 17);
@@ -185,6 +187,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // AlignToWorldCheckbox
             // 
             this.AlignToWorldCheckbox.AutoSize = true;
+            this.AlignToWorldCheckbox.Enabled = false;
             this.AlignToWorldCheckbox.Location = new System.Drawing.Point(7, 22);
             this.AlignToWorldCheckbox.Name = "AlignToWorldCheckbox";
             this.AlignToWorldCheckbox.Size = new System.Drawing.Size(54, 17);
@@ -400,7 +403,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 208F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 212F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.ScaleXValue, 1, 1);
@@ -657,95 +660,15 @@ namespace Chisel.Editor.Tools.TextureTool
             this.gbspGroup.TabStop = false;
             this.gbspGroup.Text = "GBSP";
             // 
-            // chkMirror
+            // chkSheet
             // 
-            this.chkMirror.AutoSize = true;
-            this.chkMirror.Location = new System.Drawing.Point(6, 19);
-            this.chkMirror.Name = "chkMirror";
-            this.chkMirror.Size = new System.Drawing.Size(52, 17);
-            this.chkMirror.TabIndex = 0;
-            this.chkMirror.Text = "Mirror";
-            this.chkMirror.UseVisualStyleBackColor = true;
-            // 
-            // chkFullBright
-            // 
-            this.chkFullBright.AutoSize = true;
-            this.chkFullBright.Location = new System.Drawing.Point(6, 42);
-            this.chkFullBright.Name = "chkFullBright";
-            this.chkFullBright.Size = new System.Drawing.Size(72, 17);
-            this.chkFullBright.TabIndex = 1;
-            this.chkFullBright.Text = "Full Bright";
-            this.chkFullBright.UseVisualStyleBackColor = true;
-            // 
-            // chkTransparent
-            // 
-            this.chkTransparent.AutoSize = true;
-            this.chkTransparent.Location = new System.Drawing.Point(6, 65);
-            this.chkTransparent.Name = "chkTransparent";
-            this.chkTransparent.Size = new System.Drawing.Size(83, 17);
-            this.chkTransparent.TabIndex = 2;
-            this.chkTransparent.Text = "Transparent";
-            this.chkTransparent.UseVisualStyleBackColor = true;
-            // 
-            // chkSky
-            // 
-            this.chkSky.AutoSize = true;
-            this.chkSky.Location = new System.Drawing.Point(95, 65);
-            this.chkSky.Name = "chkSky";
-            this.chkSky.Size = new System.Drawing.Size(44, 17);
-            this.chkSky.TabIndex = 3;
-            this.chkSky.Text = "Sky";
-            this.chkSky.UseVisualStyleBackColor = true;
-            // 
-            // chkLight
-            // 
-            this.chkLight.AutoSize = true;
-            this.chkLight.Location = new System.Drawing.Point(95, 42);
-            this.chkLight.Name = "chkLight";
-            this.chkLight.Size = new System.Drawing.Size(49, 17);
-            this.chkLight.TabIndex = 4;
-            this.chkLight.Text = "Light";
-            this.chkLight.UseVisualStyleBackColor = true;
-            // 
-            // chkFixedHull
-            // 
-            this.chkFixedHull.AutoSize = true;
-            this.chkFixedHull.Location = new System.Drawing.Point(95, 19);
-            this.chkFixedHull.Name = "chkFixedHull";
-            this.chkFixedHull.Size = new System.Drawing.Size(72, 17);
-            this.chkFixedHull.TabIndex = 5;
-            this.chkFixedHull.Text = "Fixed Hull";
-            this.chkFixedHull.UseVisualStyleBackColor = true;
-            // 
-            // chkGouraud
-            // 
-            this.chkGouraud.AutoSize = true;
-            this.chkGouraud.Location = new System.Drawing.Point(173, 19);
-            this.chkGouraud.Name = "chkGouraud";
-            this.chkGouraud.Size = new System.Drawing.Size(67, 17);
-            this.chkGouraud.TabIndex = 6;
-            this.chkGouraud.Text = "Gouraud";
-            this.chkGouraud.UseVisualStyleBackColor = true;
-            // 
-            // chkFlat
-            // 
-            this.chkFlat.AutoSize = true;
-            this.chkFlat.Location = new System.Drawing.Point(173, 42);
-            this.chkFlat.Name = "chkFlat";
-            this.chkFlat.Size = new System.Drawing.Size(43, 17);
-            this.chkFlat.TabIndex = 7;
-            this.chkFlat.Text = "Flat";
-            this.chkFlat.UseVisualStyleBackColor = true;
-            // 
-            // chkTextureLocked
-            // 
-            this.chkTextureLocked.AutoSize = true;
-            this.chkTextureLocked.Location = new System.Drawing.Point(173, 65);
-            this.chkTextureLocked.Name = "chkTextureLocked";
-            this.chkTextureLocked.Size = new System.Drawing.Size(101, 17);
-            this.chkTextureLocked.TabIndex = 8;
-            this.chkTextureLocked.Text = "Texture Locked";
-            this.chkTextureLocked.UseVisualStyleBackColor = true;
+            this.chkSheet.AutoSize = true;
+            this.chkSheet.Location = new System.Drawing.Point(280, 42);
+            this.chkSheet.Name = "chkSheet";
+            this.chkSheet.Size = new System.Drawing.Size(54, 17);
+            this.chkSheet.TabIndex = 10;
+            this.chkSheet.Text = "Sheet";
+            this.chkSheet.UseVisualStyleBackColor = true;
             // 
             // chkVisible
             // 
@@ -757,15 +680,95 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkVisible.Text = "Visible";
             this.chkVisible.UseVisualStyleBackColor = true;
             // 
-            // chkSheet
+            // chkTextureLocked
             // 
-            this.chkSheet.AutoSize = true;
-            this.chkSheet.Location = new System.Drawing.Point(280, 42);
-            this.chkSheet.Name = "chkSheet";
-            this.chkSheet.Size = new System.Drawing.Size(54, 17);
-            this.chkSheet.TabIndex = 10;
-            this.chkSheet.Text = "Sheet";
-            this.chkSheet.UseVisualStyleBackColor = true;
+            this.chkTextureLocked.AutoSize = true;
+            this.chkTextureLocked.Location = new System.Drawing.Point(173, 65);
+            this.chkTextureLocked.Name = "chkTextureLocked";
+            this.chkTextureLocked.Size = new System.Drawing.Size(101, 17);
+            this.chkTextureLocked.TabIndex = 8;
+            this.chkTextureLocked.Text = "Texture Locked";
+            this.chkTextureLocked.UseVisualStyleBackColor = true;
+            // 
+            // chkFlat
+            // 
+            this.chkFlat.AutoSize = true;
+            this.chkFlat.Location = new System.Drawing.Point(173, 42);
+            this.chkFlat.Name = "chkFlat";
+            this.chkFlat.Size = new System.Drawing.Size(43, 17);
+            this.chkFlat.TabIndex = 7;
+            this.chkFlat.Text = "Flat";
+            this.chkFlat.UseVisualStyleBackColor = true;
+            // 
+            // chkGouraud
+            // 
+            this.chkGouraud.AutoSize = true;
+            this.chkGouraud.Location = new System.Drawing.Point(173, 19);
+            this.chkGouraud.Name = "chkGouraud";
+            this.chkGouraud.Size = new System.Drawing.Size(67, 17);
+            this.chkGouraud.TabIndex = 6;
+            this.chkGouraud.Text = "Gouraud";
+            this.chkGouraud.UseVisualStyleBackColor = true;
+            // 
+            // chkFixedHull
+            // 
+            this.chkFixedHull.AutoSize = true;
+            this.chkFixedHull.Location = new System.Drawing.Point(95, 19);
+            this.chkFixedHull.Name = "chkFixedHull";
+            this.chkFixedHull.Size = new System.Drawing.Size(72, 17);
+            this.chkFixedHull.TabIndex = 5;
+            this.chkFixedHull.Text = "Fixed Hull";
+            this.chkFixedHull.UseVisualStyleBackColor = true;
+            // 
+            // chkLight
+            // 
+            this.chkLight.AutoSize = true;
+            this.chkLight.Location = new System.Drawing.Point(95, 42);
+            this.chkLight.Name = "chkLight";
+            this.chkLight.Size = new System.Drawing.Size(49, 17);
+            this.chkLight.TabIndex = 4;
+            this.chkLight.Text = "Light";
+            this.chkLight.UseVisualStyleBackColor = true;
+            // 
+            // chkSky
+            // 
+            this.chkSky.AutoSize = true;
+            this.chkSky.Location = new System.Drawing.Point(95, 65);
+            this.chkSky.Name = "chkSky";
+            this.chkSky.Size = new System.Drawing.Size(44, 17);
+            this.chkSky.TabIndex = 3;
+            this.chkSky.Text = "Sky";
+            this.chkSky.UseVisualStyleBackColor = true;
+            // 
+            // chkTransparent
+            // 
+            this.chkTransparent.AutoSize = true;
+            this.chkTransparent.Location = new System.Drawing.Point(6, 65);
+            this.chkTransparent.Name = "chkTransparent";
+            this.chkTransparent.Size = new System.Drawing.Size(83, 17);
+            this.chkTransparent.TabIndex = 2;
+            this.chkTransparent.Text = "Transparent";
+            this.chkTransparent.UseVisualStyleBackColor = true;
+            // 
+            // chkFullBright
+            // 
+            this.chkFullBright.AutoSize = true;
+            this.chkFullBright.Location = new System.Drawing.Point(6, 42);
+            this.chkFullBright.Name = "chkFullBright";
+            this.chkFullBright.Size = new System.Drawing.Size(72, 17);
+            this.chkFullBright.TabIndex = 1;
+            this.chkFullBright.Text = "Full Bright";
+            this.chkFullBright.UseVisualStyleBackColor = true;
+            // 
+            // chkMirror
+            // 
+            this.chkMirror.AutoSize = true;
+            this.chkMirror.Location = new System.Drawing.Point(6, 19);
+            this.chkMirror.Name = "chkMirror";
+            this.chkMirror.Size = new System.Drawing.Size(52, 17);
+            this.chkMirror.TabIndex = 0;
+            this.chkMirror.Text = "Mirror";
+            this.chkMirror.UseVisualStyleBackColor = true;
             // 
             // TextureApplicationForm
             // 
