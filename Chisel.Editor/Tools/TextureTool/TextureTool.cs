@@ -185,7 +185,13 @@ namespace Chisel.Editor.Tools.TextureTool
                 if (!properties.DifferentXShiftValues) face.Texture.XShift = properties.XShift;
                 if (!properties.DifferentYShiftValues) face.Texture.YShift = properties.YShift;
                 if (!properties.DifferentRotationValues) face.SetTextureRotation(properties.Rotation);
-                face.CalculateTextureCoordinates(false);
+                if (face.Flags.HasFlag(FaceFlags.TextureLocked))
+                {
+                    face.AlignTextureToFace();
+                } else
+                {
+                    face.AlignTextureToWorld();
+                }
             };
 
             Document.PerformAction("Modify texture properties", new EditFace(Document.Selection.GetSelectedFaces(), action, false));
