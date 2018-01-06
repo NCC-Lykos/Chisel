@@ -36,7 +36,6 @@ namespace Chisel.Providers.Map
         {
             return filename.EndsWith(".3dt", true, CultureInfo.InvariantCulture);
         }
-
         private void Assert(bool b, string message = "Malformed file")
         {
             if (!b) throw new Exception(message);
@@ -48,21 +47,18 @@ namespace Chisel.Providers.Map
                     + " " + c.Z.ToString("0.000000", CultureInfo.InvariantCulture)
                     + " " + (-c.Y).ToString("0.000000", CultureInfo.InvariantCulture);
         }
-
         private string FormatCoordinateNonSwitch(Coordinate c)
         {
             return c.X.ToString("0.000000", CultureInfo.InvariantCulture)
                     + " " + c.Y.ToString("0.000000", CultureInfo.InvariantCulture)
                     + " " + c.Z.ToString("0.000000", CultureInfo.InvariantCulture);
         }
-
         private string FormatIntCoordinate(Coordinate c)
         {
             return c.X.ToString("0", CultureInfo.InvariantCulture)
                     + " " + c.Z.ToString("0", CultureInfo.InvariantCulture)
                     + " " + (-c.Y).ToString("0", CultureInfo.InvariantCulture);
         }
-
         private string FormatColor(System.Drawing.Color c)
         {
             return c.R.ToString("0", CultureInfo.InvariantCulture)
@@ -70,7 +66,38 @@ namespace Chisel.Providers.Map
                    + " " + c.B.ToString("0", CultureInfo.InvariantCulture);
         }
 
+        /*NOTE(SVK):Outdated use face.AlignTextureToWorld() now*/
+        /*
+        private static void NCAlignTextureToWorld(Face face)
+        {
+            var direction = NCClosestAxisToNormal(face.Plane);
+            face.Texture.UAxis = direction == Coordinate.UnitX ? Coordinate.UnitY : Coordinate.UnitX;
+            face.Texture.VAxis = direction == Coordinate.UnitZ ? -Coordinate.UnitY : -Coordinate.UnitZ;
+        }
+        
+        private static Coordinate NCClosestAxisToNormal(Plane plane)
+        {
+            var norm = plane.Normal.Absolute();
+
+            if (norm.Z >= norm.X && norm.Z >= norm.Y) return Coordinate.UnitZ;
+            if (norm.X >= norm.Y) return Coordinate.UnitX;
+            return Coordinate.UnitY;
+        }
+        */
+
+        private static System.Drawing.Color GetGenesisBrushColor(int Flags)
+        {
+            //Determine type of brush and color it
+            if (Flags == 72)
+                return Color.FromArgb(255, 186, 85, 211);
+            return Colour.GetRandomBrushColour();
+        }
+
         private static List<string> FaceProperties = new List<string> { "NumPoints", "Flags", "Light", "MipMapBias", "Translucency", "Reflectivity" };
+        private static List<string> SolidProperties = new List<string> { "Flags", "ModelId", "GroupId", "HullSize", "Type", "BrushFaces" };
+        private static List<string> EntityProperties = new List<string> { "eStyle", "eOrigin", "eFlags", "eGroup", "ePairCount" };
+        private static List<string> EntityListProperties = new List<string> { "EntCount", "CurEnt" };
+
         private Face ReadFace(Solid parent, StreamReader rdr, IDGenerator generator)
         {
             const NumberStyles ns = NumberStyles.Float;
@@ -93,7 +120,7 @@ namespace Chisel.Providers.Map
 
                 var split = line.Split(' ');
                 Assert(split.Length == 4);
-
+                
                 var coord = Coordinate.Parse(split[1], split[2], split[3]);
                 var tmp = coord.Y;
                 coord.Y = -coord.Z;
@@ -116,15 +143,18 @@ namespace Chisel.Providers.Map
                 Translucency = float.Parse(properties["Translucency"]),
                 Light = int.Parse(properties["Light"]),
             };
+
             face.Vertices.AddRange(poly.Vertices.Select(x => new Vertex(x, face)));
 
-            NCAlignTextureToWorld(face);
+            //NCAlignTextureToWorld(face);
+            
 
             face.Texture.XShift = decimal.Parse(texSplit[4], ns, CultureInfo.InvariantCulture);
             face.Texture.YShift = decimal.Parse(texSplit[5], ns, CultureInfo.InvariantCulture);
             face.SetTextureRotation(decimal.Parse(texSplit[2], ns, CultureInfo.InvariantCulture));
             face.Texture.XScale = decimal.Parse(texSplit[7], ns, CultureInfo.InvariantCulture);
             face.Texture.YScale = decimal.Parse(texSplit[8], ns, CultureInfo.InvariantCulture);
+            face.AlignTextureToWorld();
 
             face.UpdateBoundingBox();
 
@@ -141,21 +171,260 @@ namespace Chisel.Providers.Map
 
             return face;
         }
-
-        private static void NCAlignTextureToWorld(Face face)
+        private Solid ReadSolid(StreamReader rdr, IDGenerator generator, string brushName = "NoName")
         {
-            var direction = NCClosestAxisToNormal(face.Plane);
-            face.Texture.UAxis = direction == Coordinate.UnitX ? Coordinate.UnitY : Coordinate.UnitX;
-            face.Texture.VAxis = direction == Coordinate.UnitZ ? -Coordinate.UnitY : -Coordinate.UnitZ;
+            var properties = new Dictionary<string, string>();
+
+            foreach (var prop in SolidProperties)
+            {
+                (string name, string value) = ReadProperty(rdr);
+                Assert(name == prop);
+                properties[name] = value;
+            }
+
+            var numFaces = int.Parse(properties["BrushFaces"]);
+            var faces = new List<Face>(numFaces);
+            var ret = new Solid(generator.GetNextObjectID()) { ClassName = brushName };
+            for (int i = 0; i < numFaces; ++i)
+            {
+                faces.Add(ReadFace(ret, rdr, generator));
+            }
+
+            ret.Faces.AddRange(faces);
+
+            // Ensure all the faces point outwards
+            var origin = ret.GetOrigin();
+            foreach (var face in ret.Faces)
+            {
+                if (face.Plane.OnPlane(origin) >= 0) face.Flip();
+            }
+
+            ret.UpdateBoundingBox();
+
+            //var ret = Solid.CreateFromIntersectingPlanes(faces.Select(x => x.Plane), generator);
+            ret.Colour = GetGenesisBrushColor(int.Parse(properties["Flags"]));
+            ret.MetaData.Set("Flags", properties["Flags"]);
+            ret.MetaData.Set("ModelId", properties["ModelId"]);
+            ret.MetaData.Set("HullSize", properties["HullSize"]);
+            ret.MetaData.Set("Type", properties["Type"]);
+
+            int group = int.Parse(properties["GroupId"]);
+            if (group > 0)
+                ret.Visgroups.Add(group);
+
+            return ret;
         }
-
-        private static Coordinate NCClosestAxisToNormal(Plane plane)
+        private static void ReadKeyValue(Entity ent, string line)
         {
-            var norm = plane.Normal.Absolute();
+            var split = line.Split(' ');
+            var key = split[1].Trim();
+            var value = string.Join(" ", split.Skip(3)).Trim('"');
 
-            if (norm.Z >= norm.X && norm.Z >= norm.Y) return Coordinate.UnitZ;
-            if (norm.X >= norm.Y) return Coordinate.UnitX;
-            return Coordinate.UnitY;
+            if (key == "classname")
+                ent.ClassName = value;
+            else if (key.Equals("origin", StringComparison.OrdinalIgnoreCase))
+            {
+                var osp = value.Split(' ');
+                ent.Origin = Coordinate.Parse(osp[0], osp[1], osp[2]);
+                var tmp = ent.Origin.Y;
+                ent.Origin.Y = -ent.Origin.Z;
+                ent.Origin.Z = tmp;
+            }
+            else if (key == "%name%")
+            {
+                ent.EntityData.Name = value;
+                ent.EntityData.SetPropertyValue(key, value);
+            }
+            else
+            {
+                if (key == "color")
+                {
+                    var csp = value.Split(' ');
+                    var r = int.Parse(csp[0]);
+                    var g = int.Parse(csp[1]);
+                    var b = int.Parse(csp[2]);
+
+                    ent.Colour = System.Drawing.Color.FromArgb(r, g, b);
+                }
+
+                ent.EntityData.SetPropertyValue(key, value);
+            }
+        }
+        private static (string name, string value) ReadProperty(StreamReader rdr)
+        {
+            var line = rdr.ReadLine();
+            return ReadProperty(line);
+        }
+        private static (string name, string value) ReadProperty(string line)
+        {
+            var split = line.Split(' ');
+            return (split[0].Trim(), string.Join(" ", split.Skip(1)).Trim('"'));
+        }
+        private Entity ReadWorldEntity(StreamReader rdr, IDGenerator generator)
+        {
+            var ent = new Entity(generator.GetNextObjectID()) { EntityData = new EntityData(), Colour = Colour.GetRandomBrushColour() };
+            ent.EntityData.Name = "worldspawn";
+
+            string line;
+            while ((line = rdr.ReadLine()).StartsWith("Brush"))
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(line, "Brush \"(?<BrushName>.*)\"");
+                string brushName = "NoName";
+                if (match.Success)
+                    brushName = match.Groups["BrushName"].Value;
+
+                var s = ReadSolid(rdr, generator, brushName);
+                if (s != null) s.SetParent(ent, false);
+            }
+
+            ent.UpdateBoundingBox();
+            return ent;
+        }
+        private Entity ReadEntity(StreamReader rdr, IDGenerator generator)
+        {
+            var properties = new Dictionary<string, string>();
+            var ent = new Entity(generator.GetNextObjectID()) { EntityData = new EntityData(), Colour = Colour.GetRandomBrushColour() };
+
+            string line = rdr.ReadLine();
+            Assert(line.Trim() == "CEntity");
+
+            foreach (var prop in EntityProperties)
+            {
+                (string name, string value) = ReadProperty(rdr);
+                Assert(name == prop);
+                properties[name] = value;
+            }
+            ent.EntityData.Flags = int.Parse(properties["eFlags"]);
+
+            var numPairs = int.Parse(properties["ePairCount"]);
+            for (int i = 0; i < numPairs; ++i)
+            {
+                line = rdr.ReadLine();
+                ReadKeyValue(ent, line);
+            }
+
+            // Swallow end
+            line = rdr.ReadLine();
+            Assert(line == "End CEntity");
+
+            ent.UpdateBoundingBox();
+            return ent;
+        }
+        private List<Entity> ReadAllEntities(StreamReader rdr, IDGenerator generator)
+        {
+            var properties = new Dictionary<string, string>();
+            var list = new List<Entity>();
+
+            list.Add(ReadWorldEntity(rdr, generator));
+
+            foreach (var prop in EntityListProperties)
+            {
+                (string name, string value) = ReadProperty(rdr);
+                Assert(name == prop);
+                properties[name] = value;
+            }
+
+            var numEntites = int.Parse(properties["EntCount"]);
+            for (int i = 0; i < numEntites; ++i)
+            {
+                Entity ent = ReadEntity(rdr, generator);
+                if (ent != null)
+                    list.Add(ent);
+            }
+
+            return list;
+        }
+        private Dictionary<string, string> ReadMapStats(StreamReader rdr)
+        {
+            var ret = new Dictionary<string, string>();
+            (string name, string value) = ReadProperty(rdr);
+            var _3dtVersion = float.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture);
+            if (_3dtVersion == 1.35f)
+                _3dtVersion = 1.31f;
+            //ret["3dtVersion"] = value;
+            MapVersion = _3dtVersion;
+
+            var numStats = 8;
+            if (_3dtVersion < 1.34)
+                numStats = 6;
+
+            for (int i = 0; i < numStats; ++i)
+            {
+                (name, value) = ReadProperty(rdr);
+                ret[name] = value;
+            }
+
+            return ret;
+        }
+        private List<Motion> ReadMotions(int numMotions, StreamReader rdr)
+        {
+            const NumberStyles ns = NumberStyles.Float;
+            FileStream fs = (FileStream)rdr.BaseStream;
+            List<Motion> models = new List<Motion>();
+
+            string line = null;
+            bool newModel = true;
+            for (int i = 0; i < numMotions; ++i)
+            {
+                var model = new Motion();
+
+                bool inModel = true;
+                while (inModel)
+                {
+                    var start = rdr.GetPosition();
+                    if (line == null)
+                        line = rdr.ReadLine();
+
+                    if (!newModel && line.StartsWith("Model \""))
+                    {
+                        models.Add(model);
+                        newModel = true;
+                        break;
+                    }
+                    else if (line.StartsWith("Group \""))
+                    {
+                        models.Add(model);
+                        rdr.SetPosition(start);
+                        return models;
+                    }
+
+                    model.RawModelLines.Add(line);
+                    line = null;
+                    newModel = false;
+                }
+            }
+
+            return models;
+        }
+        private List<Visgroup> ReadGroups(int numGroups, StreamReader rdr)
+        {
+            var ret = new List<Visgroup>();
+            for (int i = 0; i < numGroups; ++i)
+            {
+                var group = new Visgroup();
+
+                (string name, string value) = ReadProperty(rdr);
+                group.Name = value;
+
+                (name, value) = ReadProperty(rdr);
+                group.ID = int.Parse(value);
+
+                (name, value) = ReadProperty(rdr);
+                group.Visible = value == "1";
+
+                (name, value) = ReadProperty(rdr);
+                (name, value) = ReadProperty(rdr);
+                var colors = value.Split(' ');
+                var r = int.Parse(colors[0], NumberStyles.Float, CultureInfo.InvariantCulture);
+                var g = int.Parse(colors[1], NumberStyles.Float, CultureInfo.InvariantCulture);
+                var b = int.Parse(colors[2], NumberStyles.Float, CultureInfo.InvariantCulture);
+
+                group.Colour = System.Drawing.Color.FromArgb(r, g, b);
+
+                ret.Add(group);
+            }
+
+            return ret;
         }
 
         private void WriteFace(Face face, StreamWriter wr)
@@ -250,115 +519,11 @@ namespace Chisel.Providers.Map
 
             WriteProperty("Pos", FormatCoordinate(face.BoundingBox.Center), wr, false, 1);*/
         }
-
-        private static List<string> SolidProperties = new List<string>{"Flags", "ModelId", "GroupId", "HullSize", "Type", "BrushFaces" };
-        private Solid ReadSolid(StreamReader rdr, IDGenerator generator, string brushName = "NoName")
-        {
-            var properties = new Dictionary<string, string>();
-
-            foreach (var prop in SolidProperties)
-            {
-                (string name, string value) = ReadProperty(rdr);
-                Assert(name == prop);
-                properties[name] = value;
-            }
-
-            var numFaces = int.Parse(properties["BrushFaces"]);
-            var faces = new List<Face>(numFaces);
-            var ret = new Solid(generator.GetNextObjectID()) { ClassName = brushName };
-            for (int i = 0; i < numFaces; ++i)
-            {
-                faces.Add(ReadFace(ret, rdr, generator));
-            }
-
-            ret.Faces.AddRange(faces);
-
-            // Ensure all the faces point outwards
-            var origin = ret.GetOrigin();
-            foreach (var face in ret.Faces)
-            {
-                if (face.Plane.OnPlane(origin) >= 0) face.Flip();
-            }
-
-            ret.UpdateBoundingBox();
-
-            //var ret = Solid.CreateFromIntersectingPlanes(faces.Select(x => x.Plane), generator);
-            ret.Colour = GetGenesisBrushColor(int.Parse(properties["Flags"]));
-            ret.MetaData.Set("Flags", properties["Flags"]);
-            ret.MetaData.Set("ModelId", properties["ModelId"]);
-            ret.MetaData.Set("HullSize", properties["HullSize"]);
-            ret.MetaData.Set("Type", properties["Type"]);
-
-            int group = int.Parse(properties["GroupId"]);
-            if (group > 0)
-                ret.Visgroups.Add(group);
-
-            return ret;
-        }
-
-        private static System.Drawing.Color GetGenesisBrushColor(int Flags)
-        {
-            //Determine type of brush and color it
-            if (Flags == 72)
-                return Color.FromArgb(255, 186, 85, 211);
-            return Colour.GetRandomBrushColour();
-        }
-
-        private static void ReadKeyValue(Entity ent, string line)
-        {
-            var split = line.Split(' ');
-            var key = split[1].Trim();
-            var value = string.Join(" ", split.Skip(3)).Trim('"');
-
-            if (key == "classname")
-                ent.ClassName = value;
-            else if (key.Equals("origin", StringComparison.OrdinalIgnoreCase))
-            {
-                var osp = value.Split(' ');
-                ent.Origin = Coordinate.Parse(osp[0], osp[1], osp[2]);
-                var tmp = ent.Origin.Y;
-                ent.Origin.Y = -ent.Origin.Z;
-                ent.Origin.Z = tmp;
-            }
-            else if (key == "%name%")
-            {
-                ent.EntityData.Name = value;
-                ent.EntityData.SetPropertyValue(key, value);
-            }
-            else
-            {
-                if (key == "color")
-                {
-                    var csp = value.Split(' ');
-                    var r = int.Parse(csp[0]);
-                    var g = int.Parse(csp[1]);
-                    var b = int.Parse(csp[2]);
-
-                    ent.Colour = System.Drawing.Color.FromArgb(r, g, b);
-                }
-
-                ent.EntityData.SetPropertyValue(key, value);
-            }
-        }
-
         private void WriteKeyValue(string key, string value, StreamWriter wr)
         {
             string line = string.Format("Key {0} Value \"{1}\"", key, value);
             wr.WriteLine(line);
         }
-
-        private static (string name, string value) ReadProperty(StreamReader rdr)
-        {
-            var line = rdr.ReadLine();
-            return ReadProperty(line);
-        }
-
-        private static (string name, string value) ReadProperty(string line)
-        {
-            var split = line.Split(' ');
-            return (split[0].Trim(), string.Join(" ", split.Skip(1)).Trim('"'));
-        }
-
         private static void WriteProperty(string name, string value, StreamWriter wr, bool quote = false, int numTabs = 0, bool newlineValue = false, string defaultValue = null)
         {
 
@@ -376,28 +541,6 @@ namespace Chisel.Providers.Map
 
             wr.WriteLine(bld.ToString());
         }
-
-        private Entity ReadWorldEntity(StreamReader rdr, IDGenerator generator)
-        {
-            var ent = new Entity(generator.GetNextObjectID()) { EntityData = new EntityData(), Colour = Colour.GetRandomBrushColour() };
-            ent.EntityData.Name = "worldspawn";
-
-            string line;
-            while ((line = rdr.ReadLine()).StartsWith("Brush"))
-            {
-                var match = System.Text.RegularExpressions.Regex.Match(line, "Brush \"(?<BrushName>.*)\"");
-                string brushName = "NoName";
-                if (match.Success)
-                    brushName = match.Groups["BrushName"].Value;
-
-                var s = ReadSolid(rdr, generator, brushName);
-                if (s != null) s.SetParent(ent, false);
-            }
-
-            ent.UpdateBoundingBox();
-            return ent;
-        }
-
         private void WriteWorldEntity(List<Solid> solids, StreamWriter wr)
         {
             foreach(var solid in solids)
@@ -417,39 +560,6 @@ namespace Chisel.Providers.Map
                     WriteFace(face, wr);
             }
         }
-
-        private static List<string> EntityProperties = new List<string> { "eStyle", "eOrigin", "eFlags", "eGroup", "ePairCount" };
-        private Entity ReadEntity(StreamReader rdr, IDGenerator generator)
-        {
-            var properties = new Dictionary<string, string>();
-            var ent = new Entity(generator.GetNextObjectID()) { EntityData = new EntityData(), Colour = Colour.GetRandomBrushColour() };
-
-            string line = rdr.ReadLine();
-            Assert(line.Trim() == "CEntity");
-
-            foreach (var prop in EntityProperties)
-            {
-                (string name, string value) = ReadProperty(rdr);
-                Assert(name == prop);
-                properties[name] = value;
-            }
-            ent.EntityData.Flags = int.Parse(properties["eFlags"]);
-
-            var numPairs = int.Parse(properties["ePairCount"]);
-            for (int i = 0; i < numPairs; ++i)
-            {
-                line = rdr.ReadLine();
-                ReadKeyValue(ent, line);
-            }
-
-            // Swallow end
-            line = rdr.ReadLine();
-            Assert(line == "End CEntity");
-
-            ent.UpdateBoundingBox();
-            return ent;
-        }
-
         private void WriteEntity(Entity entity, StreamWriter wr)
         {
             WriteProperty("CEntity", "", wr);
@@ -483,56 +593,6 @@ namespace Chisel.Providers.Map
 
             WriteProperty("End", "CEntity", wr);
         }
-
-        private static List<string> EntityListProperties = new List<string> { "EntCount", "CurEnt" };
-        private List<Entity> ReadAllEntities(StreamReader rdr, IDGenerator generator)
-        {
-            var properties = new Dictionary<string, string>();
-            var list = new List<Entity>();
-
-            list.Add(ReadWorldEntity(rdr, generator));
-
-            foreach (var prop in EntityListProperties)
-            {
-                (string name, string value) = ReadProperty(rdr);
-                Assert(name == prop);
-                properties[name] = value;
-            }
-
-            var numEntites = int.Parse(properties["EntCount"]);
-            for (int i = 0; i < numEntites; ++i)
-            {
-                Entity ent = ReadEntity(rdr, generator);
-                if (ent != null)
-                    list.Add(ent);
-            }
-
-            return list;
-        }
-
-        private Dictionary<string, string> ReadMapStats(StreamReader rdr)
-        {
-            var ret = new Dictionary<string, string>();
-            (string name, string value) = ReadProperty(rdr);
-            var _3dtVersion = float.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture);
-            if (_3dtVersion == 1.35f)
-                _3dtVersion = 1.31f;
-            //ret["3dtVersion"] = value;
-            MapVersion = _3dtVersion;
-
-            var numStats = 8;
-            if (_3dtVersion < 1.34)
-                numStats = 6;
-            
-            for (int i = 0; i < numStats; ++i)
-            {
-                (name, value) = ReadProperty(rdr);
-                ret[name] = value;
-            }
-
-            return ret;
-        }
-
         private void WriteMapStats(Dictionary<string, string> stats, List<Solid> solids, List<Entity> entities, DataStructures.MapObjects.Map map, StreamWriter wr)
         {
             WriteProperty("3dtVersion", "1.35", wr);
@@ -563,48 +623,6 @@ namespace Chisel.Providers.Map
             }
             */
         }
-
-        private List<Motion> ReadMotions(int numMotions, StreamReader rdr)
-        {
-            const NumberStyles ns = NumberStyles.Float;
-            FileStream fs = (FileStream)rdr.BaseStream;
-            List<Motion> models = new List<Motion>();
-
-            string line = null;
-            bool newModel = true;
-            for (int i = 0; i < numMotions; ++i)
-            {
-                var model = new Motion();
-
-                bool inModel = true;
-                while (inModel)
-                {
-                    var start = rdr.GetPosition();
-                    if (line == null)
-                        line = rdr.ReadLine();
-
-                    if (!newModel && line.StartsWith("Model \""))
-                    {
-                        models.Add(model);
-                        newModel = true;
-                        break;
-                    }
-                    else if (line.StartsWith("Group \""))
-                    {
-                        models.Add(model);
-                        rdr.SetPosition(start);
-                        return models;
-                    }
-
-                    model.RawModelLines.Add(line);
-                    line = null;
-                    newModel = false;
-                }
-            }
-
-            return models;
-        }
-
         private void WriteMotions(List<Motion> motions, StreamWriter wr)
         {
             foreach (var motion in motions)
@@ -620,37 +638,6 @@ namespace Chisel.Providers.Map
                 nativeMotion = nativeMotion.Replace("\n\n", "\n");
                 wr.Write(nativeMotion);*/
             }
-        }
-
-        private List<Visgroup> ReadGroups(int numGroups, StreamReader rdr)
-        {
-            var ret = new List<Visgroup>();
-            for (int i = 0; i < numGroups; ++i)
-            {
-                var group = new Visgroup();
-
-                (string name, string value) = ReadProperty(rdr);
-                group.Name = value;
-
-                (name, value) = ReadProperty(rdr);
-                group.ID = int.Parse(value);
-
-                (name, value) = ReadProperty(rdr);
-                group.Visible = value == "1";
-
-                (name, value) = ReadProperty(rdr);
-                (name, value) = ReadProperty(rdr);
-                var colors = value.Split(' ');
-                var r = int.Parse(colors[0], NumberStyles.Float, CultureInfo.InvariantCulture);
-                var g = int.Parse(colors[1], NumberStyles.Float, CultureInfo.InvariantCulture);
-                var b = int.Parse(colors[2], NumberStyles.Float, CultureInfo.InvariantCulture);
-
-                group.Colour = System.Drawing.Color.FromArgb(r, g, b);
-
-                ret.Add(group);
-            }
-
-            return ret;
         }
 
         /// <summary>

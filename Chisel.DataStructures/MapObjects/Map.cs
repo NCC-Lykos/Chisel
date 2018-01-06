@@ -142,9 +142,13 @@ namespace Chisel.DataStructures.MapObjects
         /// <summary>
         /// Should be called when a map is loaded. Sets up visgroups, object ids, gamedata, and textures.
         /// </summary>
-        public void PostLoadProcess(GameData.GameData gameData, Func<string, ITexture> textureAccessor, Func<string, float> textureOpacity)
+        //public void PostLoadProcess(GameData.GameData gameData, Func<string, ITexture> textureAccessor, Func<string, float> textureOpacity)
+        public void PostLoadProcess(GameData.GameData gameData,
+                                    Func<string, ITexture> textureAccessor,
+                                    Func<string, float> textureOpacity,
+                                    bool DisableTransparent)
         {
-            PartialPostLoadProcess(gameData, textureAccessor, textureOpacity);
+            PartialPostLoadProcess(gameData, textureAccessor, textureOpacity, DisableTransparent);
 
             var all = WorldSpawn.FindAll();
 
@@ -212,7 +216,11 @@ namespace Chisel.DataStructures.MapObjects
             return g.SelectMany(x => GetAllVisgroups(x.Children)).Union(g);
         }
 
-        public void PartialPostLoadProcess(GameData.GameData gameData, Func<string, ITexture> textureAccessor, Func<string, float> textureOpacity)
+        //public void PartialPostLoadProcess(GameData.GameData gameData, Func<string, ITexture> textureAccessor, Func<string, float> textureOpacity)
+        public void PartialPostLoadProcess(GameData.GameData gameData,
+                                           Func<string, ITexture> textureAccessor,
+                                           Func<string, float> textureOpacity,
+                                           bool DisableTransparent)
         {
             var objects = WorldSpawn.FindAll();
             Parallel.ForEach(objects, obj =>
@@ -238,7 +246,16 @@ namespace Chisel.DataStructures.MapObjects
                         if (f.Texture.Texture == null)
                         {
                             f.Texture.Texture = textureAccessor(f.Texture.Name.ToLowerInvariant());
-                            f.CalculateTextureCoordinates(true);
+                            //TODO(SVK): Remove, disabled for debugging do not want shifting offsets
+                            //f.CalculateTextureCoordinates(true);
+                            if (!f.Flags.HasFlag(FaceFlags.TextureLocked))
+                            {
+                                f.AlignTextureToWorld();
+                            } else
+                            {
+                                f.AlignTextureToFace();
+                            }
+                            f.CalculateTextureCoordinates(false);
                         }
                         if (disp && !(f is Displacement))
                         {
@@ -246,8 +263,17 @@ namespace Chisel.DataStructures.MapObjects
                         }
                         else if (f.Texture.Texture != null)
                         {
-                            f.Opacity = textureOpacity(f.Texture.Name.ToLowerInvariant());
-                            if (!HideNullTextures && f.Opacity < 0.1) f.Opacity = 1;
+                            //NOTE(SVK):Seems Chisel exepects some special char in WAD file texture name for transparancy.
+                            //RF functions differntly so disable
+                            //f.Opacity = textureOpacity(f.Texture.Name.ToLowerInvariant());
+                            //if (!HideNullTextures && f.Opacity < 0.1) f.Opacity = 1;
+                            if(!DisableTransparent && (f.Flags.HasFlag(FaceFlags.Transparent) && !f.Flags.HasFlag(FaceFlags.Mirror)))
+                            {
+                                f.Opacity = (f.Translucency / 255.0f);
+                            } else
+                            {
+                                f.Opacity = 1;
+                            }
                         }
                     });
                 }

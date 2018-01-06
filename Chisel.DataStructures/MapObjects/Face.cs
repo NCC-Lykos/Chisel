@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using Chisel.DataStructures.Geometric;
 using Chisel.DataStructures.Transformations;
 using Chisel.Extensions;
+using System.Diagnostics;
 
 namespace Chisel.DataStructures.MapObjects
 {
@@ -62,9 +63,9 @@ namespace Chisel.DataStructures.MapObjects
             ID = info.GetInt64("ID");
             Flags = (FaceFlags)info.GetInt32("Flags");
             Colour = Color.FromArgb(info.GetInt32("Colour"));
-            Plane = (Plane) info.GetValue("Plane", typeof (Plane));
-            Texture = (TextureReference) info.GetValue("Texture", typeof (TextureReference));
-            Vertices = ((Vertex[]) info.GetValue("Vertices", typeof (Vertex[]))).ToList();
+            Plane = (Plane)info.GetValue("Plane", typeof(Plane));
+            Texture = (TextureReference)info.GetValue("Texture", typeof(TextureReference));
+            Vertices = ((Vertex[])info.GetValue("Vertices", typeof(Vertex[]))).ToList();
             Vertices.ForEach(x => x.Parent = this);
         }
 
@@ -81,17 +82,17 @@ namespace Chisel.DataStructures.MapObjects
         public virtual Face Copy(IDGenerator generator)
         {
             var f = new Face(generator.GetNextFaceID())
-                        {
-                            Flags = Flags,
-                            Plane = Plane.Clone(),
-                            Colour = Colour,
-                            IsSelected = IsSelected,
-                            IsHidden = IsHidden,
-                            Opacity = Opacity,
-                            Texture = Texture.Clone(),
-                            Parent = Parent,
-                            BoundingBox = BoundingBox.Clone()
-                        };
+            {
+                Flags = Flags,
+                Plane = Plane.Clone(),
+                Colour = Colour,
+                IsSelected = IsSelected,
+                IsHidden = IsHidden,
+                Opacity = Opacity,
+                Texture = Texture.Clone(),
+                Parent = Parent,
+                BoundingBox = BoundingBox.Clone()
+            };
             foreach (var v in Vertices.Select(x => x.Clone()))
             {
                 v.Parent = f;
@@ -206,6 +207,10 @@ namespace Chisel.DataStructures.MapObjects
 
         public virtual void CalculateTextureCoordinates(bool minimizeShiftValues)
         {
+            if (this.ID == 1054)
+            {
+                this.Opacity = this.Opacity;
+            }
             if (minimizeShiftValues) MinimiseTextureShiftValues();
             Vertices.ForEach(c => c.TextureU = c.TextureV = 0);
 
@@ -225,6 +230,10 @@ namespace Chisel.DataStructures.MapObjects
             }
         }
 
+        /* NOTE(SVK):Texture Align to match face.cpp in RFedit */
+        /*
+        
+        
         public void AlignTextureToWorld()
         {
             // Set the U and V axes to match the X, Y, or Z axes
@@ -260,6 +269,7 @@ namespace Chisel.DataStructures.MapObjects
 
             CalculateTextureCoordinates(true);
         }
+        
 
         public bool IsTextureAlignedToWorld()
         {
@@ -272,6 +282,174 @@ namespace Chisel.DataStructures.MapObjects
         {
             var cp = Texture.UAxis.Cross(Texture.VAxis).Normalise();
             return cp.EquivalentTo(Plane.Normal, 0.01m) || cp.EquivalentTo(-Plane.Normal, 0.01m);
+        }
+        */
+
+        private UInt32 DetermineAxis(Coordinate v)
+        {
+            UInt32 Result = 0;
+            float x, y, z;
+            //NOTE(SVK): used the RF xyz coords here
+            //Round is a hack to avoid precision issues with better datatypes used in code.
+            //TODO(SVK): Calc a plane normal that matches in precision RF
+            x = (float)Math.Round(Math.Abs(v.X), 7);
+            y = (float)Math.Round(Math.Abs(v.Z), 7);
+            z = (float)Math.Round(Math.Abs(v.Y), 7);
+
+            if (y > x)
+            {
+                if (z > y) { Result = 2; }
+                else { Result = 1; }
+            }
+            else if (z > x) { Result = 2; }
+            return (Result);
+        }
+
+        public void AlignTextureToWorld()
+        {
+            float cosA, sinA, angle = (((float)-Texture.Rotation * (float)3.14159265358979323846f) / (float)180.0f);
+            sinA = (float)Math.Sin(angle);
+            cosA = (float)Math.Cos(angle);
+            UInt32 Axis = DetermineAxis(this.Plane.Normal);
+
+            //Note Y is Z and Z is Y
+            switch (Axis)
+            {
+                case 0:
+                    Texture.UAxis = new Coordinate(0, (decimal)-cosA, (decimal)sinA);
+                    Texture.VAxis = new Coordinate(0, (decimal)-sinA, (decimal)-cosA);
+                    break;
+                case 1:
+                    Texture.UAxis = new Coordinate((decimal)cosA, (decimal)-sinA, 0);
+                    Texture.VAxis = new Coordinate((decimal)-sinA, (decimal)-cosA, 0);
+                    break;
+                case 2:
+                    Texture.UAxis = new Coordinate((decimal)cosA, 0, (decimal)sinA);
+                    Texture.VAxis = new Coordinate((decimal)sinA, 0, (decimal)-cosA);
+                    break;
+            }
+            CalculateTextureCoordinates(false);
+
+        }
+
+        public void AlignTextureToFace()
+        {
+            ////TODO(SVK): Rewrite this entire function:
+            ////direct translation from face.cpp need to optimize, im sure this is slow.
+            //float d1, d2, theta, cosV, cosA, sinA, angle = (((float)Texture.Rotation * (float)3.14159265358979323846f) / (float)180.0f);
+            //Coordinate axis = new Coordinate(0, 0, 0), d = new Coordinate(0, 0, 1), pN = new Coordinate(Math.Abs(this.Plane.Normal.X),
+            //                                                                                       Math.Abs(this.Plane.Normal.Y),
+            //                                                                                       Math.Abs(this.Plane.Normal.Z));
+            //pN.X = Math.Abs(pN.X);
+            //pN.Y = Math.Abs(pN.Y);
+            //pN.Z = Math.Abs(pN.Z);
+            ////Inverse of normal
+            //if (pN.X > pN.Y && pN.X > pN.Z && pN.X > 0) { pN *= -1; }
+            //else if (pN.X > pN.Y && pN.X <= pN.Z && pN.Z > 0) { pN *= -1; }
+            //else if (pN.X <= pN.Y && pN.Y > pN.Z && pN.Y > 0) { pN *= -1; }
+            //else if (pN.X <= pN.Y && pN.Y <= pN.Z && pN.Z > 0) { pN *= -1; }
+            ////CrossProduct
+            //axis.X = d.Y * pN.Z - d.Z * pN.Y;
+            //axis.Y = d.Z * pN.X - d.X * pN.Z;
+            //axis.Z = d.X * pN.Y - d.Y * pN.X;
+            ////DotProduct
+            //cosV = (float)(d.X * pN.X + d.Y * pN.Y + d.Z * pN.Z);
+            //if (cosV > 1.0f) cosV = 1.0f;
+            //theta = (float)Math.Acos(cosV);
+            ////Normalize
+            //d1 = (float)axis.X * (float)axis.X;
+            //d1 += (float)axis.Y * (float)axis.Y;
+            //d1 += (float)axis.Z * (float)axis.Z;
+            //d1 = (float)Math.Sqrt(d1);
+            //d2 = d1;
+            //Coordinate aA = new Coordinate(1, 0, 0);
+            //Coordinate bA = new Coordinate(0, 1, 0);
+            //Coordinate cA = new Coordinate(0, 0, 1);
+            //Coordinate tA = new Coordinate(0, 0, 0);
+
+            //if (d1 == 0.0f)
+            //{
+            //    //if normalize square root is 0
+            //    float cosR = (float)Math.Cos(-theta), sinR = (float)Math.Sin(-theta);
+            //    aA = new Coordinate(1, 0, 0);
+            //    bA = new Coordinate(0, (decimal)cosR, (decimal)-sinR);
+            //    cA = new Coordinate(0, (decimal)sinR, (decimal)cosR);
+            //    tA = new Coordinate(0, 0, 0);
+            //}
+            //else
+            //{
+            //    d2 = 1.0f / d1;
+            //    axis.X *= (decimal)d2;
+            //    axis.Y *= (decimal)d2;
+            //    axis.Z *= (decimal)d2;
+            //    float sinT = (float)Math.Sin(theta);
+            //    axis *= (decimal)sinT;
+            //    Quaternion q = new Quaternion(axis, (decimal)(Math.Cos(theta * 0.5f)));
+            //    float x, y, z, w;
+            //    float x2, y2, z2;
+            //    float xx2, yy2, zz2;
+            //    float xy2, xz2, xw2;
+            //    float yz2, yw2, zw2;
+            //    x = (float)q.X; y = (float)q.Y; z = (float)q.Z; w = (float)q.W;
+            //    x2 = 2 * x; y2 = 2 * y; z2 = 2 * z;
+            //    xx2 = x * x2; yy2 = y * y2; zz2 = z * z2;
+            //    xy2 = y * x2; yz2 = z * y2; zw2 = w * z2;
+            //    xz2 = z * x2; yw2 = w * y2;
+            //    xw2 = w * x2;
+
+            //    aA.X = (decimal)(1.0f - yy2 - zz2);
+            //    aA.Y = (decimal)(xy2 - zw2);
+            //    aA.Z = (decimal)(xz2 + yw2);
+
+            //    bA.X = (decimal)(xy2 + zw2);
+            //    bA.Y = (decimal)(1.0f - xx2 - zz2);
+            //    bA.Z = (decimal)(yz2 - xw2);
+
+            //    cA.X = (decimal)(xz2 - yw2);
+            //    cA.Y = (decimal)(yz2 + xw2);
+            //    cA.Z = (decimal)(1.0f - xx2 - yy2);
+
+            //    tA.X = 0; tA.Y = 0; tA.Z = 0;
+            //}
+
+            //sinA = (float)Math.Sin(angle);
+            //cosA = (float)Math.Cos(angle);
+
+
+            ////Set Texture Rotation
+            //Coordinate a = new Coordinate((decimal)cosA, (decimal)-sinA, 0);
+            //Coordinate b = new Coordinate((decimal)sinA, (decimal)cosA, 0);
+            //Coordinate c = new Coordinate(0, 0, (decimal)1.0f);
+            //Coordinate t = new Coordinate(0, 0, 0);
+
+            //UInt32 Axis = DetermineAxis(this.Plane.Normal);
+            ////Note Y is Z and Z is Y
+            //switch (Axis)
+            //{
+            //    case 0:
+            //        Texture.UAxis = new Coordinate(0, (decimal)-cosA, (decimal)sinA);
+            //        Texture.VAxis = new Coordinate(0, (decimal)-sinA, (decimal)-cosA);
+            //        break;
+            //    case 1:
+            //        Texture.UAxis = new Coordinate((decimal)cosA, (decimal)-sinA, 0);
+            //        Texture.VAxis = new Coordinate((decimal)-sinA, (decimal)-cosA, 0);
+            //        break;
+            //    case 2:
+            //        Texture.UAxis = new Coordinate((decimal)cosA, 0, (decimal)sinA);
+            //        Texture.VAxis = new Coordinate((decimal)sinA, 0, (decimal)-cosA);
+            //        break;
+            //}
+            //CalculateTextureCoordinates(false);
+        }
+        
+        public bool IsTextureAlignedToWorld()
+        {
+            return !this.Flags.HasFlag(FaceFlags.TextureLocked);
+        }
+
+        public bool IsTextureAlignedToFace()
+        {
+            return this.Flags.HasFlag(FaceFlags.TextureLocked);
         }
 
         public void AlignTextureWithFace(Face face)
@@ -402,24 +580,25 @@ namespace Chisel.DataStructures.MapObjects
             }
             CalculateTextureCoordinates(true);
         }
-
+        
         /// <summary>
         /// Rotate the texture around the texture normal.
         /// </summary>
         /// <param name="rotate">The rotation angle in degrees</param>
         public void SetTextureRotation(decimal rotate)
         {
+            /*
             var rads = DMath.DegreesToRadians(Texture.Rotation - rotate);
             // Rotate around the texture normal
             var texNorm = Texture.VAxis.Cross(Texture.UAxis).Normalise();
             var transform = new UnitRotate(rads, new Line(Coordinate.Zero, texNorm));
             Texture.UAxis = transform.Transform(Texture.UAxis);
             Texture.VAxis = transform.Transform(Texture.VAxis);
+            */
             Texture.Rotation = rotate;
-
-            CalculateTextureCoordinates(false);
+            
+            //CalculateTextureCoordinates(false);
         }
-
         #endregion
 
         public virtual void UpdateBoundingBox()

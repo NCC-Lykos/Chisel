@@ -114,7 +114,11 @@ namespace Chisel.Editor.Documents
             var items = TextureCollection.GetItems(texList);
             TextureProvider.LoadTextureItems(items);
 
-            Map.PostLoadProcess(GameData, GetTexture, SettingsManager.GetSpecialTextureOpacity);
+            //Map.PostLoadProcess(GameData, GetTexture, SettingsManager.GetSpecialTextureOpacity);
+            Map.PostLoadProcess(GameData,
+                                       GetTexture,
+                                       SettingsManager.GetSpecialTextureOpacity,
+                                       Chisel.Settings.View.GloballyDisableTransparency);
             Map.UpdateDecals(this);
             Map.UpdateModels(this);
             Map.UpdateSprites(this);
@@ -377,7 +381,12 @@ namespace Chisel.Editor.Documents
 
         public void RenderAll()
         {
-            Map.PartialPostLoadProcess(GameData, GetTexture, SettingsManager.GetSpecialTextureOpacity);
+
+            //Map.PartialPostLoadProcess(GameData, GetTexture, SettingsManager.GetSpecialTextureOpacity);
+            Map.PartialPostLoadProcess(GameData, 
+                                       GetTexture,
+                                       SettingsManager.GetSpecialTextureOpacity,
+                                       Chisel.Settings.View.GloballyDisableTransparency);
 
             var decalsUpdated = Map.UpdateDecals(this);
             var modelsUpdated = Map.UpdateModels(this);
@@ -398,7 +407,11 @@ namespace Chisel.Editor.Documents
         public void RenderObjects(IEnumerable<MapObject> objects)
         {
             var objs = objects.ToList();
-            Map.PartialPostLoadProcess(GameData, GetTexture, SettingsManager.GetSpecialTextureOpacity);
+            //Map.PartialPostLoadProcess(GameData, GetTexture, SettingsManager.GetSpecialTextureOpacity);
+            Map.PartialPostLoadProcess(GameData,
+                                       GetTexture,
+                                       SettingsManager.GetSpecialTextureOpacity,
+                                       Chisel.Settings.View.GloballyDisableTransparency);
 
             var decalsUpdated = Map.UpdateDecals(this, objs);
             var modelsUpdated = Map.UpdateModels(this, objs);
@@ -416,7 +429,11 @@ namespace Chisel.Editor.Documents
 
         public void RenderFaces(IEnumerable<Face> faces)
         {
-            Map.PartialPostLoadProcess(GameData, GetTexture, SettingsManager.GetSpecialTextureOpacity);
+            //Map.PartialPostLoadProcess(GameData, GetTexture, SettingsManager.GetSpecialTextureOpacity);
+            Map.PartialPostLoadProcess(GameData,
+                                       GetTexture,
+                                       SettingsManager.GetSpecialTextureOpacity,
+                                       Chisel.Settings.View.GloballyDisableTransparency);
             // No need to update decals or models here: they can only be changed via entity properties
             HelperManager.UpdateCache();
             Renderer.UpdatePartial(faces);
