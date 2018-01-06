@@ -40,7 +40,7 @@ namespace Chisel.Editor.Tools.TextureTool
             {
                 Rotation = XShift = YShift = 0;
                 XScale = YScale = 1;
-                DifferentXScaleValues = DifferentYScaleValues = DifferentXShiftValues = DifferentYShiftValues = false;
+                DifferentXScaleValues = DifferentYScaleValues = DifferentXShiftValues = DifferentYShiftValues = DifferentRotationValues = false;
                 AllAlignedToFace = AllAlignedToWorld = false;
                 NoneAlignedToFace = NoneAlignedToWorld = true;
             }

@@ -245,17 +245,12 @@ namespace Chisel.DataStructures.MapObjects
                     {
                         if (f.Texture.Texture == null)
                         {
-                            f.Texture.Texture = textureAccessor(f.Texture.Name.ToLowerInvariant());
-                            //TODO(SVK): Remove, disabled for debugging do not want shifting offsets
-                            //f.CalculateTextureCoordinates(true);
-                            if (!f.Flags.HasFlag(FaceFlags.TextureLocked))
+                            if(f.Texture.Rotation != 0)
                             {
-                                f.AlignTextureToWorld();
-                            } else
-                            {
-                                f.AlignTextureToFace();
+                                f.Opacity = f.Opacity;
                             }
-                            f.CalculateTextureCoordinates(false);
+                            f.Texture.Texture = textureAccessor(f.Texture.Name.ToLowerInvariant());
+                            f.AlignTexture();
                         }
                         if (disp && !(f is Displacement))
                         {

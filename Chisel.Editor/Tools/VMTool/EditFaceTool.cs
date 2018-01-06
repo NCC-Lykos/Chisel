@@ -59,7 +59,7 @@ namespace Chisel.Editor.Tools.VMTool
                 };
                 f.Vertices.AddRange(verts.Select(x => new Vertex(x, face)));
                 f.UpdateBoundingBox();
-                f.AlignTextureToFace();
+                f.AlignTexture();
                 solid.Faces.Add(f);
                 _selection.Add(f);
             }
@@ -90,7 +90,7 @@ namespace Chisel.Editor.Tools.VMTool
                             };
                 f.Vertices.AddRange(verts.Select(x => new Vertex(x, face)));
                 f.UpdateBoundingBox();
-                f.AlignTextureToFace();
+                f.AlignTexture();
                 solid.Faces.Add(f);
                 _selection.Add(f);
             }

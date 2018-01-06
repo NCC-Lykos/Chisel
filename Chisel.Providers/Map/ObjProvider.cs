@@ -197,7 +197,7 @@ namespace Chisel.Providers.Map
                 foreach (var face in solid.Faces)
                 {
                     face.Colour = solid.Colour;
-                    face.AlignTextureToFace();
+                    face.AlignTexture();
                 }
                 solid.SetParent(map.WorldSpawn);
             }

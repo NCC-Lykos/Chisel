@@ -151,11 +151,10 @@ namespace Chisel.Providers.Map
 
             face.Texture.XShift = decimal.Parse(texSplit[4], ns, CultureInfo.InvariantCulture);
             face.Texture.YShift = decimal.Parse(texSplit[5], ns, CultureInfo.InvariantCulture);
-            face.SetTextureRotation(decimal.Parse(texSplit[2], ns, CultureInfo.InvariantCulture));
+            face.Texture.Rotation = decimal.Parse(texSplit[2], ns, CultureInfo.InvariantCulture);
             face.Texture.XScale = decimal.Parse(texSplit[7], ns, CultureInfo.InvariantCulture);
             face.Texture.YScale = decimal.Parse(texSplit[8], ns, CultureInfo.InvariantCulture);
-            face.AlignTextureToWorld();
-
+            
             face.UpdateBoundingBox();
 
             // Parse light scale

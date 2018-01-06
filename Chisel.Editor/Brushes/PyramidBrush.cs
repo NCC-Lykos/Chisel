@@ -49,7 +49,7 @@ namespace Chisel.Editor.Brushes
                                };
                 face.Vertices.AddRange(arr.Select(x => new Vertex(x, face)));
                 face.UpdateBoundingBox();
-                face.AlignTextureToWorld();
+                face.AlignTexture();
                 solid.Faces.Add(face);
             }
             solid.UpdateBoundingBox();
