@@ -91,6 +91,26 @@ namespace Chisel.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Chisel {
+            get {
+                object obj = ResourceManager.GetObject("Chisel", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Chisel_Large {
+            get {
+                object obj = ResourceManager.GetObject("Chisel_Large", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Cursor_Rotate {
@@ -736,26 +756,6 @@ namespace Chisel.Editor.Properties {
         internal static System.Drawing.Bitmap Menu_WindowSettings {
             get {
                 object obj = ResourceManager.GetObject("Menu_WindowSettings", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon Chisel {
-            get {
-                object obj = ResourceManager.GetObject("Chisel", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Chisel_Large {
-            get {
-                object obj = ResourceManager.GetObject("Chisel_Large", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

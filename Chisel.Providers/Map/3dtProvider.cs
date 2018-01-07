@@ -339,14 +339,18 @@ namespace Chisel.Providers.Map
             var ret = new Dictionary<string, string>();
             (string name, string value) = ReadProperty(rdr);
             var _3dtVersion = float.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture);
+            var numStats = 0;
+
+            //Compatibility with what we've done already
             if (_3dtVersion == 1.35f)
                 _3dtVersion = 1.31f;
+
+            if (_3dtVersion >= 1.33f)
+                numStats = 8;
+            else
+                numStats = 6;
             //ret["3dtVersion"] = value;
             MapVersion = _3dtVersion;
-
-            var numStats = 8;
-            if (_3dtVersion < 1.34)
-                numStats = 6;
 
             for (int i = 0; i < numStats; ++i)
             {
@@ -443,7 +447,7 @@ namespace Chisel.Providers.Map
             }
 
             var texInfo = string.Format("Rotate {0} Shift {1} {2} Scale {3} {4} Name \"{5}\"",
-                face.Texture.Rotation.ToString("0.000000", CultureInfo.InvariantCulture),
+                face.Texture.Rotation.ToString("0", CultureInfo.InvariantCulture),
                 face.Texture.XShift.ToString("0", CultureInfo.InvariantCulture),
                 face.Texture.YShift.ToString("0", CultureInfo.InvariantCulture),
                 face.Texture.XScale.ToString("0.000000", CultureInfo.InvariantCulture),
@@ -457,6 +461,14 @@ namespace Chisel.Providers.Map
                 + face.LightScale.Y.ToString("0.000000", CultureInfo.InvariantCulture), wr, false, 2);
             else
                 WriteProperty("LightScale", "1.000000 1.000000", wr, false, 2);
+
+            //3DT Version 1.32+ stated the following..
+            //Version 1.32 11/04/99 - Brian - Face Info save out Base Vec for Tex Lock
+            //Version 1.33 08/15/03 - QoD - Added ActorsDirectory, PawnIniPath; TexRotation is saved as float
+            //Version 1.34 11/09/03 - QoD - changed Arch template
+
+            //WriteProperty("Transform", "1.000000 0.000000 -0.000000 0.000000 0.000000 1.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000", wr, false, 1);
+            //WriteProperty("Pos", "0.000000 0.000000 0.000000", wr, false, 1);
 
 
             /*var fnorm = face.Plane.Normal;
@@ -595,7 +607,7 @@ namespace Chisel.Providers.Map
         }
         private void WriteMapStats(Dictionary<string, string> stats, List<Solid> solids, List<Entity> entities, DataStructures.MapObjects.Map map, StreamWriter wr)
         {
-            WriteProperty("3dtVersion", "1.35", wr);
+            WriteProperty("3dtVersion", "1.31", wr);
 
             //The count on the Visgroups is off by 1 because it is counting Auto. We do not use Auto in 3DT or RFEdit.
             var NumGroups = (map.Visgroups.Count() - 1).ToString();
@@ -746,7 +758,54 @@ namespace Chisel.Providers.Map
                     WriteProperty("Color", FormatColor(visgroup.Colour), sw);
                 }
 
-                sw.Write(map.WorldSpawn.MetaData.Get<string>("stuff"));
+                /* Extra ArchData for 3DT Version >= 1.34, that we need to skip for outputting version 1.31
+                Sides 3
+                CW 0
+                Shape 0
+                Radius2 64.000000
+                Height 0.000000
+                Massive 0
+                Steps 0
+                */
+
+                var lastBlock = map.WorldSpawn.MetaData.Get<string>("stuff");
+                var lines = lastBlock.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                bool inArch = false, archTCut = false;
+                foreach (var lineUntrimmed in lines)
+                {
+                    var line = lineUntrimmed.Trim();
+
+                    
+                    if (string.Equals(line, "ArchTemplate", StringComparison.OrdinalIgnoreCase))
+                    {
+                        inArch = true;
+                    }
+                    else if (line.EndsWith("Template", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Lines ending in "Template" are not in the ArchTemplate, 
+                        inArch = false;
+                    }
+                    else if (line.StartsWith("TemplatePos", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // lines which are TemplatePos signify the ending 3 lines of the 3dt
+                        inArch = false;
+                    }
+
+                    // If we are in the arch template, and the line is TCut, then we have reached the
+                    // end of the valid arch template data in 3DT version < 1.34. 
+                    var isTCut = line.StartsWith("TCut", StringComparison.OrdinalIgnoreCase);
+                    if (inArch && isTCut)
+                        archTCut = true;
+
+                    // The rest of the arch template data we don't care about
+                    if (inArch && archTCut && !isTCut)
+                        continue;
+
+                    sw.WriteLine(line);
+                }
+
+                //sw.Write(map.WorldSpawn.MetaData.Get<string>("stuff"));
             }
         }
     }
