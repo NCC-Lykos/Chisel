@@ -139,15 +139,18 @@ namespace Chisel.Providers.Map
                 Plane = poly.GetPlane(),
                 Parent = parent,
                 Texture = { Name = texSplit[10].Trim('"') },
-                Flags = (FaceFlags)int.Parse(properties["Flags"]),
-                Opacity = (float.Parse(properties["Translucency"]) / 255.0f),
                 Light = int.Parse(properties["Light"]),
             };
 
+            
+            
             face.Vertices.AddRange(poly.Vertices.Select(x => new Vertex(x, face)));
             face.InitFaceAngle();
             //NCAlignTextureToWorld(face);
 
+            face.Texture.Flags = (FaceFlags)int.Parse(properties["Flags"]);
+            face.Texture.Translucency = float.Parse(properties["Translucency"]);
+            face.Texture.Opacity = (float.Parse(properties["Translucency"]) / 255.0f);
 
             face.Texture.XShift = decimal.Parse(texSplit[4], ns, CultureInfo.InvariantCulture);
             face.Texture.YShift = decimal.Parse(texSplit[5], ns, CultureInfo.InvariantCulture);
@@ -435,10 +438,10 @@ namespace Chisel.Providers.Map
         {
             //var flags = face.Flags == 0 ? "512" : ((int)face.Flags).ToString();
             WriteProperty("NumPoints", face.Vertices.Count().ToString(), wr, false, 2);
-            WriteProperty("Flags", ((int)face.Flags).ToString(), wr, false, 2);
+            WriteProperty("Flags", ((int)face.Texture.Flags).ToString(), wr, false, 2);
             WriteProperty("Light", face.Light.ToString(), wr, false, 2);
             WriteProperty("MipMapBias", "1.000000", wr, false, 2);
-            WriteProperty("Translucency", (face.Opacity * 255.0f).ToString(), wr, false, 2);
+            WriteProperty("Translucency", (face.Texture.Opacity * 255.0f).ToString(), wr, false, 2);
             WriteProperty("Reflectivity", "1.000000", wr, false, 2);
 
             foreach (var vert in face.Vertices)

@@ -385,7 +385,7 @@ namespace Chisel.Editor.Tools.SelectTool
             var solid = obj as Solid;
             if (solid == null) return obj.GetIntersectionPoint(line);
 
-            return solid.Faces.Where(x => x.Opacity > 0 && !x.IsHidden)
+            return solid.Faces.Where(x => x.Texture.Opacity > 0 && !x.IsHidden)
                 .Select(x => x.GetIntersectionPoint(line))
                 .Where(x => x != null)
                 .OrderBy(x => (x - line.Start).VectorMagnitude())

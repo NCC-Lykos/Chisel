@@ -143,7 +143,7 @@ namespace Chisel.Editor.Rendering.Arrays
 
                     PushOffset(face);
                     var index = PushData(Convert(face));
-                    if (!face.Parent.IsRenderHidden3D && face.Opacity > 0) PushIndex(subset, index, face.GetTriangleIndices());
+                    if (!face.Parent.IsRenderHidden3D && face.Texture.Opacity > 0) PushIndex(subset, index, face.GetTriangleIndices());
                     if (!face.Parent.IsRenderHidden2D) PushIndex(BrushWireframe, index, face.GetLineIndices());
 
                     if (group.Key.Transparent) PushSubset(subset, face);
@@ -181,7 +181,7 @@ namespace Chisel.Editor.Rendering.Arrays
 
         private bool HasTransparency(Face face)
         {
-            return face.Opacity < 0.95
+            return face.Texture.Opacity < 0.95
                    || (face.Texture.Texture != null && face.Texture.Texture.HasTransparency());
         }
 
@@ -193,7 +193,7 @@ namespace Chisel.Editor.Rendering.Arrays
             float r = face.Colour.R / 255f,
                   g = face.Colour.G / 255f,
                   b = face.Colour.B / 255f,
-                  a = face.Opacity;
+                  a = face.Texture.Opacity;
             return face.GetIndexedVertices().Select(vert => new MapObjectVertex
             {
                 Position = new Vector3((float)vert.Location.DX, (float)vert.Location.DY, (float)vert.Location.DZ),

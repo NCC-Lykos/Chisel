@@ -167,9 +167,6 @@ namespace Chisel.Editor.Tools.TextureTool
             Action<Document, Face> action = (document, face) =>
             {
                 face.AlignTexture();
-                //if (align == AlignMode.Face) face.AlignTextureToFace();
-                //else if (align == AlignMode.World) face.AlignTextureToWorld();
-                //face.CalculateTextureCoordinates(false);
             };
 
             Document.PerformAction("Align texture", new EditFace(Document.Selection.GetSelectedFaces(), action, false));
@@ -186,6 +183,8 @@ namespace Chisel.Editor.Tools.TextureTool
                 if (!properties.DifferentXShiftValues) face.Texture.XShift = properties.XShift;
                 if (!properties.DifferentYShiftValues) face.Texture.YShift = properties.YShift;
                 if (!properties.DifferentRotationValues) face.Texture.Rotation = properties.Rotation;
+                if (!properties.DifferentTranslucencyValues) face.Texture.Translucency = properties.Translucency;
+                
                 face.AlignTexture();
             };
 

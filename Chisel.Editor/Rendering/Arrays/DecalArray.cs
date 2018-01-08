@@ -87,7 +87,7 @@ namespace Chisel.Editor.Rendering.Arrays
             float r = face.Colour.R / 255f,
                   g = face.Colour.G / 255f,
                   b = face.Colour.B / 255f,
-                  a = face.Opacity;
+                  a = face.Texture.Opacity;
             return face.Vertices.Select(vert => new MapObjectVertex
             {
                 Position = new Vector3((float)vert.Location.DX, (float)vert.Location.DY, (float)vert.Location.DZ),

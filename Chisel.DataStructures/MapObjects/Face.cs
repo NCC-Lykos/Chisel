@@ -10,22 +10,7 @@ using System.Diagnostics;
 
 namespace Chisel.DataStructures.MapObjects
 {
-    [Flags]
-    public enum FaceFlags
-    {
-        Mirror = (1 << 0),
-        FullBright = (1 << 1),
-        Sky = (1 << 2),
-        Light = (1 << 3),
-        Selected = (1 << 4),
-        FixedHull = (1 << 5),
-        Gouraud = (1 << 6),
-        Flat = (1 << 7),
-        TextureLocked = (1 << 8),
-        Visible = (1 << 9),
-        Sheet = (1 << 10),
-        Transparent = (1 << 11),
-    }
+    
 
     [Serializable]
     public class Face : ISerializable
@@ -36,10 +21,10 @@ namespace Chisel.DataStructures.MapObjects
 
         public bool IsSelected { get; set; }
         public bool IsHidden { get; set; }
-        public float Opacity { get; set; }
-        public float Translucency { get; set; }
+        
+        
         public int Light { get; set; }
-        public FaceFlags Flags { get; set; }
+        
         public Coordinate LightScale { get; set; }
 
         public TextureReference Texture { get; set; }
@@ -57,13 +42,11 @@ namespace Chisel.DataStructures.MapObjects
             Texture = new TextureReference();
             Vertices = new List<Vertex>();
             IsSelected = false;
-            Opacity = 1;
         }
 
         protected Face(SerializationInfo info, StreamingContext context)
         {
             ID = info.GetInt64("ID");
-            Flags = (FaceFlags)info.GetInt32("Flags");
             Colour = Color.FromArgb(info.GetInt32("Colour"));
             Plane = (Plane)info.GetValue("Plane", typeof(Plane));
             Texture = (TextureReference)info.GetValue("Texture", typeof(TextureReference));
@@ -74,7 +57,6 @@ namespace Chisel.DataStructures.MapObjects
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("ID", ID);
-            info.AddValue("Flags", Flags);
             info.AddValue("Colour", Colour.ToArgb());
             info.AddValue("Plane", Plane);
             info.AddValue("Texture", Texture);
@@ -85,12 +67,10 @@ namespace Chisel.DataStructures.MapObjects
         {
             var f = new Face(generator.GetNextFaceID())
             {
-                Flags = Flags,
                 Plane = Plane.Clone(),
                 Colour = Colour,
                 IsSelected = IsSelected,
                 IsHidden = IsHidden,
-                Opacity = Opacity,
                 Texture = Texture.Clone(),
                 Parent = Parent,
                 BoundingBox = BoundingBox.Clone()
@@ -113,11 +93,9 @@ namespace Chisel.DataStructures.MapObjects
         public virtual void Paste(Face f)
         {
             Plane = f.Plane.Clone();
-            Flags = f.Flags;
             Colour = f.Colour;
             IsSelected = f.IsSelected;
             IsHidden = f.IsHidden;
-            Opacity = f.Opacity;
             Texture = f.Texture.Clone();
             Parent = f.Parent;
             BoundingBox = f.BoundingBox.Clone();
@@ -209,10 +187,6 @@ namespace Chisel.DataStructures.MapObjects
 
         public virtual void CalculateTextureCoordinates(bool minimizeShiftValues)
         {
-            if (this.ID == 1054)
-            {
-                this.Opacity = this.Opacity;
-            }
             if (minimizeShiftValues) MinimiseTextureShiftValues();
             Vertices.ForEach(c => c.TextureU = c.TextureV = 0);
 
@@ -315,10 +289,6 @@ namespace Chisel.DataStructures.MapObjects
         
         public void InitFaceAngle()
         {
-            if (ID == 785)
-            {
-                Opacity = Opacity;
-            }
             Matrix r = new Matrix();
             Coordinate ax, p = Plane.Normal.Absolute();
             decimal temp; 
@@ -413,10 +383,11 @@ namespace Chisel.DataStructures.MapObjects
         private void AlignTextureToFace()
         {
             /*
-            0-AX  1-AY  2-AZ 3-TX
-            4-BX  5-BY  6-BZ 7-TY
-            8-CX  9-CY 10-CZ 11-TZ
-            */
+           
+            //0-AX  1-AY  2-AZ 3-TX
+            //4-BX  5-BY  6-BZ 7-TY
+            //8-CX  9-CY 10-CZ 11-TZ
+            
 
             //Clear Rotation
             AngleRF.Values[3] = AngleRF.Values[7] = AngleRF.Values[11] = 0;
@@ -446,16 +417,17 @@ namespace Chisel.DataStructures.MapObjects
             //Offset computing should not need to ever happen since the Tex.Pos in RF is always 0.
 
             CalculateTextureCoordinates(false);
+            */
         }
         
         public bool IsTextureAlignedToWorld()
         {
-            return !this.Flags.HasFlag(FaceFlags.TextureLocked);
+            return !Texture.Flags.HasFlag(FaceFlags.TextureLocked);
         }
 
         public bool IsTextureAlignedToFace()
         {
-            return this.Flags.HasFlag(FaceFlags.TextureLocked);
+            return Texture.Flags.HasFlag(FaceFlags.TextureLocked);
         }
 
         public void AlignTexture()
