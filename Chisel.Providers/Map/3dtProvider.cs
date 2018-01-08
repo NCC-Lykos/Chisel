@@ -145,9 +145,9 @@ namespace Chisel.Providers.Map
             };
 
             face.Vertices.AddRange(poly.Vertices.Select(x => new Vertex(x, face)));
-
+            face.InitFaceAngle();
             //NCAlignTextureToWorld(face);
-            
+
 
             face.Texture.XShift = decimal.Parse(texSplit[4], ns, CultureInfo.InvariantCulture);
             face.Texture.YShift = decimal.Parse(texSplit[5], ns, CultureInfo.InvariantCulture);

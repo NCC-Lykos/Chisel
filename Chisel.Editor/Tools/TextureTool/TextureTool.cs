@@ -353,7 +353,8 @@ namespace Chisel.Editor.Tools.TextureTool
                                                             if (behaviour == SelectBehaviour.ApplyWithValues && firstSelected != null)
                                                             {
                                                                 // Calculates the texture coordinates
-                                                                face.AlignTextureWithFace(firstSelected);
+                                                                //face.AlignTextureWithFace(firstSelected);
+                                                                face.AlignTexture();
                                                             }
                                                             else if (behaviour == SelectBehaviour.ApplyWithValues)
                                                             {

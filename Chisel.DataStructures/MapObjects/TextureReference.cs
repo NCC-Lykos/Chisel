@@ -85,17 +85,17 @@ namespace Chisel.DataStructures.MapObjects
         public TextureReference Clone()
         {
             return new TextureReference
-                       {
-                           Name = Name,
-                           Texture = Texture,
-                           Rotation = Rotation,
-                           UAxis = UAxis.Clone(),
-                           VAxis = VAxis.Clone(),
-                           XShift = XShift,
-                           XScale = XScale,
-                           YShift = YShift,
-                           YScale = YScale
-                       };
+            {
+                Name = Name,
+                Texture = Texture,
+                Rotation = Rotation,
+                UAxis = UAxis.Clone(),
+                VAxis = VAxis.Clone(),
+                XShift = XShift,
+                XScale = XScale,
+                YShift = YShift,
+                YScale = YScale
+            };
         }
     }
 }
