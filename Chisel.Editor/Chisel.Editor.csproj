@@ -77,6 +77,26 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.WindowsAPICodePack">
@@ -844,10 +864,6 @@
     <ProjectReference Include="..\Chisel.DataStructures\Chisel.DataStructures.csproj">
       <Project>{26A974C9-E495-4FA3-8E87-1E00019D04F5}</Project>
       <Name>Chisel.DataStructures</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Chisel.Editor.Elevate\Chisel.Editor.Elevate.csproj">
-      <Project>{262FC468-01B6-451A-ABE9-9B6E00B29F81}</Project>
-      <Name>Chisel.Editor.Elevate</Name>
     </ProjectReference>
     <ProjectReference Include="..\Chisel.FileSystem\Chisel.FileSystem.csproj">
       <Project>{1C2C012D-DBA5-4C7F-994F-E3034AC60DCC}</Project>
