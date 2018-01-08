@@ -6,14 +6,14 @@ using Chisel.Common;
 using Chisel.Common.Mediator;
 using Chisel.DataStructures.MapObjects;
 using Chisel.Editor.Documents;
-using Chisel.Editor.UI;
+//using Chisel.Editor.UI;
 using Chisel.Providers.Texture;
 using Chisel.Settings;
 using Chisel.Settings.Models;
 
 namespace Chisel.Editor.Tools.TextureTool
 {
-    public partial class TextureApplicationForm : HotkeyForm
+    public partial class TextureApplicationForm : UI.HotkeyForm
     {
         public class CurrentTextureProperties : TextureReference
         {
@@ -470,7 +470,21 @@ namespace Chisel.Editor.Tools.TextureTool
                 });
             }
             if (flag == FaceFlags.Mirror) { this.PropertiesChanged(); }
-            if (flag == FaceFlags.Transparent) { this.PropertiesChanged(); }
+            if (flag == FaceFlags.Transparent) {
+
+                var opacityValue = (int)Opacity.Value;
+
+                faces.ForEach((x) =>
+                {
+                    x.Opacity = ((int)opacityValue / 255.0f);
+                });
+
+                this.PropertiesChanged();
+                if (chkTransparent.Checked)
+                    Opacity.Enabled = true;
+                else
+                    Opacity.Enabled = false;
+            }
             
         }
 
@@ -581,7 +595,7 @@ namespace Chisel.Editor.Tools.TextureTool
 
         private void BrowseButtonClicked(object sender, EventArgs e)
         {
-            using (var browser = new TextureBrowser())
+            using (var browser = new UI.TextureBrowser())
             {
                 browser.SetTextureList(Document.TextureCollection.GetAllBrowsableItems());
                 browser.ShowDialog();
@@ -643,6 +657,21 @@ namespace Chisel.Editor.Tools.TextureTool
         public bool ShouldTreatAsOne()
         {
             return TreatAsOneCheckbox.Checked;
+        }
+
+        private void OpacityValueChanged(object sender, EventArgs e)
+        {
+            if (_freeze) return;
+            var box = (NumericUpDown)sender;
+
+            var opacity = (int)box.Value;
+
+            var faces = Document.Selection.GetSelectedFaces().ToList();
+            faces.ForEach((x) =>
+            {
+                x.Opacity = ((int)box.Value / 255.0f);
+            });
+            PropertiesChanged();
         }
     }
 }

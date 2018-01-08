@@ -1,4 +1,4 @@
-﻿using Chisel.Editor.UI;
+﻿//using Chisel.Editor.UI;
 
 namespace Chisel.Editor.Tools.TextureTool
 {
@@ -73,6 +73,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.RecentTexturesList = new Chisel.Editor.UI.TextureListPanel();
             this.SelectedTexturesList = new Chisel.Editor.UI.TextureListPanel();
             this.gbspGroup = new System.Windows.Forms.GroupBox();
+            this.Opacity = new System.Windows.Forms.NumericUpDown();
             this.chkSheet = new System.Windows.Forms.CheckBox();
             this.chkVisible = new System.Windows.Forms.CheckBox();
             this.chkTextureLocked = new System.Windows.Forms.CheckBox();
@@ -94,6 +95,7 @@ namespace Chisel.Editor.Tools.TextureTool
             ((System.ComponentModel.ISupportInitialize)(this.ShiftYValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LightmapValue)).BeginInit();
             this.gbspGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Opacity)).BeginInit();
             this.SuspendLayout();
             // 
             // label11
@@ -403,7 +405,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 213F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 222F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.ScaleXValue, 1, 1);
@@ -642,6 +644,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // 
             // gbspGroup
             // 
+            this.gbspGroup.Controls.Add(this.Opacity);
             this.gbspGroup.Controls.Add(this.chkSheet);
             this.gbspGroup.Controls.Add(this.chkVisible);
             this.gbspGroup.Controls.Add(this.chkTextureLocked);
@@ -660,6 +663,30 @@ namespace Chisel.Editor.Tools.TextureTool
             this.gbspGroup.TabStop = false;
             this.gbspGroup.Text = "GBSP";
             // 
+            // Opacity
+            // 
+            this.Opacity.Enabled = false;
+            this.Opacity.Location = new System.Drawing.Point(95, 62);
+            this.Opacity.Maximum = new decimal(new int[] {
+            512,
+            0,
+            0,
+            0});
+            this.Opacity.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.Opacity.Name = "Opacity";
+            this.Opacity.Size = new System.Drawing.Size(58, 20);
+            this.Opacity.TabIndex = 40;
+            this.Opacity.Value = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.Opacity.ValueChanged += new System.EventHandler(this.OpacityValueChanged);
+            // 
             // chkSheet
             // 
             this.chkSheet.AutoSize = true;
@@ -673,7 +700,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkVisible
             // 
             this.chkVisible.AutoSize = true;
-            this.chkVisible.Location = new System.Drawing.Point(280, 65);
+            this.chkVisible.Location = new System.Drawing.Point(280, 19);
             this.chkVisible.Name = "chkVisible";
             this.chkVisible.Size = new System.Drawing.Size(56, 17);
             this.chkVisible.TabIndex = 9;
@@ -683,7 +710,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkTextureLocked
             // 
             this.chkTextureLocked.AutoSize = true;
-            this.chkTextureLocked.Location = new System.Drawing.Point(173, 65);
+            this.chkTextureLocked.Location = new System.Drawing.Point(280, 65);
             this.chkTextureLocked.Name = "chkTextureLocked";
             this.chkTextureLocked.Size = new System.Drawing.Size(101, 17);
             this.chkTextureLocked.TabIndex = 8;
@@ -733,7 +760,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkSky
             // 
             this.chkSky.AutoSize = true;
-            this.chkSky.Location = new System.Drawing.Point(95, 65);
+            this.chkSky.Location = new System.Drawing.Point(173, 65);
             this.chkSky.Name = "chkSky";
             this.chkSky.Size = new System.Drawing.Size(44, 17);
             this.chkSky.TabIndex = 3;
@@ -818,6 +845,7 @@ namespace Chisel.Editor.Tools.TextureTool
             ((System.ComponentModel.ISupportInitialize)(this.LightmapValue)).EndInit();
             this.gbspGroup.ResumeLayout(false);
             this.gbspGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Opacity)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -861,8 +889,8 @@ namespace Chisel.Editor.Tools.TextureTool
         private System.Windows.Forms.NumericUpDown ShiftYValue;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown LightmapValue;
-        private TextureListPanel SelectedTexturesList;
-        private TextureListPanel RecentTexturesList;
+        private UI.TextureListPanel SelectedTexturesList;
+        private UI.TextureListPanel RecentTexturesList;
         private System.Windows.Forms.ToolTip HoverTip;
         private System.Windows.Forms.CheckBox AlignToFaceCheckbox;
         private System.Windows.Forms.CheckBox AlignToWorldCheckbox;
@@ -878,5 +906,6 @@ namespace Chisel.Editor.Tools.TextureTool
         private System.Windows.Forms.CheckBox chkTextureLocked;
         private System.Windows.Forms.CheckBox chkFlat;
         private System.Windows.Forms.CheckBox chkGouraud;
+        private System.Windows.Forms.NumericUpDown Opacity;
     }
 }
