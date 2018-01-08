@@ -7,9 +7,26 @@ using Chisel.DataStructures.Geometric;
 
 namespace Chisel.DataStructures.MapObjects
 {
+    [Flags]
+    public enum SolidFlags
+    {
+        solid = (1<<0),
+        window = (1 << 1),
+        empty = (1 << 2),
+        translucent = (1 << 3),
+        wavy = (1 << 4),
+        detail = (1 << 5),
+        clip = (1 << 6),
+        hint = (1 << 7),
+        area = (1 << 8),
+        flocking = (1 << 9),
+        sheet = (1 << 10),
+    }
+
     [Serializable]
     public class Solid : MapObject
     {
+        public SolidFlags Flags;
         public List<Face> Faces { get; private set; }
 
         public override Color Colour {

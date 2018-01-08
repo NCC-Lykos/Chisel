@@ -203,7 +203,8 @@ namespace Chisel.Providers.Map
 
             //var ret = Solid.CreateFromIntersectingPlanes(faces.Select(x => x.Plane), generator);
             ret.Colour = GetGenesisBrushColor(int.Parse(properties["Flags"]));
-            ret.MetaData.Set("Flags", properties["Flags"]);
+            //ret.MetaData.Set("Flags", properties["Flags"]);
+            ret.Flags = (SolidFlags)int.Parse(properties["Flags"]);
             ret.MetaData.Set("ModelId", properties["ModelId"]);
             ret.MetaData.Set("HullSize", properties["HullSize"]);
             ret.MetaData.Set("Type", properties["Type"]);
@@ -558,11 +559,9 @@ namespace Chisel.Providers.Map
             foreach(var solid in solids)
             {
                 int vis = solid.Visgroups[0];
-                var flags = solid.MetaData.Get<string>("Flags");
-                flags = string.IsNullOrWhiteSpace(flags) ? "1" : flags;
 
                 WriteProperty("Brush", solid.ClassName ?? "NoName", wr, true);
-                WriteProperty("Flags", flags, wr, false, 1);
+                WriteProperty("Flags", ((int)solid.Flags).ToString(), wr, false, 1);
                 WriteProperty("ModelId", solid.MetaData.Get<string>("ModelId") ?? "0", wr, false, 1);
                 WriteProperty("GroupId", (vis < 0 ? 0 : vis).ToString(), wr, false, 1);
                 WriteProperty("HullSize", solid.MetaData.Get<string>("HullSize") ?? "1.000000", wr, false, 1);
