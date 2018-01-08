@@ -46,7 +46,7 @@ namespace Chisel.Editor.Brushes
                 new[] { c4, c2, c1 }
             };
 
-            var solid = new Solid(generator.GetNextObjectID()) { Colour = Colour.GetRandomBrushColour() };
+            var solid = new Solid(generator.GetNextObjectID()) { Colour = Colour.GetRandomBrushColour(), Flags = SolidFlags.solid };
             foreach (var arr in faces)
             {
                 var face = new Face(generator.GetNextFaceID())
