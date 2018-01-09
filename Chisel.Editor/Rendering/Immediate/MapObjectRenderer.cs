@@ -53,7 +53,7 @@ namespace Chisel.Editor.Rendering.Immediate
 
         private static float GetOpacity(ITexture texture, Face face)
         {
-            return face.Texture.Opacity;
+            return (float)face.Texture.Opacity;
         }
 
         public static void DrawFilled(IEnumerable<Face> faces, Color color, bool textured, bool blend = true)

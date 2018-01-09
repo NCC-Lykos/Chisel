@@ -149,8 +149,8 @@ namespace Chisel.Providers.Map
             //NCAlignTextureToWorld(face);
 
             face.Texture.Flags = (FaceFlags)int.Parse(properties["Flags"]);
-            face.Texture.Translucency = float.Parse(properties["Translucency"]);
-            face.Texture.Opacity = (float.Parse(properties["Translucency"]) / 255.0f);
+            face.Texture.Translucency = decimal.Parse(properties["Translucency"]);
+            face.Texture.Opacity = (decimal.Parse(properties["Translucency"]) / (decimal)255.0f);
 
             face.Texture.XShift = decimal.Parse(texSplit[4], ns, CultureInfo.InvariantCulture);
             face.Texture.YShift = decimal.Parse(texSplit[5], ns, CultureInfo.InvariantCulture);
@@ -441,7 +441,8 @@ namespace Chisel.Providers.Map
             WriteProperty("Flags", ((int)face.Texture.Flags).ToString(), wr, false, 2);
             WriteProperty("Light", face.Light.ToString(), wr, false, 2);
             WriteProperty("MipMapBias", "1.000000", wr, false, 2);
-            WriteProperty("Translucency", (face.Texture.Opacity * 255.0f).ToString(), wr, false, 2);
+            //WriteProperty("Translucency", (face.Texture.Opacity * 255.0f).ToString(), wr, false, 2);
+            WriteProperty("Translucency", (face.Texture.Translucency).ToString(), wr, false, 2);
             WriteProperty("Reflectivity", "1.000000", wr, false, 2);
 
             foreach (var vert in face.Vertices)
