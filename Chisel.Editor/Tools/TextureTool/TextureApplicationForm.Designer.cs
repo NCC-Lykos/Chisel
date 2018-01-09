@@ -405,7 +405,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 223F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 226F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.ScaleXValue, 1, 1);
@@ -691,6 +691,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkSheet.TabIndex = 10;
             this.chkSheet.Text = "Sheet";
             this.chkSheet.UseVisualStyleBackColor = true;
+            this.chkSheet.CheckedChanged += new System.EventHandler(this.chkSheet_CheckedChanged);
             // 
             // chkVisible
             // 
@@ -701,6 +702,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkVisible.TabIndex = 9;
             this.chkVisible.Text = "Visible";
             this.chkVisible.UseVisualStyleBackColor = true;
+            this.chkVisible.CheckedChanged += new System.EventHandler(this.chkVisible_CheckedChanged);
             // 
             // chkTextureLocked
             // 
@@ -711,6 +713,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkTextureLocked.TabIndex = 8;
             this.chkTextureLocked.Text = "Texture Locked";
             this.chkTextureLocked.UseVisualStyleBackColor = true;
+            this.chkTextureLocked.CheckedChanged += new System.EventHandler(this.chkTextureLocked_CheckedChanged);
             // 
             // chkFlat
             // 
@@ -721,6 +724,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkFlat.TabIndex = 7;
             this.chkFlat.Text = "Flat";
             this.chkFlat.UseVisualStyleBackColor = true;
+            this.chkFlat.CheckedChanged += new System.EventHandler(this.chkFlat_CheckedChanged);
             // 
             // chkGouraud
             // 
@@ -731,6 +735,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkGouraud.TabIndex = 6;
             this.chkGouraud.Text = "Gouraud";
             this.chkGouraud.UseVisualStyleBackColor = true;
+            this.chkGouraud.CheckedChanged += new System.EventHandler(this.chkGouraud_CheckedChanged);
             // 
             // chkFixedHull
             // 
@@ -741,6 +746,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkFixedHull.TabIndex = 5;
             this.chkFixedHull.Text = "Fixed Hull";
             this.chkFixedHull.UseVisualStyleBackColor = true;
+            this.chkFixedHull.CheckedChanged += new System.EventHandler(this.chkFixedHull_CheckedChanged);
             // 
             // chkLight
             // 
@@ -751,6 +757,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkLight.TabIndex = 4;
             this.chkLight.Text = "Light";
             this.chkLight.UseVisualStyleBackColor = true;
+            this.chkLight.CheckedChanged += new System.EventHandler(this.chkLight_CheckedChanged);
             // 
             // chkSky
             // 
@@ -761,6 +768,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkSky.TabIndex = 3;
             this.chkSky.Text = "Sky";
             this.chkSky.UseVisualStyleBackColor = true;
+            this.chkSky.CheckedChanged += new System.EventHandler(this.chkSky_CheckedChanged);
             // 
             // chkTransparent
             // 
@@ -771,6 +779,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkTransparent.TabIndex = 2;
             this.chkTransparent.Text = "Transparent";
             this.chkTransparent.UseVisualStyleBackColor = true;
+            this.chkTransparent.CheckedChanged += new System.EventHandler(this.chkTransparent_CheckedChanged);
             // 
             // chkFullBright
             // 
@@ -781,6 +790,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkFullBright.TabIndex = 1;
             this.chkFullBright.Text = "Full Bright";
             this.chkFullBright.UseVisualStyleBackColor = true;
+            this.chkFullBright.CheckedChanged += new System.EventHandler(this.chkFullBright_CheckedChanged);
             // 
             // chkMirror
             // 
@@ -791,6 +801,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkMirror.TabIndex = 0;
             this.chkMirror.Text = "Mirror";
             this.chkMirror.UseVisualStyleBackColor = true;
+            this.chkMirror.CheckedChanged += new System.EventHandler(this.chkMirror_CheckedChanged);
             // 
             // TextureApplicationForm
             // 

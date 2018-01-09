@@ -60,8 +60,8 @@ namespace Chisel.DataStructures.MapObjects
         public decimal YScale { get; set; }
 
         public FaceFlags Flags { get; set; }
-        public float Translucency { get; set; }
-        public float Opacity { get; set; }
+        public decimal Translucency { get; set; }
+        public decimal Opacity { get; set; }
 
         public TextureReference()
         {
@@ -88,8 +88,8 @@ namespace Chisel.DataStructures.MapObjects
             YScale = info.GetDecimal("YScale");
 
             Flags = (FaceFlags)info.GetInt32("Flags");
-            Translucency = (float)info.GetDecimal("Translucency");
-            Opacity = (float)info.GetDecimal("Opacity");
+            Translucency = info.GetDecimal("Translucency");
+            Opacity = info.GetDecimal("Opacity");
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
