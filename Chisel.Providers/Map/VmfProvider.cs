@@ -262,7 +262,7 @@ namespace Chisel.Providers.Map
                     disp.Plane = face.Plane;
                     disp.Vertices = face.Vertices;
                     disp.Texture = f.Texture;
-                    disp.AlignTextureToWorld();
+                    disp.AlignTexture();
                     disp.CalculatePoints();
                     ret.Faces[i] = disp;
                 }

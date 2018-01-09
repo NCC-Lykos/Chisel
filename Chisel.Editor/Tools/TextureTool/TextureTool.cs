@@ -166,9 +166,7 @@ namespace Chisel.Editor.Tools.TextureTool
         {
             Action<Document, Face> action = (document, face) =>
             {
-                if (align == AlignMode.Face) face.AlignTextureToFace();
-                else if (align == AlignMode.World) face.AlignTextureToWorld();
-                face.CalculateTextureCoordinates(false);
+                face.AlignTexture();
             };
 
             Document.PerformAction("Align texture", new EditFace(Document.Selection.GetSelectedFaces(), action, false));
@@ -184,14 +182,10 @@ namespace Chisel.Editor.Tools.TextureTool
                 if (!properties.DifferentYScaleValues) face.Texture.YScale = properties.YScale;
                 if (!properties.DifferentXShiftValues) face.Texture.XShift = properties.XShift;
                 if (!properties.DifferentYShiftValues) face.Texture.YShift = properties.YShift;
-                if (!properties.DifferentRotationValues) face.SetTextureRotation(properties.Rotation);
-                if (face.Flags.HasFlag(FaceFlags.TextureLocked))
-                {
-                    face.AlignTextureToFace();
-                } else
-                {
-                    face.AlignTextureToWorld();
-                }
+                if (!properties.DifferentRotationValues) face.Texture.Rotation = properties.Rotation;
+                if (!properties.DifferentTranslucencyValues) face.Texture.Translucency = properties.Translucency;
+                
+                face.AlignTexture();
             };
 
             Document.PerformAction("Modify texture properties", new EditFace(Document.Selection.GetSelectedFaces(), action, false));
@@ -358,7 +352,8 @@ namespace Chisel.Editor.Tools.TextureTool
                                                             if (behaviour == SelectBehaviour.ApplyWithValues && firstSelected != null)
                                                             {
                                                                 // Calculates the texture coordinates
-                                                                face.AlignTextureWithFace(firstSelected);
+                                                                //face.AlignTextureWithFace(firstSelected);
+                                                                face.AlignTexture();
                                                             }
                                                             else if (behaviour == SelectBehaviour.ApplyWithValues)
                                                             {
@@ -366,7 +361,7 @@ namespace Chisel.Editor.Tools.TextureTool
                                                                 face.Texture.YScale = _form.CurrentProperties.YScale;
                                                                 face.Texture.XShift = _form.CurrentProperties.XShift;
                                                                 face.Texture.YShift = _form.CurrentProperties.YShift;
-                                                                face.SetTextureRotation(_form.CurrentProperties.Rotation);
+                                                                face.Texture.Rotation = _form.CurrentProperties.Rotation;
                                                             }
                                                             else
                                                             {

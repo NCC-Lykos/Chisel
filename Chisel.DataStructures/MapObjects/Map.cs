@@ -246,20 +246,11 @@ namespace Chisel.DataStructures.MapObjects
                         if (f.Texture.Texture == null)
                         {
                             f.Texture.Texture = textureAccessor(f.Texture.Name.ToLowerInvariant());
-                            //TODO(SVK): Remove, disabled for debugging do not want shifting offsets
-                            //f.CalculateTextureCoordinates(true);
-                            if (!f.Flags.HasFlag(FaceFlags.TextureLocked))
-                            {
-                                f.AlignTextureToWorld();
-                            } else
-                            {
-                                f.AlignTextureToFace();
-                            }
-                            f.CalculateTextureCoordinates(false);
+                            f.AlignTexture();
                         }
                         if (disp && !(f is Displacement))
                         {
-                            f.Opacity = 0;
+                            f.Texture.Opacity = 0;
                         }
                         else if (f.Texture.Texture != null)
                         {
@@ -267,8 +258,8 @@ namespace Chisel.DataStructures.MapObjects
                             //RF functions differntly so disable
                             //f.Opacity = textureOpacity(f.Texture.Name.ToLowerInvariant());
                             //if (!HideNullTextures && f.Opacity < 0.1) f.Opacity = 1;
-                            if(!DisableTransparent && (!f.Flags.HasFlag(FaceFlags.Transparent) && !f.Flags.HasFlag(FaceFlags.Mirror)))
-                                f.Opacity = 1;
+                            if(!DisableTransparent && (!f.Texture.Flags.HasFlag(FaceFlags.Transparent) && !f.Texture.Flags.HasFlag(FaceFlags.Mirror)))
+                                f.Texture.Opacity = 1;
                         }
                     });
                 }

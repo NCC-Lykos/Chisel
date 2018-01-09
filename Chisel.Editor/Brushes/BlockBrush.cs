@@ -32,11 +32,11 @@ namespace Chisel.Editor.Brushes
                     Plane = new Plane(arr[0], arr[1], arr[2]),
                     Colour = solid.Colour,
                     Texture = { Texture = texture },
-                    Flags = FaceFlags.Visible
+                    //Flags = FaceFlags.Visible
                 };
                 face.Vertices.AddRange(arr.Select(x => new Vertex(x.Round(roundDecimals), face)));
                 face.UpdateBoundingBox();
-                face.AlignTextureToWorld();
+                face.AlignTexture();
                 solid.Faces.Add(face);
             }
             solid.UpdateBoundingBox();

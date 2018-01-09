@@ -257,8 +257,8 @@ namespace Chisel.Editor.Rendering.Renderers
 
             var all = GetAllVisible(Document.Map.WorldSpawn);
             var cache = CollectFaces(all);
-            var unselected = cache.Where(x => !x.IsSelected && (x.Parent == null || !x.Parent.IsSelected) && x.Opacity > 0.1).ToList();
-            var selected = cache.Where(x => (x.IsSelected || (x.Parent != null && x.Parent.IsSelected)) && x.Opacity > 0.1).ToList();
+            var unselected = cache.Where(x => !x.IsSelected && (x.Parent == null || !x.Parent.IsSelected) && x.Texture.Opacity > 0.1).ToList();
+            var selected = cache.Where(x => (x.IsSelected || (x.Parent != null && x.Parent.IsSelected)) && x.Texture.Opacity > 0.1).ToList();
             var decals = GetDecals(Document.Map.WorldSpawn).ToList();
 
             GL.NewList(_listUntransformed2D, ListMode.Compile);
@@ -287,8 +287,8 @@ namespace Chisel.Editor.Rendering.Renderers
             GL.EndList();
 
             _transparentFaces.Clear();
-            _transparentFaces.AddRange(selected.Where(x => x.Opacity < 0.9 || (x.Texture.Texture != null && x.Texture.Texture.HasTransparency())));
-            _transparentFaces.AddRange(unselected.Where(x => x.Opacity < 0.9 || (x.Texture.Texture != null && x.Texture.Texture.HasTransparency())));
+            _transparentFaces.AddRange(selected.Where(x => x.Texture.Opacity < 0.9 || (x.Texture.Texture != null && x.Texture.Texture.HasTransparency())));
+            _transparentFaces.AddRange(unselected.Where(x => x.Texture.Opacity < 0.9 || (x.Texture.Texture != null && x.Texture.Texture.HasTransparency())));
             _transparentFaces.AddRange(decals.SelectMany(x => x.GetDecalGeometry()));
 
             selected.RemoveAll(_transparentFaces.Contains);

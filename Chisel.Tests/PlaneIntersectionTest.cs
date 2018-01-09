@@ -98,7 +98,7 @@ namespace Chisel.Tests
                     var face = new Face(idg.GetNextFaceID()) {Plane = polygon.Plane};
                     face.Vertices.AddRange(polygon.Vertices.Select(x => new Vertex(x, face)));
                     face.UpdateBoundingBox();
-                    face.AlignTextureToWorld();
+                    face.AlignTexture();
                     solid.Faces.Add(face);
                 }
                 solid.UpdateBoundingBox();

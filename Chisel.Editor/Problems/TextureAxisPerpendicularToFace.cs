@@ -25,7 +25,7 @@ namespace Chisel.Editor.Problems
 
         public IAction Fix(Problem problem)
         {
-            return new EditFace(problem.Faces, (d,x) => x.AlignTextureToFace(), false);
+            return new EditFace(problem.Faces, (d,x) => x.AlignTexture(), false);
         }
     }
 }

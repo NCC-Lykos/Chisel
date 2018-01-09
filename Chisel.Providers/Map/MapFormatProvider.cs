@@ -85,7 +85,7 @@ namespace Chisel.Providers.Map
             // Cater for older-style map formats
             if (parts.Count == 21)
             {
-                face.AlignTextureToFace();
+                face.AlignTexture();
                 face.Texture.XShift = decimal.Parse(parts[16], ns, CultureInfo.InvariantCulture);
                 face.Texture.YShift = decimal.Parse(parts[17], ns, CultureInfo.InvariantCulture);
                 face.Texture.Rotation = decimal.Parse(parts[18], ns, CultureInfo.InvariantCulture);

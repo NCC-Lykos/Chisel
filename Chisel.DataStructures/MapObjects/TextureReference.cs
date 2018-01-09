@@ -5,6 +5,23 @@ using Chisel.DataStructures.Geometric;
 
 namespace Chisel.DataStructures.MapObjects
 {
+    [Flags]
+    public enum FaceFlags
+    {
+        Mirror = (1 << 0),
+        FullBright = (1 << 1),
+        Sky = (1 << 2),
+        Light = (1 << 3),
+        Selected = (1 << 4),
+        FixedHull = (1 << 5),
+        Gouraud = (1 << 6),
+        Flat = (1 << 7),
+        TextureLocked = (1 << 8),
+        Visible = (1 << 9),
+        Sheet = (1 << 10),
+        Transparent = (1 << 11),
+    }
+
     [Serializable]
     public class TextureReference : ISerializable
     {
@@ -42,6 +59,10 @@ namespace Chisel.DataStructures.MapObjects
         public decimal YShift { get; set; }
         public decimal YScale { get; set; }
 
+        public FaceFlags Flags { get; set; }
+        public float Translucency { get; set; }
+        public float Opacity { get; set; }
+
         public TextureReference()
         {
             Name = "";
@@ -51,6 +72,8 @@ namespace Chisel.DataStructures.MapObjects
             _vAxis = Coordinate.UnitX;
             XShift = YShift = 0;
             XScale = YScale = 1;
+            Opacity = 1;
+            Translucency = 255;
         }
 
         protected TextureReference(SerializationInfo info, StreamingContext context)
@@ -63,6 +86,10 @@ namespace Chisel.DataStructures.MapObjects
             XScale = info.GetDecimal("XScale");
             YShift = info.GetDecimal("YShift");
             YScale = info.GetDecimal("YScale");
+
+            Flags = (FaceFlags)info.GetInt32("Flags");
+            Translucency = (float)info.GetDecimal("Translucency");
+            Opacity = (float)info.GetDecimal("Opacity");
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -75,6 +102,10 @@ namespace Chisel.DataStructures.MapObjects
             info.AddValue("XScale", XScale);
             info.AddValue("YShift", YShift);
             info.AddValue("YScale", YScale);
+
+            info.AddValue("Flags", Flags);
+            info.AddValue("Translucency", Translucency);
+            info.AddValue("Opacity", Opacity);
         }
 
         public Coordinate GetNormal()
@@ -85,17 +116,20 @@ namespace Chisel.DataStructures.MapObjects
         public TextureReference Clone()
         {
             return new TextureReference
-                       {
-                           Name = Name,
-                           Texture = Texture,
-                           Rotation = Rotation,
-                           UAxis = UAxis.Clone(),
-                           VAxis = VAxis.Clone(),
-                           XShift = XShift,
-                           XScale = XScale,
-                           YShift = YShift,
-                           YScale = YScale
-                       };
+            {
+                Name = Name,
+                Texture = Texture,
+                Rotation = Rotation,
+                UAxis = UAxis.Clone(),
+                VAxis = VAxis.Clone(),
+                XShift = XShift,
+                XScale = XScale,
+                YShift = YShift,
+                YScale = YScale,
+                Flags = Flags,
+                Translucency = Translucency,
+                Opacity = Opacity
+            };
         }
     }
 }

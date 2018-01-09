@@ -184,7 +184,7 @@ namespace Chisel.DataStructures.MapObjects
             front.Faces.Union(back.Faces).ToList().ForEach(x =>
                                     {
                                         x.Texture = Faces[0].Texture.Clone();
-                                        x.AlignTextureToFace();
+                                        x.AlignTexture();
                                         x.Colour = Colour;
                                     });
             // Restore textures (match the planes up on each face)
@@ -227,7 +227,7 @@ namespace Chisel.DataStructures.MapObjects
                 var face = new Face(generator.GetNextFaceID()) { Plane = poly.Plane , Parent = solid };
                 face.Vertices.AddRange(poly.Vertices.Select(x => new Vertex(x.Round(2), face))); // Round vertices a bit for sanity
                 face.UpdateBoundingBox();
-                face.AlignTextureToWorld();
+                face.AlignTexture();
                 solid.Faces.Add(face);
             }
 
