@@ -145,7 +145,7 @@ namespace Chisel.Providers.Map
             
             
             face.Vertices.AddRange(poly.Vertices.Select(x => new Vertex(x, face)));
-            face.InitFaceAngle();
+            
             //NCAlignTextureToWorld(face);
 
             face.Texture.Flags = (FaceFlags)int.Parse(properties["Flags"]);
@@ -168,7 +168,45 @@ namespace Chisel.Providers.Map
             // Skip currently unknown values Transform and Pos
             if (MapVersion > 1.31)
             {
-                rdr.ReadLine(); rdr.ReadLine();
+                texSplit = rdr.ReadLine().Trim().Split(' ','\t');
+                Assert(texSplit.Length == 13);
+                face.Texture.TransformAngleRF = new Matrix();
+
+                /*
+                NOTE(SVK): Keep RF YZ
+                Chisel
+                0-AX  1-AY  2-AZ  3-TX
+                4-BX  5-BY  6-BZ  7-TY
+                8-CX  9-CY 10-CZ 11-TZ
+
+                RF
+                1-AX  2-AY  3-AZ 10-TX
+                4-BX  5-BY  6-BZ 11-TY
+                7-CX  8-CY  9-CZ 12-TZ
+                */
+                //A
+                face.Texture.TransformAngleRF.Values[0] = decimal.Parse(texSplit[1], ns, CultureInfo.InvariantCulture);
+                face.Texture.TransformAngleRF.Values[1] = decimal.Parse(texSplit[2], ns, CultureInfo.InvariantCulture);
+                face.Texture.TransformAngleRF.Values[2] = decimal.Parse(texSplit[3], ns, CultureInfo.InvariantCulture);
+
+                //B
+                face.Texture.TransformAngleRF.Values[4] = decimal.Parse(texSplit[4], ns, CultureInfo.InvariantCulture);
+                face.Texture.TransformAngleRF.Values[5] = decimal.Parse(texSplit[5], ns, CultureInfo.InvariantCulture);
+                face.Texture.TransformAngleRF.Values[6] = decimal.Parse(texSplit[6], ns, CultureInfo.InvariantCulture);
+
+                //C
+                face.Texture.TransformAngleRF.Values[8] = decimal.Parse(texSplit[7], ns, CultureInfo.InvariantCulture);
+                face.Texture.TransformAngleRF.Values[9] = decimal.Parse(texSplit[8], ns, CultureInfo.InvariantCulture);
+                face.Texture.TransformAngleRF.Values[10] = decimal.Parse(texSplit[9], ns, CultureInfo.InvariantCulture);
+
+                //T (transform)
+                face.Texture.TransformAngleRF.Values[3] = decimal.Parse(texSplit[10], ns, CultureInfo.InvariantCulture);
+                face.Texture.TransformAngleRF.Values[7] = decimal.Parse(texSplit[11], ns, CultureInfo.InvariantCulture);
+                face.Texture.TransformAngleRF.Values[11] = decimal.Parse(texSplit[12], ns, CultureInfo.InvariantCulture);
+
+                texSplit = rdr.ReadLine().Trim().Split(' ','\t');
+                face.Texture.PositionRF = Coordinate.Parse(texSplit[1], texSplit[3], texSplit[2]);
+                face.Texture.PositionRF.Y *= -1;
             }
 
             return face;
@@ -436,12 +474,10 @@ namespace Chisel.Providers.Map
 
         private void WriteFace(Face face, StreamWriter wr)
         {
-            //var flags = face.Flags == 0 ? "512" : ((int)face.Flags).ToString();
             WriteProperty("NumPoints", face.Vertices.Count().ToString(), wr, false, 2);
             WriteProperty("Flags", ((int)face.Texture.Flags).ToString(), wr, false, 2);
             WriteProperty("Light", face.Light.ToString(), wr, false, 2);
             WriteProperty("MipMapBias", "1.000000", wr, false, 2);
-            //WriteProperty("Translucency", (face.Texture.Opacity * 255.0f).ToString(), wr, false, 2);
             WriteProperty("Translucency", (face.Texture.Translucency).ToString(), wr, false, 2);
             WriteProperty("Reflectivity", "1.000000", wr, false, 2);
 

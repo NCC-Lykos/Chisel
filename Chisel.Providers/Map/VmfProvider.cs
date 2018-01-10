@@ -177,7 +177,9 @@ namespace Chisel.Providers.Map
             ret.Texture.YShift = vaxis.Item2;
             ret.Texture.YScale = vaxis.Item3;
             ret.Texture.Rotation = side.PropertyDecimal("rotation");
+            ret.Texture.Flags = (FaceFlags)side.PropertyInteger("flags");
             ret.Plane = side.PropertyPlane("plane");
+            
 
             var verts = side.Children.FirstOrDefault(x => x.Name == "vertex");
             if (verts != null)
@@ -204,6 +206,7 @@ namespace Chisel.Providers.Map
             ret["uaxis"] = String.Format(CultureInfo.InvariantCulture, "[{0} {1}] {2}", FormatCoordinate(face.Texture.UAxis), face.Texture.XShift, face.Texture.XScale);
             ret["vaxis"] = String.Format(CultureInfo.InvariantCulture, "[{0} {1}] {2}", FormatCoordinate(face.Texture.VAxis), face.Texture.YShift, face.Texture.YScale);
             ret["rotation"] = face.Texture.Rotation.ToString(CultureInfo.InvariantCulture);
+            ret["flags"] = ((int)face.Texture.Flags).ToString();
             // ret["lightmapscale"]
             // ret["smoothing_groups"]
 

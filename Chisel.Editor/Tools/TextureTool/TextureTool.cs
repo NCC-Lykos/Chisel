@@ -154,7 +154,7 @@ namespace Chisel.Editor.Tools.TextureTool
                                       {
                                           face.Texture.Name = texture.Name;
                                           face.Texture.Texture = ti;
-                                          face.CalculateTextureCoordinates(false);
+                                          face.CalculateTextureCoordinates(true);
                                       };
             // When the texture changes, the entire list needs to be regenerated, can't do a partial update.
             Document.PerformAction("Apply texture", new EditFace(Document.Selection.GetSelectedFaces(), action, true));

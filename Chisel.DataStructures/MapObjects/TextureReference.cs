@@ -58,10 +58,13 @@ namespace Chisel.DataStructures.MapObjects
 
         public decimal YShift { get; set; }
         public decimal YScale { get; set; }
-
+        
         public FaceFlags Flags { get; set; }
         public decimal Translucency { get; set; }
         public decimal Opacity { get; set; }
+
+        public Matrix TransformAngleRF { get; set; }
+        public Coordinate PositionRF { get; set; }
 
         public TextureReference()
         {
@@ -74,6 +77,8 @@ namespace Chisel.DataStructures.MapObjects
             XScale = YScale = 1;
             Opacity = 1;
             Translucency = 255;
+            TransformAngleRF = new Matrix();
+            PositionRF = new Coordinate(0, 0, 0);
         }
 
         protected TextureReference(SerializationInfo info, StreamingContext context)
@@ -90,6 +95,7 @@ namespace Chisel.DataStructures.MapObjects
             Flags = (FaceFlags)info.GetInt32("Flags");
             Translucency = info.GetDecimal("Translucency");
             Opacity = info.GetDecimal("Opacity");
+            
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -106,6 +112,9 @@ namespace Chisel.DataStructures.MapObjects
             info.AddValue("Flags", Flags);
             info.AddValue("Translucency", Translucency);
             info.AddValue("Opacity", Opacity);
+
+            info.AddValue("TransformAngleRF", TransformAngleRF);
+            info.AddValue("PositionRF", PositionRF);
         }
 
         public Coordinate GetNormal()

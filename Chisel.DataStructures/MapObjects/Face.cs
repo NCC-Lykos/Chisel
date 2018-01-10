@@ -33,8 +33,7 @@ namespace Chisel.DataStructures.MapObjects
         public Solid Parent { get; set; }
 
         public Box BoundingBox { get; set; }
-
-        private Matrix AngleRF { get; set; }
+        
 
         public Face(long id)
         {
@@ -201,8 +200,40 @@ namespace Chisel.DataStructures.MapObjects
 
             foreach (var v in Vertices)
             {
-                v.TextureU = (v.Location.Dot(Texture.UAxis) / udiv) + uadd;
-                v.TextureV = (v.Location.Dot(Texture.VAxis) / vdiv) + vadd;
+                if (IsTextureAlignedToWorld())
+                {
+                    v.TextureU = (v.Location.Dot(Texture.UAxis) / udiv) + uadd;
+                    v.TextureV = (v.Location.Dot(Texture.VAxis) / vdiv) + vadd;
+                } else
+                {
+                    decimal x, y;
+                    Coordinate uVec, vVec;
+
+                    uVec = Texture.UAxis.Clone();
+                    vVec = Texture.VAxis.Clone();
+
+                    uVec *= (1 / Texture.XScale);
+                    vVec *= (1 / Texture.YScale);
+
+                    //Match precision of RF.
+                    uVec.X = (decimal)((float)uVec.X);
+                    uVec.Y = (decimal)((float)uVec.Y);
+                    uVec.Z = (decimal)((float)uVec.Z);
+                    vVec.X = (decimal)((float)vVec.X);
+                    vVec.Y = (decimal)((float)vVec.Y);
+                    vVec.Z = (decimal)((float)vVec.Z);
+
+                    float uO, vO;
+                    uO = (float)uVec.Dot(Texture.PositionRF);
+                    vO = (float)vVec.Dot(Texture.PositionRF);
+
+                    x = (Texture.XShift - (decimal)uO) / Texture.Texture.Width;
+                    y = (Texture.YShift - (decimal)vO) / Texture.Texture.Height;
+                    
+                    v.TextureU = (v.Location.Dot(uVec) / Texture.Texture.Width) + (x);
+                    v.TextureV = (v.Location.Dot(vVec) / Texture.Texture.Height) + (y);
+                    
+                }
             }
         }
         
@@ -274,48 +305,56 @@ namespace Chisel.DataStructures.MapObjects
         }
         private Matrix SetZRotationRF(double Rotation)
         {
+            //0-AX  1-AY  2-AZ 3-TX
+            //4-BX  5-BY  6-BZ 7-TY
+            //8-CX  9-CY 10-CZ 11-TZ
             Matrix r = new Matrix();
             double cos, sin;
             cos = Math.Cos(Rotation);
             sin = Math.Sin(Rotation);
 
-            r.Values[5] = r.Values[10] = (decimal)cos;
-            r.Values[6] = (decimal)-sin;
-            r.Values[9] = (decimal)sin;
-            r.Values[0] = 1;
+            for(int x = 0; x < 16; x++)
+            {
+                r.Values[x] = 0;
+            }
 
+            r.Values[0] = r.Values[5] = (decimal)cos;
+            r.Values[1] = (decimal)-sin;
+            r.Values[4] = (decimal)sin;
+            r.Values[10] = 1;
+            
             return r;
         }
         
-        public void InitFaceAngle()
+        private Coordinate ToRF(Coordinate c)
         {
-            Matrix r = new Matrix();
-            Coordinate ax, p = Plane.Normal.Absolute();
-            decimal temp; 
-            double cosV, theta;
+            Coordinate r = new Coordinate(c.X, c.Z, -c.Y);
+            return r;
+        }
 
-            //to RF
-            temp = p.Y;
-            p.Y = p.Z;
-            p.Z = temp;
+        public void FaceAngle_NoTransform()
+        {
+            Coordinate ax,p2 = ToRF(Plane.Normal), p = ToRF(Plane.Normal).Absolute();
+            Matrix r = new Matrix();
+            double cosV, theta;
 
             if (p.X > p.Y)
             {
-                if (p.X > p.Z) { if (p.X > 0) p *= -1; }
-                else { if (p.Z > 0) p *= -1; }
+                if (p.X > p.Z) { if (p2.X > 0) p2 *= -1; }
+                else { if (p2.Z > 0) p2 *= -1; }
             } else {
-                if (p.Y > p.Z) { if (p.Y > 0) p *= -1; }
-                else { if (p.Z > 0) p *= -1; }
+                if (p.Y > p.Z) { if (p2.Y > 0) p2 *= -1; }
+                else { if (p2.Z > 0) p2 *= -1; }
             }
             Coordinate d = new Coordinate(0,0,1);
-            ax = d.Cross(p);
-            cosV = (double)d.Dot(p);
+            ax = d.Cross(p2);
+            cosV = (double)d.Dot(p2);
             if (cosV > 1) cosV = 1;
-            if (cosV < 1) cosV = -1;
+            if (cosV < -1) cosV = -1;
             theta = Math.Acos(cosV);
             double sinT, cosT;
-
-            if ((ax.Normalise().X == 0) && (ax.Normalise().Y == 0) && (ax.Normalise().Z == 0))
+            ax = ax.Normalise();
+            if ((ax.X == 0) && (ax.Y == 0) && (ax.Z == 0))
             {
                 r.Values[0] = r.Values[5] = r.Values[10] = 1; //Set Identity
                 Matrix t = SetZRotationRF(-theta);
@@ -330,7 +369,7 @@ namespace Chisel.DataStructures.MapObjects
                 r = QuaternionToMatrixRF(q);
             }
 
-            this.AngleRF = r;
+            //this.AngleRF = r;
         }
 
         private UInt32 DetermineAxis(Coordinate v)
@@ -376,25 +415,23 @@ namespace Chisel.DataStructures.MapObjects
                     Texture.VAxis = new Coordinate((decimal)sinA, 0, (decimal)-cosA);
                     break;
             }
-            CalculateTextureCoordinates(false);
+            CalculateTextureCoordinates(true);
 
         }
-
+        
         private void AlignTextureToFace()
         {
-            /*
-           
             //0-AX  1-AY  2-AZ 3-TX
             //4-BX  5-BY  6-BZ 7-TY
             //8-CX  9-CY 10-CZ 11-TZ
             
-
             //Clear Rotation
-            AngleRF.Values[3] = AngleRF.Values[7] = AngleRF.Values[11] = 0;
+            Texture.TransformAngleRF.Values[3] = Texture.TransformAngleRF.Values[7] = Texture.TransformAngleRF.Values[11] = 0;
             UInt32 Axis = DetermineAxis(this.Plane.Normal);
 
             Matrix t = SetZRotationRF(((double)Texture.Rotation * Math.PI / 180.0f));
-            t = MatrixMultiplyRF(AngleRF, t);
+            t = Texture.TransformAngleRF * t;
+
             // Z = Y
             // Y = -Z
             switch (Axis)
@@ -414,10 +451,8 @@ namespace Chisel.DataStructures.MapObjects
             }
 
             //Scaling set in calc texter coords
-            //Offset computing should not need to ever happen since the Tex.Pos in RF is always 0.
-
-            CalculateTextureCoordinates(false);
-            */
+            
+            CalculateTextureCoordinates(true);
         }
         
         public bool IsTextureAlignedToWorld()
@@ -569,8 +604,9 @@ namespace Chisel.DataStructures.MapObjects
                     }
                 }
             }
-            
-            CalculateTextureCoordinates(true);
+
+            AlignTexture();
+            //CalculateTextureCoordinates(true);
             UpdateBoundingBox();
         }
 
