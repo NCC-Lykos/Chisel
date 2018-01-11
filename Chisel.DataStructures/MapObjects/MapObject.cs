@@ -28,6 +28,9 @@ namespace Chisel.DataStructures.MapObjects
         public Box BoundingBox { get; set; }
         public MetaData MetaData { get; private set; }
 
+        public Coordinate SelCenter { get; set; }
+        public Matrix SelMatrix { get; set; }
+
         protected MapObject(long id)
         {
             ID = id;

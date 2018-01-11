@@ -32,7 +32,7 @@ namespace Chisel.DataStructures.MapObjects
         public bool TextureScalingLock { get; set; }
         public bool Cordon { get; set; }
         public Box CordonBounds { get; set; }
-
+        
         public Map()
         {
             Version = 1;

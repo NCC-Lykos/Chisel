@@ -933,10 +933,12 @@ namespace Chisel.Editor.Tools.SelectTool
                 var sel = new ChangeSelection(copies.SelectMany(x => x.FindAll()), Document.Selection.GetSelectedObjects());
                 action.Add(sel);
             }
-            else
+            else //NOTE(SVK): This is Move????
             {
                 // Transform the selection
-                cad.Edit(objects, new TransformEditOperation(transform, Document.Map.GetTransformFlags()));
+                TransformFlags Flags = Document.Map.GetTransformFlags();
+                Flags |= TransformFlags.Move;
+                cad.Edit(objects, new TransformEditOperation(transform, Flags));
             }
 
             // Execute the action

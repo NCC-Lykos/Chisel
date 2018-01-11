@@ -325,10 +325,81 @@ namespace Chisel.DataStructures.MapObjects
             
             return r;
         }
-        
+        private Coordinate RotateRF(Matrix m, Coordinate p)
+        {
+            //0-AX  1-AY  2-AZ 3-TX
+            //4-BX  5-BY  6-BZ 7-TY
+            //8-CX  9-CY 10-CZ 11-TZ
+            Coordinate r = new Coordinate(0, 0, 0);
+
+            r.X = (p.X * m.Values[0]) + (p.Y * m.Values[1]) + (p.Z *  m.Values[2]);
+            r.Y = (p.X * m.Values[4]) + (p.Y * m.Values[5]) + (p.Z *  m.Values[6]);
+            r.Z = (p.X * m.Values[8]) + (p.Y * m.Values[9]) + (p.Z * m.Values[10]);
+
+            return r;
+        }
+
         private Coordinate ToRF(Coordinate c)
         {
+            //X,-Z,Y
+            // ->
+            //X,Y,-Z
             Coordinate r = new Coordinate(c.X, c.Z, -c.Y);
+            return r;
+        }
+        private Coordinate ToChisel(Coordinate c)
+        {
+            //X,Y,-Z
+            // ->
+            //X,-Z,Y
+            Coordinate r = new Coordinate(c.X, -c.Z, c.Y);
+            return r;
+        }
+        private Matrix ToRF_Y(Matrix m)
+        {
+            // A,B,C
+            // ->
+            // A,C,B
+
+            //then
+            //X,Z,Y
+            // ->
+            //X,Y,-Z
+
+            //0-AX  1-AY  2-AZ 3-TX
+            //4-BX  5-BY  6-BZ 7-TY
+            //8-CX  9-CY 10-CZ 11-TZ
+
+            //Ignore shift & inverse???
+            Matrix r = new Matrix();
+            r.Values[0] = m.Values[0]; r.Values[1] = m.Values[2];  r.Values[2]  = m.Values[1];
+            r.Values[4] = m.Values[8]; r.Values[5] = m.Values[10]; r.Values[6]  = m.Values[9];
+            r.Values[8] = m.Values[4]; r.Values[9] = m.Values[6];  r.Values[10] = m.Values[5];
+
+            return r;
+        }
+
+        private Matrix ToRF_Z(Matrix m)
+        {
+            // A,B,C
+            // ->
+            // A,C,B
+
+            //then
+            //X,Z,Y
+            // ->
+            //X,Y,-Z
+
+            //0-AX  1-AY  2-AZ 3-TX
+            //4-BX  5-BY  6-BZ 7-TY
+            //8-CX  9-CY 10-CZ 11-TZ
+
+            //Ignore shift & inverse???
+            Matrix r = new Matrix();
+            r.Values[0] = m.Values[5]; r.Values[1] = m.Values[6];  r.Values[2]  = m.Values[4];
+            r.Values[4] = m.Values[9]; r.Values[5] = m.Values[10]; r.Values[6]  = m.Values[8];
+            r.Values[8] = m.Values[1]; r.Values[9] = m.Values[2];  r.Values[10] = m.Values[0];
+
             return r;
         }
 
@@ -573,40 +644,78 @@ namespace Chisel.DataStructures.MapObjects
                 Texture.YScale *= va.VectorMagnitude();
             }
             {
-                // Transform the texture axes and move them back to the origin
-
-                // Only do the transform if the axes end up being not perpendicular
-                // Otherwise just make a best-effort guess, same as the scaling lock
-                
-                if (Math.Abs(ua.Dot(va)) < 0.0001m && DMath.Abs(Plane.Normal.Dot(ua.Cross(va).Normalise())) > 0.0001m)
+                //NOTE(SVK):Only edit solids not entities.
+                if(this.Parent.Parent.GetType().Name == "World" && this.Parent.GetType().Name == "Solid")
                 {
-                    Texture.UAxis = ua;
-                    Texture.VAxis = va;
-                }
-                else
-                {
-                    AlignTextureToWorld();
-                }
-                if (flags.HasFlag(TransformFlags.TextureLock) && Texture.Texture != null)
-                {
-                    // Check some original reference points to see how the transform mutates them
-                    var scaled = (transform.Transform(Coordinate.One) - transform.Transform(Coordinate.Zero)).VectorMagnitude();
-                    var original = (Coordinate.One - Coordinate.Zero).VectorMagnitude();
-
-                    // Ignore texture lock when the transformation contains a scale
-                    if (DMath.Abs(scaled - original) <= 0.01m)
+                    if (this.Texture.Flags.HasFlag(FaceFlags.TextureLocked))
                     {
-                        // Calculate the new shift values based on the UV values of the vertices
-                        var vtx = Vertices[0];
+                        Coordinate Center = this.Parent.Parent.SelCenter;
+                        Matrix Xfrm = this.Parent.Parent.SelMatrix;
 
-                        Texture.XShift = Texture.Texture.Width * vtx.TextureU - (vtx.Location.Dot(Texture.UAxis)) / Texture.XScale;
-                        Texture.YShift = Texture.Texture.Height * vtx.TextureV - (vtx.Location.Dot(Texture.VAxis)) / Texture.YScale;
+                        if (flags.HasFlag(TransformFlags.Move))
+                        {
+                            Texture.PositionRF = transform.Transform(Texture.PositionRF);
+                        }
+                        
+                        if (flags.HasFlag(TransformFlags.RotationX) || 
+                            flags.HasFlag(TransformFlags.RotationY) || 
+                            flags.HasFlag(TransformFlags.RotationZ))
+                        {
+                            if (flags.HasFlag(TransformFlags.RotationY)) Xfrm = ToRF_Y(Xfrm);
+                            if (flags.HasFlag(TransformFlags.RotationZ)) Xfrm = ToRF_Z(Xfrm);
+
+                            Texture.TransformAngleRF = Xfrm * Texture.TransformAngleRF;
+                            Texture.PositionRF = Texture.PositionRF - Center;
+                            Texture.PositionRF = RotateRF(Xfrm, ToRF(Texture.PositionRF));
+                            Texture.PositionRF = ToChisel(Texture.PositionRF);
+                            Texture.PositionRF = Texture.PositionRF + Center;
+
+                            //NOTE(SVK): Tweek this, Fixing XYShift for RF
+                            //var vtx = Vertices[0];
+                            //Texture.XShift = Texture.Texture.Width * Math.Round(vtx.TextureU,1) - (vtx.Location.Dot(Texture.UAxis)) / Texture.XScale;
+                            //Texture.YShift = Texture.Texture.Height * Math.Round(vtx.TextureV,1) - (vtx.Location.Dot(Texture.VAxis)) / Texture.YScale;
+                        }
+
+                        if (flags.HasFlag(TransformFlags.Scale))
+                        {
+                        }
+                    }
+                    
+                    //new code
+                }
+                else //entities etc...
+                {
+                    // Transform the texture axes and move them back to the origin
+                    // Only do the transform if the axes end up being not perpendicular
+                    // Otherwise just make a best-effort guess, same as the scaling lock
+
+                    if (Math.Abs(ua.Dot(va)) < 0.0001m && DMath.Abs(Plane.Normal.Dot(ua.Cross(va).Normalise())) > 0.0001m)
+                    {
+                        Texture.UAxis = ua;
+                        Texture.VAxis = va;
+                    }
+                    else
+                    {
+                        AlignTextureToWorld();
+                    }
+                    if (flags.HasFlag(TransformFlags.TextureLock) && Texture.Texture != null)
+                    {
+                        // Check some original reference points to see how the transform mutates them
+                        var scaled = (transform.Transform(Coordinate.One) - transform.Transform(Coordinate.Zero)).VectorMagnitude();
+                        var original = (Coordinate.One - Coordinate.Zero).VectorMagnitude();
+                        // Ignore texture lock when the transformation contains a scale
+                        if (DMath.Abs(scaled - original) <= 0.01m)
+                        {
+                            // Calculate the new shift values based on the UV values of the vertices
+                            var vtx = Vertices[0];
+                            Texture.XShift = Texture.Texture.Width * vtx.TextureU - (vtx.Location.Dot(Texture.UAxis)) / Texture.XScale;
+                            Texture.YShift = Texture.Texture.Height * vtx.TextureV - (vtx.Location.Dot(Texture.VAxis)) / Texture.YScale;
+                        }
                     }
                 }
             }
 
             AlignTexture();
-            //CalculateTextureCoordinates(true);
             UpdateBoundingBox();
         }
 

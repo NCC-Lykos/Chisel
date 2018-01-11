@@ -63,7 +63,7 @@ namespace Chisel.Editor.Actions.MapObjects.Operations
                 // Unclone will reset children, need to reselect them if needed
                 var deselect = obj.FindAll().Where(x => x.IsSelected).ToList();
                 document.Selection.Deselect(deselect);
-
+                
                 EditOperation.PerformOperation(obj);
 
                 var select = obj.FindAll().Where(x => deselect.Any(y => x.ID == y.ID));
@@ -238,7 +238,6 @@ namespace Chisel.Editor.Actions.MapObjects.Operations
             }
             _idsToDelete = null;
 
-            // Edit
             _editObjects.ForEach(x => x.Perform(document));
 
             if (_createdIds.Any() || _deletedObjects.Any())

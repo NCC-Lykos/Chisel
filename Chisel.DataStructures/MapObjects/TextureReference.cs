@@ -95,7 +95,9 @@ namespace Chisel.DataStructures.MapObjects
             Flags = (FaceFlags)info.GetInt32("Flags");
             Translucency = info.GetDecimal("Translucency");
             Opacity = info.GetDecimal("Opacity");
-            
+
+            TransformAngleRF = (Matrix)info.GetValue("TransformAngleRF", typeof(Matrix));
+            PositionRF = (Coordinate)info.GetValue("PositionRF", typeof(Coordinate));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -137,7 +139,9 @@ namespace Chisel.DataStructures.MapObjects
                 YScale = YScale,
                 Flags = Flags,
                 Translucency = Translucency,
-                Opacity = Opacity
+                Opacity = Opacity,
+                TransformAngleRF = TransformAngleRF,
+                PositionRF = PositionRF
             };
         }
     }

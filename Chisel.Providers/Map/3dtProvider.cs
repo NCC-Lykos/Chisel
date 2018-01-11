@@ -502,6 +502,43 @@ namespace Chisel.Providers.Map
             else
                 WriteProperty("LightScale", "1.000000 1.000000", wr, false, 2);
 
+            /*
+                NOTE(SVK): Keep RF YZ
+                Chisel
+                0-AX  1-AY  2-AZ  3-TX
+                4-BX  5-BY  6-BZ  7-TY
+                8-CX  9-CY 10-CZ 11-TZ
+
+                RF
+                1-AX  2-AY  3-AZ 10-TX
+                4-BX  5-BY  6-BZ 11-TY
+                7-CX  8-CY  9-CZ 12-TZ
+            */
+            WriteProperty("Transform",
+                face.Texture.TransformAngleRF.Values[0].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                face.Texture.TransformAngleRF.Values[1].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                face.Texture.TransformAngleRF.Values[2].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+
+                face.Texture.TransformAngleRF.Values[4].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                face.Texture.TransformAngleRF.Values[5].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                face.Texture.TransformAngleRF.Values[6].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+
+                face.Texture.TransformAngleRF.Values[8].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                face.Texture.TransformAngleRF.Values[9].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                face.Texture.TransformAngleRF.Values[10].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+
+                face.Texture.TransformAngleRF.Values[3].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                face.Texture.TransformAngleRF.Values[7].ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                face.Texture.TransformAngleRF.Values[11].ToString("0.000000", CultureInfo.InvariantCulture), wr, false, 1);
+            //X,-Z,Y
+            // ->
+            //X,Y,-Z
+            decimal Temp = -face.Texture.PositionRF.Y;
+            WriteProperty("Pos",
+                face.Texture.PositionRF.X.ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                face.Texture.PositionRF.Z.ToString("0.000000", CultureInfo.InvariantCulture) + " " +
+                Temp.ToString("0.000000", CultureInfo.InvariantCulture), wr, false, 1);
+
             //3DT Version 1.32+ stated the following..
             //Version 1.32 11/04/99 - Brian - Face Info save out Base Vec for Tex Lock
             //Version 1.33 08/15/03 - QoD - Added ActorsDirectory, PawnIniPath; TexRotation is saved as float
@@ -645,7 +682,8 @@ namespace Chisel.Providers.Map
         }
         private void WriteMapStats(Dictionary<string, string> stats, List<Solid> solids, List<Entity> entities, DataStructures.MapObjects.Map map, StreamWriter wr)
         {
-            WriteProperty("3dtVersion", "1.31", wr);
+            //WriteProperty("3dtVersion", "1.31", wr);
+            WriteProperty("3dtVersion", "1.32", wr);
 
             //The count on the Visgroups is off by 1 because it is counting Auto. We do not use Auto in 3DT or RFEdit.
             var NumGroups = (map.Visgroups.Count() - 1).ToString();
