@@ -735,11 +735,6 @@ namespace Chisel.Editor.Tools.TextureTool
             _freeze = false;
             PropertiesChanged();
         }
-
-        private void chkMirror_CheckedChanged_1(object sender, EventArgs e)
-        {
-
-        }
     }
 }
 

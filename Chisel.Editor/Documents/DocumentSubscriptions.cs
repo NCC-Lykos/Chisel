@@ -603,6 +603,9 @@ namespace Chisel.Editor.Documents
 
                 var value = td.TransformValue;
                 IUnitTransformation transform = null;
+
+                TransformFlags Flags = _document.Map.GetTransformFlags();
+
                 switch (td.TransformType)
                 {
                     case TransformType.Rotate:
@@ -610,19 +613,29 @@ namespace Chisel.Editor.Documents
                         var rot = Matrix.Rotation(Quaternion.EulerAngles(value * DMath.PI / 180)); // Do rotation
                         var fin = Matrix.Translation(box.Center); // Move to final origin
                         transform = new UnitMatrixMult(fin * rot * mov);
+                        //TODO(SVK): //TODO(SVK): Find better implementation than to throw in WorldSpawn
+                        _document.Map.WorldSpawn.SelMatrix = rot;
+                        _document.Map.WorldSpawn.SelCenter = box.Center;
+
+                        if (value.X != 0) Flags |= TransformFlags.RotationX;
+                        if (value.Y != 0) Flags |= TransformFlags.RotationY;
+                        if (value.Z != 0) Flags |= TransformFlags.RotationZ;
+
                         break;
                     case TransformType.Translate:
                         transform = new UnitTranslate(value);
+                        Flags |= TransformFlags.Translate;
                         break;
                     case TransformType.Scale:
                         transform = new UnitScale(value, box.Center);
+                        Flags |= TransformFlags.Scale;
                         break;
                 }
 
                 if (transform == null) return;
 
                 var selected = _document.Selection.GetSelectedParents();
-                _document.PerformAction("Transform selection", new Edit(selected, new TransformEditOperation(transform, _document.Map.GetTransformFlags())));
+                _document.PerformAction("Transform selection", new Edit(selected, new TransformEditOperation(transform, Flags)));
             }
         }
 
