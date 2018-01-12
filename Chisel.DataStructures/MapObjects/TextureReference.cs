@@ -80,7 +80,7 @@ namespace Chisel.DataStructures.MapObjects
             TransformAngleRF = new Matrix();
             PositionRF = new Coordinate(0, 0, 0);
         }
-
+        
         protected TextureReference(SerializationInfo info, StreamingContext context)
         {
             Name = info.GetString("Name");

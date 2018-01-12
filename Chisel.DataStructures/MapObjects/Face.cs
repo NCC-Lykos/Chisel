@@ -43,6 +43,8 @@ namespace Chisel.DataStructures.MapObjects
             IsSelected = false;
         }
 
+        
+
         protected Face(SerializationInfo info, StreamingContext context)
         {
             ID = info.GetInt64("ID");
@@ -183,7 +185,7 @@ namespace Chisel.DataStructures.MapObjects
             Top,
             Bottom
         }
-
+        
         public virtual void CalculateTextureCoordinates(bool minimizeShiftValues)
         {
             if (minimizeShiftValues) MinimiseTextureShiftValues();
@@ -402,8 +404,8 @@ namespace Chisel.DataStructures.MapObjects
 
             return r;
         }
-
-        public void FaceAngle_NoTransform()
+        
+        public void InitFaceAngle()
         {
             Coordinate ax,p2 = ToRF(Plane.Normal), p = ToRF(Plane.Normal).Absolute();
             Matrix r = new Matrix();
@@ -440,7 +442,7 @@ namespace Chisel.DataStructures.MapObjects
                 r = QuaternionToMatrixRF(q);
             }
 
-            //this.AngleRF = r;
+            Texture.TransformAngleRF = r;
         }
 
         private UInt32 DetermineAxis(Coordinate v)
