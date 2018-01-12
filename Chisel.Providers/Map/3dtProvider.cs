@@ -146,8 +146,6 @@ namespace Chisel.Providers.Map
             
             face.Vertices.AddRange(poly.Vertices.Select(x => new Vertex(x, face)));
             
-            //NCAlignTextureToWorld(face);
-
             face.Texture.Flags = (FaceFlags)int.Parse(properties["Flags"]);
             face.Texture.Translucency = decimal.Parse(properties["Translucency"]);
             face.Texture.Opacity = (decimal.Parse(properties["Translucency"]) / (decimal)255.0f);
@@ -207,6 +205,9 @@ namespace Chisel.Providers.Map
                 texSplit = rdr.ReadLine().Trim().Split(' ','\t');
                 face.Texture.PositionRF = Coordinate.Parse(texSplit[1], texSplit[3], texSplit[2]);
                 face.Texture.PositionRF.Y *= -1;
+            } else
+            {
+                face.InitFaceAngle();
             }
 
             return face;

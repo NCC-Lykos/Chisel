@@ -184,7 +184,7 @@ namespace Chisel.Editor.Tools.TextureTool
                 if (!properties.DifferentYShiftValues) face.Texture.YShift = properties.YShift;
                 if (!properties.DifferentRotationValues) face.Texture.Rotation = properties.Rotation;
                 if (!properties.DifferentTranslucencyValues) face.Texture.Translucency = properties.Translucency;
-                if (!properties.DifferentGBSPFlags) face.Texture.Flags = properties.Flags;
+                //if (!properties.DifferentGBSPFlags) face.Texture.Flags = properties.Flags;
                 
                 face.AlignTexture();
             };

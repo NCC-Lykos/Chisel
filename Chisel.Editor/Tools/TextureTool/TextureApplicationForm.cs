@@ -26,7 +26,47 @@ namespace Chisel.Editor.Tools.TextureTool
             public bool DifferentRotationValues { get; set; }
 
             public bool DifferentTranslucencyValues { get; set; }
-            public bool DifferentGBSPFlags { get; set; }
+
+            //public bool DifferentGBSPFlags { get; set; }
+
+            public bool DifferentGBSPMirror { get; set; }
+            public bool DifferentGBSPFullBright { get; set; }
+            public bool DifferentGBSPSky { get; set; }
+            public bool DifferentGBSPLight { get; set; }
+            //public bool DifferentGBSPSelected { get; set; }
+            public bool DifferentGBSPFixedHull { get; set; }
+            public bool DifferentGBSPGouraud { get; set; }
+            public bool DifferentGBSPFlat { get; set; }
+            public bool DifferentGBSPTextureLocked { get; set; }
+            public bool DifferentGBSPVisible { get; set; }
+            public bool DifferentGBSPSheet { get; set; }
+            public bool DifferentGBSPTransparent { get; set; }
+
+            public bool AllMirror { get; set; }
+            public bool AllFullBright { get; set; }
+            public bool AllSky { get; set; }
+            public bool AllLight { get; set; }
+            //public bool AllSelected { get; set; }
+            public bool AllFixedHull { get; set; }
+            public bool AllGouraud { get; set; }
+            public bool AllFlat { get; set; }
+            public bool AllTextureLocked { get; set; }
+            public bool AllVisible { get; set; }
+            public bool AllSheet { get; set; }
+            public bool AllTransparent { get; set; }
+
+            public bool NoneMirror { get; set; }
+            public bool NoneFullBright { get; set; }
+            public bool NoneSky { get; set; }
+            public bool NoneLight { get; set; }
+            //public bool NoneSelected { get; set; }
+            public bool NoneFixedHull { get; set; }
+            public bool NoneGouraud { get; set; }
+            public bool NoneFlat { get; set; }
+            public bool NoneTextureLocked { get; set; }
+            public bool NoneVisible { get; set; }
+            public bool NoneSheet { get; set; }
+            public bool NoneTransparent { get; set; }
 
             public bool AllAlignedToFace { get; set; }
             public bool NoneAlignedToFace { get; set; }
@@ -43,13 +83,30 @@ namespace Chisel.Editor.Tools.TextureTool
             {
                 Rotation = XShift = YShift = 0;
                 XScale = YScale = 1;
-                DifferentXScaleValues = DifferentYScaleValues = DifferentXShiftValues = DifferentYShiftValues = DifferentRotationValues = false;
+                DifferentXScaleValues = DifferentYScaleValues = false;
+                DifferentXShiftValues = DifferentYShiftValues = false;
+                DifferentRotationValues = false;
                 
                 AllAlignedToFace = AllAlignedToWorld = false;
                 NoneAlignedToFace = NoneAlignedToWorld = true;
                 Translucency = 255;
                 Flags = 0;
-                DifferentTranslucencyValues = DifferentGBSPFlags = false;
+                Flags |= FaceFlags.Visible;
+                DifferentTranslucencyValues = false;
+
+                DifferentGBSPMirror = DifferentGBSPFullBright = DifferentGBSPSky = false;
+                //DifferentGBSPLight = DifferentGBSPSelected = DifferentGBSPFixedHull = false;
+                DifferentGBSPLight = DifferentGBSPFixedHull = false;
+                DifferentGBSPGouraud = DifferentGBSPFlat = DifferentGBSPTextureLocked = false;
+                DifferentGBSPVisible = DifferentGBSPSheet = DifferentGBSPTransparent = false;
+
+                //AllMirror = AllFullBright = AllSky = AllLight = AllSelected = AllFixedHull = false;
+                AllMirror = AllFullBright = AllSky = AllLight = AllFixedHull = false;
+                AllGouraud = AllFlat = AllTextureLocked = AllVisible = AllSheet = AllTransparent = false;
+
+                //NoneMirror = NoneFullBright = NoneSky = NoneLight = NoneSelected = NoneFixedHull = true;
+                NoneMirror = NoneFullBright = NoneSky = NoneLight = NoneFixedHull = true;
+                NoneGouraud = NoneFlat = NoneTextureLocked = NoneVisible = NoneSheet = NoneTransparent = true;
             }
 
             public void Reset(IEnumerable<Face> faces)
@@ -57,6 +114,10 @@ namespace Chisel.Editor.Tools.TextureTool
                 Reset();
                 var num = 0;
                 AllAlignedToWorld = NoneAlignedToWorld = AllAlignedToFace = NoneAlignedToFace = true;
+
+                //AllMirror = AllFullBright = AllSky = AllLight = AllSelected = AllFixedHull = true;
+                AllMirror = AllFullBright = AllSky = AllLight = AllFixedHull = true;
+                AllGouraud = AllFlat = AllTextureLocked = AllVisible = AllSheet = AllTransparent = true;
                 foreach (var face in faces)
                 {
                     if (face.IsTextureAlignedToFace()) NoneAlignedToFace = false;
@@ -64,6 +125,19 @@ namespace Chisel.Editor.Tools.TextureTool
                     if (face.IsTextureAlignedToWorld()) NoneAlignedToWorld = false;
                     else AllAlignedToWorld = false;
 
+                    if (face.Texture.Flags.HasFlag(FaceFlags.Mirror)) NoneMirror = false; else AllMirror = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.FullBright)) NoneFullBright = false; else AllFullBright = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.Sky)) NoneSky = false; else AllSky = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.Light)) NoneLight = false; else AllLight = false;
+                    //if (face.Texture.Flags.HasFlag(FaceFlags.Selected)) NoneSelected = false; else AllSelected = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.FixedHull)) NoneFixedHull = false; else AllFixedHull = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.Gouraud)) NoneGouraud = false; else AllGouraud = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.Flat)) NoneFlat = false; else AllFlat = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.TextureLocked)) NoneTextureLocked = false; else AllTextureLocked = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.Visible)) NoneVisible = false; else AllVisible = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.Sheet)) NoneSheet = false; else AllSheet = false;
+                    if (face.Texture.Flags.HasFlag(FaceFlags.Transparent)) NoneTransparent = false; else AllTransparent = false;
+                    
                     if (num == 0)
                     {
                         XScale = face.Texture.XScale;
@@ -82,7 +156,19 @@ namespace Chisel.Editor.Tools.TextureTool
                         if (face.Texture.YShift != YShift) DifferentYShiftValues = true;
                         if (face.Texture.Rotation != Rotation) DifferentRotationValues = true;
                         if (face.Texture.Translucency != Translucency) DifferentTranslucencyValues = true;
-                        if (face.Texture.Flags != Flags) DifferentGBSPFlags = true;
+                        //if (face.Texture.Flags != Flags) DifferentGBSPFlags = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.Mirror) == Flags.HasFlag(FaceFlags.Mirror)) DifferentGBSPMirror = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.FullBright) == Flags.HasFlag(FaceFlags.FullBright)) DifferentGBSPFullBright = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.Sky) == Flags.HasFlag(FaceFlags.Sky)) DifferentGBSPSky = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.Light) == Flags.HasFlag(FaceFlags.Light)) DifferentGBSPLight = true;
+                        //if (face.Texture.Flags.HasFlag(FaceFlags.Selected) == Flags.HasFlag(FaceFlags.Selected)) DifferentGBSPSelected = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.FixedHull) == Flags.HasFlag(FaceFlags.FixedHull)) DifferentGBSPFixedHull = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.Gouraud) == Flags.HasFlag(FaceFlags.Gouraud)) DifferentGBSPGouraud = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.Flat) == Flags.HasFlag(FaceFlags.Flat)) DifferentGBSPFlat = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.TextureLocked) == Flags.HasFlag(FaceFlags.TextureLocked)) DifferentGBSPTextureLocked = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.Visible) == Flags.HasFlag(FaceFlags.Visible)) DifferentGBSPVisible = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.Sheet) == Flags.HasFlag(FaceFlags.Sheet)) DifferentGBSPSheet = true;
+                        if (face.Texture.Flags.HasFlag(FaceFlags.Transparent) == Flags.HasFlag(FaceFlags.Transparent)) DifferentGBSPTransparent = true;
                     }
                     num++;
                 }
@@ -366,31 +452,57 @@ namespace Chisel.Editor.Tools.TextureTool
             else if (_currentTextureProperties.NoneAlignedToWorld) AlignToWorldCheckbox.CheckState = CheckState.Unchecked;
             else AlignToWorldCheckbox.CheckState = CheckState.Indeterminate;
 
+            //GBSP Flags
+            if (_currentTextureProperties.AllMirror) chkMirror.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneMirror) chkMirror.CheckState = CheckState.Unchecked;
+            else chkMirror.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllFullBright) chkFullBright.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneFullBright) chkFullBright.CheckState = CheckState.Unchecked;
+            else chkFullBright.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllSky) chkSky.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneSky) chkSky.CheckState = CheckState.Unchecked;
+            else chkSky.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllLight) chkLight.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneLight) chkLight.CheckState = CheckState.Unchecked;
+            else chkLight.CheckState = CheckState.Indeterminate;
+
+            //if (_currentTextureProperties.AllSelected) chkSelected.CheckState = CheckState.Checked;
+            //else if (_currentTextureProperties.NoneSelected) chkSelected.CheckState = CheckState.Unchecked;
+            //else chkSelected.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllFixedHull) chkFixedHull.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneFixedHull) chkFixedHull.CheckState = CheckState.Unchecked;
+            else chkFixedHull.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllGouraud) chkGouraud.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneGouraud) chkGouraud.CheckState = CheckState.Unchecked;
+            else chkGouraud.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllFlat) chkFlat.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneFlat) chkFlat.CheckState = CheckState.Unchecked;
+            else chkFlat.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllTextureLocked) chkTextureLocked.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneTextureLocked) chkTextureLocked.CheckState = CheckState.Unchecked;
+            else chkTextureLocked.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllVisible) chkVisible.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneVisible) chkVisible.CheckState = CheckState.Unchecked;
+            else chkVisible.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllSheet) chkSheet.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneSheet) chkSheet.CheckState = CheckState.Unchecked;
+            else chkSheet.CheckState = CheckState.Indeterminate;
+
+            if (_currentTextureProperties.AllTransparent) chkTransparent.CheckState = CheckState.Checked;
+            else if (_currentTextureProperties.NoneTransparent) chkTransparent.CheckState = CheckState.Unchecked;
+            else chkTransparent.CheckState = CheckState.Indeterminate;
+            
             TextureDetailsLabel.Text = "";
             var textures = new List<TextureItem>();
-
-            if (faces.Count > 1)
-                gbspGroup.Enabled = false;
-            else if (faces.Count == 1)
-            {
-                var face = faces[0];
-
-                chkMirror.Checked =        _currentTextureProperties.Flags.HasFlag(FaceFlags.Mirror);
-                chkFullBright.Checked =    _currentTextureProperties.Flags.HasFlag(FaceFlags.FullBright);
-                chkFixedHull.Checked =     _currentTextureProperties.Flags.HasFlag(FaceFlags.FixedHull);
-                chkLight.Checked =         _currentTextureProperties.Flags.HasFlag(FaceFlags.Light);
-                chkSky.Checked =           _currentTextureProperties.Flags.HasFlag(FaceFlags.Sky);
-                chkSheet.Checked =         _currentTextureProperties.Flags.HasFlag(FaceFlags.Sheet);
-                chkVisible.Checked =       _currentTextureProperties.Flags.HasFlag(FaceFlags.Visible);
-                chkTextureLocked.Checked = _currentTextureProperties.Flags.HasFlag(FaceFlags.TextureLocked);
-                chkFlat.Checked =          _currentTextureProperties.Flags.HasFlag(FaceFlags.Flat);
-                chkGouraud.Checked =       _currentTextureProperties.Flags.HasFlag(FaceFlags.Gouraud);
-                
-                chkTransparent.Checked = _currentTextureProperties.Flags.HasFlag(FaceFlags.Transparent);
-                TranslucencyValue.Enabled = _currentTextureProperties.Flags.HasFlag(FaceFlags.Transparent);
-
-                gbspGroup.Enabled = true;
-            }
 
             foreach (var face in faces)
             {
@@ -431,23 +543,7 @@ namespace Chisel.Editor.Tools.TextureTool
             if (!_currentTextureProperties.DifferentYShiftValues) _currentTextureProperties.YShift = ShiftYValue.Value;
             if (!_currentTextureProperties.DifferentRotationValues) _currentTextureProperties.Rotation = RotationValue.Value;
             if (!_currentTextureProperties.DifferentTranslucencyValues) _currentTextureProperties.Translucency = TranslucencyValue.Value;
-            if (!_currentTextureProperties.DifferentGBSPFlags)
-            {
-
-                //if (chkMirror.Checked) { _currentTextureProperties.Flags |= FaceFlags.Mirror; } else { _currentTextureProperties.Flags ^= FaceFlags.Mirror; }
-                //if (chkFullBright.Checked) { _currentTextureProperties.Flags |= FaceFlags.FullBright; } else { _currentTextureProperties.Flags ^= FaceFlags.FullBright; }
-                //if (chkSky.Checked) { _currentTextureProperties.Flags |= FaceFlags.Sky; } else { _currentTextureProperties.Flags ^= FaceFlags.Sky; }
-                //if (chkLight.Checked) { _currentTextureProperties.Flags |= FaceFlags.Light; } else { _currentTextureProperties.Flags ^= FaceFlags.Light; }
-                //if (chkFixedHull.Checked) { _currentTextureProperties.Flags |= FaceFlags.FixedHull; } else { _currentTextureProperties.Flags ^= FaceFlags.FixedHull; }
-                //if (chkGouraud.Checked) { _currentTextureProperties.Flags |= FaceFlags.Gouraud; } else { _currentTextureProperties.Flags ^= FaceFlags.Gouraud; }
-                //if (chkFlat.Checked) { _currentTextureProperties.Flags |= FaceFlags.Flat; } else { _currentTextureProperties.Flags ^= FaceFlags.Flat; }
-                //if (chkTextureLocked.Checked) { _currentTextureProperties.Flags |= FaceFlags.TextureLocked; } else { _currentTextureProperties.Flags ^= FaceFlags.TextureLocked; }
-                //if (chkVisible.Checked) { _currentTextureProperties.Flags |= FaceFlags.Visible; } else { _currentTextureProperties.Flags ^= FaceFlags.Visible; }
-                //if (chkSheet.Checked) { _currentTextureProperties.Flags |= FaceFlags.Sheet; } else { _currentTextureProperties.Flags ^= FaceFlags.Sheet; }
-                //if (chkTransparent.Checked) { _currentTextureProperties.Flags |= FaceFlags.Transparent; } else { _currentTextureProperties.Flags ^= FaceFlags.Transparent; }
-            }
-
-
+            
             OnPropertyChanged(_currentTextureProperties);
         }
 
@@ -627,10 +723,13 @@ namespace Chisel.Editor.Tools.TextureTool
         private void GbspFlagChanged(bool s, FaceFlags f)
         {
             var faces = Document.Selection.GetSelectedFaces().ToList();
-            if (faces.Count == 1)
+            //if (faces.Count == 1)
+            for(int x = 0; x < faces.Count; x++)
             {
-                if (s) faces[0].Texture.Flags |= f;
-                else faces[0].Texture.Flags ^= f;
+                if (faces[x].Texture.Flags.HasFlag(f) && !s) faces[x].Texture.Flags -= f;
+                else if (!faces[x].Texture.Flags.HasFlag(f) && s) faces[x].Texture.Flags |= f;
+                //if (s) faces[0].Texture.Flags |= f;
+                //else faces[0].Texture.Flags ^= f;
             }
         }
         
@@ -638,6 +737,8 @@ namespace Chisel.Editor.Tools.TextureTool
             if (_freeze) return;
             _freeze = true;
             GbspFlagChanged(chkMirror.Checked, FaceFlags.Mirror);
+
+            _currentTextureProperties.DifferentGBSPMirror = false;
             PropertiesChanged();
             _freeze = false;
         }
@@ -645,6 +746,8 @@ namespace Chisel.Editor.Tools.TextureTool
             if (_freeze) return;
             _freeze = true;
             GbspFlagChanged(chkFullBright.Checked, FaceFlags.FullBright);
+
+            _currentTextureProperties.DifferentGBSPFullBright = false;
             PropertiesChanged();
             _freeze = false;
         }
@@ -652,6 +755,8 @@ namespace Chisel.Editor.Tools.TextureTool
             if (_freeze) return;
             _freeze = true;
             GbspFlagChanged(chkSky.Checked, FaceFlags.Sky);
+
+            _currentTextureProperties.DifferentGBSPSky = false;
             PropertiesChanged();
             _freeze = false;
         }
@@ -659,6 +764,8 @@ namespace Chisel.Editor.Tools.TextureTool
             if (_freeze) return;
             _freeze = true;
             GbspFlagChanged(chkLight.Checked, FaceFlags.Light);
+
+            _currentTextureProperties.DifferentGBSPLight = false;
             PropertiesChanged();
             _freeze = false;
         }
@@ -666,6 +773,8 @@ namespace Chisel.Editor.Tools.TextureTool
             if (_freeze) return;
             _freeze = true;
             GbspFlagChanged(chkFixedHull.Checked, FaceFlags.FixedHull);
+
+            _currentTextureProperties.DifferentGBSPFixedHull = false;
             PropertiesChanged();
             _freeze = false;
         }
@@ -673,6 +782,8 @@ namespace Chisel.Editor.Tools.TextureTool
             if (_freeze) return;
             _freeze = true;
             GbspFlagChanged(chkGouraud.Checked, FaceFlags.Gouraud);
+
+            _currentTextureProperties.DifferentGBSPGouraud = false;
             PropertiesChanged();
             _freeze = false;
         }
@@ -680,17 +791,21 @@ namespace Chisel.Editor.Tools.TextureTool
             if (_freeze) return;
             _freeze = true;
             GbspFlagChanged(chkFlat.Checked, FaceFlags.Flat);
+
+            _currentTextureProperties.DifferentGBSPFlat = false;
             PropertiesChanged();
             _freeze = false;
         }
         private void chkTextureLocked_CheckedChanged(object sender, EventArgs e) {
             if (_freeze) return;
             _freeze = true;
+            var s = sender.GetType();
             GbspFlagChanged(chkTextureLocked.Checked, FaceFlags.TextureLocked);
 
             if (chkTextureLocked.Checked) OnTextureAlign(TextureTool.AlignMode.Face);
             else OnTextureAlign(TextureTool.AlignMode.World);
 
+            _currentTextureProperties.DifferentGBSPTextureLocked = false;
             PropertiesChanged();
             _freeze = false;
         }
@@ -698,6 +813,8 @@ namespace Chisel.Editor.Tools.TextureTool
             if (_freeze) return;
             _freeze = true;
             GbspFlagChanged(chkVisible.Checked, FaceFlags.Visible);
+
+            _currentTextureProperties.DifferentGBSPVisible = false;
             PropertiesChanged();
             _freeze = false;
         }
@@ -705,6 +822,8 @@ namespace Chisel.Editor.Tools.TextureTool
             if (_freeze) return;
             _freeze = true;
             GbspFlagChanged(chkSheet.Checked, FaceFlags.Sheet);
+
+            _currentTextureProperties.DifferentGBSPSheet = false;
             PropertiesChanged();
             _freeze = false;
         }
@@ -714,15 +833,19 @@ namespace Chisel.Editor.Tools.TextureTool
             _freeze = true;
             bool IsChecked = chkTransparent.Checked;
             var faces = Document.Selection.GetSelectedFaces().ToList();
-            if (faces.Count == 1)
+
+            for (int x = 0; x < faces.Count; x++)
             {
-                if (IsChecked) faces[0].Texture.Opacity = ((int)faces[0].Texture.Translucency / (decimal)255.0f);
-                else faces[0].Texture.Opacity = 1;
+                if (IsChecked) faces[x].Texture.Opacity = ((int)faces[x].Texture.Translucency / (decimal)255.0f);
+                else faces[x].Texture.Opacity = 1;
                 
                 GbspFlagChanged(IsChecked, FaceFlags.Transparent);
             }
             TranslucencyValue.Enabled = IsChecked;
+
+            _currentTextureProperties.DifferentGBSPTransparent = false;
             PropertiesChanged();
+
             _freeze = false;
         }
 
@@ -730,34 +853,17 @@ namespace Chisel.Editor.Tools.TextureTool
         {
             if (_freeze) return;
             _freeze = true;
+            
             var faces = Document.Selection.GetSelectedFaces().ToList();
-            if (faces.Count == 1) faces[0].Texture.Opacity = ((int)faces[0].Texture.Translucency / (decimal)255.0f);
+            for (int x = 0; x < faces.Count; x++)
+            {
+                faces[x].Texture.Opacity = ((int)faces[x].Texture.Translucency / (decimal)255.0f);
+            }
+
             _freeze = false;
+
+            _currentTextureProperties.DifferentTranslucencyValues = false;
             PropertiesChanged();
         }
     }
 }
-
-/*
- * 
- * 
-
- if (flag == FaceFlags.TextureLocked)
-            {
-                faces.ForEach((x) =>
-                {
-                    if (checkbox.Checked) OnTextureAlign(TextureTool.AlignMode.Face);
-                    else OnTextureAlign(TextureTool.AlignMode.World);
-                });
-            }
-            if (flag == FaceFlags.Mirror) { this.PropertiesChanged(); }
-            if (flag == FaceFlags.Transparent)
-            {
-                faces.ForEach((x) =>
-                {
-                    var TranslucencyValue = (int)this.TranslucencyValue.Value;
-                    x.Texture.Opacity = ((int)TranslucencyValue / 255.0f);
-                    this.PropertiesChanged();
-                });
-            }
-*/
