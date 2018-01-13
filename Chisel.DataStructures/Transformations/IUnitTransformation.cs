@@ -6,5 +6,6 @@ namespace Chisel.DataStructures.Transformations
     public interface IUnitTransformation : ISerializable
     {
         Coordinate Transform(Coordinate c);
+        Matrix GetMatrix();
     }
 }

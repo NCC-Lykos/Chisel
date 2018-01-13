@@ -74,6 +74,23 @@ namespace Chisel.Providers.Map
                 + " " + c.Z.ToString("0.00000000", CultureInfo.InvariantCulture);
         }
 
+        private static string FormatMatrix(Matrix m)
+        {
+            return m.Values[ 0].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[ 1].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[ 2].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[ 3].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[ 4].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[ 5].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[ 6].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[ 7].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[ 8].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[ 9].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[10].ToString("0.00000000", CultureInfo.InvariantCulture) + " " +
+                   m.Values[11].ToString("0.00000000", CultureInfo.InvariantCulture);
+
+        }
+
         private static string FormatColor(Color c)
         {
             return c.R.ToString(CultureInfo.InvariantCulture)
@@ -112,7 +129,7 @@ namespace Chisel.Providers.Map
             foreach (var visgroup in obj.Visgroups.Except(obj.AutoVisgroups).OrderBy(x => x)) 
             {
                 editor.AddProperty("visgroupid", visgroup.ToString(CultureInfo.InvariantCulture));
-            }
+          }
             editor["visgroupshown"] = "1";
             editor["visgroupautoshown"] = "1";
             if (obj.Parent is Group) editor["groupid"] = obj.Parent.ID.ToString(CultureInfo.InvariantCulture);
@@ -177,10 +194,12 @@ namespace Chisel.Providers.Map
             ret.Texture.YShift = vaxis.Item2;
             ret.Texture.YScale = vaxis.Item3;
             ret.Texture.Rotation = side.PropertyDecimal("rotation");
-            ret.Texture.Flags = (FaceFlags)side.PropertyInteger("flags");
             ret.Plane = side.PropertyPlane("plane");
+            //NOTE(SVK) Paste RF data
+            ret.Texture.Flags = (FaceFlags)side.PropertyInteger("flags");
+            ret.Texture.PositionRF = side.PropertyCoordinate("positionrf");
+            ret.Texture.TransformAngleRF = side.PropertyMatrix("transformanglerf");
             
-
             var verts = side.Children.FirstOrDefault(x => x.Name == "vertex");
             if (verts != null)
             {
@@ -206,7 +225,12 @@ namespace Chisel.Providers.Map
             ret["uaxis"] = String.Format(CultureInfo.InvariantCulture, "[{0} {1}] {2}", FormatCoordinate(face.Texture.UAxis), face.Texture.XShift, face.Texture.XScale);
             ret["vaxis"] = String.Format(CultureInfo.InvariantCulture, "[{0} {1}] {2}", FormatCoordinate(face.Texture.VAxis), face.Texture.YShift, face.Texture.YScale);
             ret["rotation"] = face.Texture.Rotation.ToString(CultureInfo.InvariantCulture);
-            ret["flags"] = ((int)face.Texture.Flags).ToString();
+
+            //NOTE(SVK) Copy RF data
+            ret["flags"] = ((int)face.Texture.Flags).ToString(CultureInfo.InvariantCulture);
+            ret["positionrf"] = FormatCoordinate(face.Texture.PositionRF);
+            ret["transformanglerf"] = FormatMatrix(face.Texture.TransformAngleRF);
+            
             // ret["lightmapscale"]
             // ret["smoothing_groups"]
 

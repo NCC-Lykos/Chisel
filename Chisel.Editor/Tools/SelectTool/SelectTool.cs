@@ -937,7 +937,7 @@ namespace Chisel.Editor.Tools.SelectTool
             {
                 // Transform the selection
                 TransformFlags Flags = Document.Map.GetTransformFlags();
-                Flags |= TransformFlags.Move;
+                
                 cad.Edit(objects, new TransformEditOperation(transform, Flags));
             }
 

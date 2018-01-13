@@ -28,5 +28,11 @@ namespace Chisel.DataStructures.Transformations
         {
             return c + Translation;
         }
+
+        public Matrix GetMatrix()
+        {
+            return new Matrix();
+        }
+
     }
 }

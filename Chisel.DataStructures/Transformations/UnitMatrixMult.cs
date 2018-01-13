@@ -48,5 +48,10 @@ namespace Chisel.DataStructures.Transformations
             var z = Matrix[8] * c.X + Matrix[9] * c.Y + Matrix[10] * c.Z + Matrix[11];
             return new Coordinate(x, y, z);
         }
+
+        public Matrix GetMatrix()
+        {
+            return Matrix;
+        }
     }
 }

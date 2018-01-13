@@ -238,6 +238,18 @@ namespace Chisel.Editor.Actions.MapObjects.Operations
             }
             _idsToDelete = null;
 
+            int avg = 0;
+            document.Map.WorldSpawn.SelCenter = new DataStructures.Geometric.Coordinate(0, 0, 0);
+            for (int counter = 0; counter < _editObjects.Count; counter++)
+            {
+                if (_editObjects[counter].Before.BoundingBox != null)
+                {
+                    avg++;
+                    document.Map.WorldSpawn.SelCenter += _editObjects[counter].Before.BoundingBox.Center;
+                }
+            }
+            document.Map.WorldSpawn.SelCenter /= avg;
+            
             _editObjects.ForEach(x => x.Perform(document));
 
             if (_createdIds.Any() || _deletedObjects.Any())

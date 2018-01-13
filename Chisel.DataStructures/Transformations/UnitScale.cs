@@ -32,5 +32,10 @@ namespace Chisel.DataStructures.Transformations
         {
             return (c - Origin).ComponentMultiply(Scalar) + Origin;
         }
+
+        public Matrix GetMatrix()
+        {
+            return new Matrix();
+        }
     }
 }
