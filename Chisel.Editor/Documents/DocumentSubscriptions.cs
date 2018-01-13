@@ -613,13 +613,9 @@ namespace Chisel.Editor.Documents
                         var rot = Matrix.Rotation(Quaternion.EulerAngles(value * DMath.PI / 180)); // Do rotation
                         var fin = Matrix.Translation(box.Center); // Move to final origin
                         transform = new UnitMatrixMult(fin * rot * mov);
-                        //TODO(SVK): //TODO(SVK): Find better implementation than to throw in WorldSpawn
-                        _document.Map.WorldSpawn.SelMatrix = rot;
+                        //TODO(SVK): Find better implementation than to throw in WorldSpawn
                         _document.Map.WorldSpawn.SelCenter = box.Center;
-
-                        if (value.X != 0) Flags |= TransformFlags.RotationX;
-                        if (value.Y != 0) Flags |= TransformFlags.RotationY;
-                        if (value.Z != 0) Flags |= TransformFlags.RotationZ;
+                        Flags |= TransformFlags.Rotation;
 
                         break;
                     case TransformType.Translate:

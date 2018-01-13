@@ -10,8 +10,6 @@ using System.Diagnostics;
 
 namespace Chisel.DataStructures.MapObjects
 {
-    
-
     [Serializable]
     public class Face : ISerializable
     {
@@ -34,7 +32,6 @@ namespace Chisel.DataStructures.MapObjects
 
         public Box BoundingBox { get; set; }
         
-
         public Face(long id)
         {
             ID = id;
@@ -42,9 +39,7 @@ namespace Chisel.DataStructures.MapObjects
             Vertices = new List<Vertex>();
             IsSelected = false;
         }
-
         
-
         protected Face(SerializationInfo info, StreamingContext context)
         {
             ID = info.GetInt64("ID");
@@ -357,54 +352,78 @@ namespace Chisel.DataStructures.MapObjects
             Coordinate r = new Coordinate(c.X, -c.Z, c.Y);
             return r;
         }
-        private Matrix ToRF_Y(Matrix m)
+
+        private int MatrixDirection(Matrix m)
         {
-            // A,B,C
-            // ->
-            // A,C,B
-
-            //then
-            //X,Z,Y
-            // ->
-            //X,Y,-Z
-
+            int r = 0;
+            decimal x, y, z;
             //0-AX  1-AY  2-AZ 3-TX
             //4-BX  5-BY  6-BZ 7-TY
             //8-CX  9-CY 10-CZ 11-TZ
 
-            //Ignore shift & inverse???
-            Matrix r = new Matrix();
-            r.Values[0] = m.Values[0]; r.Values[1] = m.Values[2];  r.Values[2]  = m.Values[1];
-            r.Values[4] = m.Values[8]; r.Values[5] = m.Values[10]; r.Values[6]  = m.Values[9];
-            r.Values[8] = m.Values[4]; r.Values[9] = m.Values[6];  r.Values[10] = m.Values[5];
+            //X = 1, Y = 2, Z = 3
+            x = m.Values[0]; y = m.Values[5]; z = m.Values[10];
+            if (x > y && x > z) r = 1;
+            else if (y > x && y > z) r = 2;
+            else if (z > x && z > y) r = 3;
+            else if (x == z || x == y) r = 1; // Multi axis rotation, not supported in RF, all bets off
+            else if (z == y) r = 3; // Multi axis rotation, not supported in RF, all bets off
 
             return r;
         }
 
-        private Matrix ToRF_Z(Matrix m)
+        private Matrix ToRF(Matrix m)
         {
-            // A,B,C
-            // ->
-            // A,C,B
-
-            //then
-            //X,Z,Y
-            // ->
-            //X,Y,-Z
-
+            int x = MatrixDirection(m);
+            Matrix r = new Matrix();
+            
+            switch (x)
+            {
+                case 1: //x
+                    r = m;
+                    break;
+                case 2: //y->x
+                    r.Values[0] = m.Values[0]; r.Values[1] = m.Values[2]; r.Values[2] = m.Values[1];
+                    r.Values[4] = m.Values[8]; r.Values[5] = m.Values[10]; r.Values[6] = m.Values[9];
+                    r.Values[8] = m.Values[4]; r.Values[9] = m.Values[6]; r.Values[10] = m.Values[5];
+                    break;
+                case 3: //z->x
+                    r.Values[0] = m.Values[5]; r.Values[1] = m.Values[6]; r.Values[2] = m.Values[4];
+                    r.Values[4] = m.Values[9]; r.Values[5] = m.Values[10]; r.Values[6] = m.Values[8];
+                    r.Values[8] = m.Values[1]; r.Values[9] = m.Values[2]; r.Values[10] = m.Values[0];
+                    break;
+            }
+            return r;
+        }
+        private TransformFlags GetTransformFlags(Matrix m)
+        {
+            TransformFlags f = (TransformFlags)0;
+            
             //0-AX  1-AY  2-AZ 3-TX
             //4-BX  5-BY  6-BZ 7-TY
             //8-CX  9-CY 10-CZ 11-TZ
+            if (m.Values[0] == 1 && m.Values[5] == 1 && m.Values[10] == 1)
+            {
+                //if everything else is zero than its a move else skew;
+                if (Math.Round(m.Values[1], 4) == 0 && Math.Round(m.Values[2], 4) == 0 && Math.Round(m.Values[6], 4) == 0 &&
+                    Math.Round(m.Values[4], 4) == 0 && Math.Round(m.Values[9], 4) == 0 && Math.Round(m.Values[8], 4) == 0) f |= TransformFlags.Translate;
+                else f |= TransformFlags.Skew;
+            }
+            else if (Math.Round(m.Values[1], 4) == 0 && Math.Round(m.Values[2], 4) == 0 && Math.Round(m.Values[6],4) == 0 &&
+                     Math.Round(m.Values[4], 4) == 0 && Math.Round(m.Values[9], 4) == 0 && Math.Round(m.Values[8], 4) == 0)
+            {
+                f |= TransformFlags.Translate;
+            }
+            else if (m.Values[0] == 1 || m.Values[5] == 1 || m.Values[10] == 1)
+            {
+                f |= TransformFlags.Rotation;
+            }
 
-            //Ignore shift & inverse???
-            Matrix r = new Matrix();
-            r.Values[0] = m.Values[5]; r.Values[1] = m.Values[6];  r.Values[2]  = m.Values[4];
-            r.Values[4] = m.Values[9]; r.Values[5] = m.Values[10]; r.Values[6]  = m.Values[8];
-            r.Values[8] = m.Values[1]; r.Values[9] = m.Values[2];  r.Values[10] = m.Values[0];
 
-            return r;
+            return f;
         }
-        
+
+
         public void InitFaceAngle()
         {
             Coordinate ax,p2 = ToRF(Plane.Normal), p = ToRF(Plane.Normal).Absolute();
@@ -646,44 +665,34 @@ namespace Chisel.DataStructures.MapObjects
                 Texture.YScale *= va.VectorMagnitude();
             }
             {
-                //NOTE(SVK):Only edit solids not entities.
+                //NOTE(SVK):Only edit solids not entities. //do entities have faces??
                 if(this.Parent.Parent.GetType().Name == "World" && this.Parent.GetType().Name == "Solid")
                 {
-                    if (this.Texture.Flags.HasFlag(FaceFlags.TextureLocked))
+                    if (Texture.Flags.HasFlag(FaceFlags.TextureLocked))
                     {
                         Coordinate Center = this.Parent.Parent.SelCenter;
-                        Matrix Xfrm = this.Parent.Parent.SelMatrix;
+                        Matrix Xfrm = transform.GetMatrix();
+                        TransformFlags f = (TransformFlags)0;
+                        if (Xfrm != Matrix.Zero) f = GetTransformFlags(Xfrm);
+                        else f = flags;
+                        
 
-                        if (flags.HasFlag(TransformFlags.Move))
+                        if (f.HasFlag(TransformFlags.Translate))
                         {
                             Texture.PositionRF = transform.Transform(Texture.PositionRF);
                         }
                         
-                        if (flags.HasFlag(TransformFlags.RotationX) || 
-                            flags.HasFlag(TransformFlags.RotationY) || 
-                            flags.HasFlag(TransformFlags.RotationZ))
+                        if (f.HasFlag(TransformFlags.Rotation))
                         {
-                            if (flags.HasFlag(TransformFlags.RotationY)) Xfrm = ToRF_Y(Xfrm);
-                            if (flags.HasFlag(TransformFlags.RotationZ)) Xfrm = ToRF_Z(Xfrm);
+                            Xfrm = ToRF(Xfrm);
 
                             Texture.TransformAngleRF = Xfrm * Texture.TransformAngleRF;
                             Texture.PositionRF = Texture.PositionRF - Center;
                             Texture.PositionRF = RotateRF(Xfrm, ToRF(Texture.PositionRF));
                             Texture.PositionRF = ToChisel(Texture.PositionRF);
                             Texture.PositionRF = Texture.PositionRF + Center;
-
-                            //NOTE(SVK): Tweek this, Fixing XYShift for RF
-                            //var vtx = Vertices[0];
-                            //Texture.XShift = Texture.Texture.Width * Math.Round(vtx.TextureU,1) - (vtx.Location.Dot(Texture.UAxis)) / Texture.XScale;
-                            //Texture.YShift = Texture.Texture.Height * Math.Round(vtx.TextureV,1) - (vtx.Location.Dot(Texture.VAxis)) / Texture.YScale;
-                        }
-
-                        if (flags.HasFlag(TransformFlags.Scale))
-                        {
                         }
                     }
-                    
-                    //new code
                 }
                 else //entities etc...
                 {

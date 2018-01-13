@@ -56,5 +56,10 @@ namespace Chisel.DataStructures.Transformations
 
             return new Coordinate(x, y, z) + Axis.Start;
         }
+
+        public Matrix GetMatrix()
+        {
+            return new Matrix();
+        }
     }
 }

@@ -223,6 +223,24 @@ namespace Chisel.Providers
             return defaultValue;
         }
 
+        public Matrix PropertyMatrix(string name, Matrix defaultValue = null)
+        {
+            var prop = this[name];
+            if (defaultValue == null) defaultValue = Matrix.Zero;
+            if (prop == null || prop.Count(c => c == ' ') != 11) return defaultValue;
+            var split = prop.Split(' ');
+
+            Matrix parse = new Matrix();
+            bool validparse = true;
+            for(int x = 0; x < 12; x++)
+            {
+                if (!decimal.TryParse(split[x], NumberStyles.Float, CultureInfo.InvariantCulture, out parse.Values[x])) validparse = false;
+            }
+
+            if (validparse) return parse;
+            else return defaultValue;
+        }
+
         public Tuple<Coordinate, decimal, decimal> PropertyTextureAxis(string name)
         {
             var prop = this[name];
