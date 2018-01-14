@@ -495,7 +495,7 @@ namespace Chisel.Providers.Map
             }
 
             var texInfo = string.Format("Rotate {0} Shift {1} {2} Scale {3} {4} Name \"{5}\"",
-                face.Texture.Rotation.ToString("0.000000", CultureInfo.InvariantCulture),
+                face.Texture.Rotation.ToString("0", CultureInfo.InvariantCulture),
                 face.Texture.XShift.ToString("0", CultureInfo.InvariantCulture),
                 face.Texture.YShift.ToString("0", CultureInfo.InvariantCulture),
                 face.Texture.XScale.ToString("0.000000", CultureInfo.InvariantCulture),
