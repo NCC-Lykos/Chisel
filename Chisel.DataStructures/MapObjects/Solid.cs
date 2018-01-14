@@ -45,6 +45,7 @@ namespace Chisel.DataStructures.MapObjects
 
         protected Solid(SerializationInfo info, StreamingContext context) : base(info, context)
         {
+            Flags = (SolidFlags)info.GetValue("Flags", typeof(SolidFlags));
             Faces = ((Face[]) info.GetValue("Faces", typeof (Face[]))).ToList();
             Faces.ForEach(x => x.Parent = this);
         }

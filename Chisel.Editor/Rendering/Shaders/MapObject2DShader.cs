@@ -31,7 +31,7 @@ namespace Chisel.Editor.Rendering.Shaders
 
             Perspective = Camera = ModelView = SelectionTransform = Matrix4.Identity;
             SelectedOnly = UnselectedOnly = false;
-            SelectedColour = new Vector4(1, 0, 0, 0.5f);
+            SelectedColour = new Vector4(1, 1, 0, 0.5f);
             OverrideColour = new Vector4(0, 0, 0, 0);
 
             Shader.Unbind();

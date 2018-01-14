@@ -43,6 +43,43 @@ namespace Chisel.Editor.UI.ObjectProperties
 
         private bool _populating;
 
+
+        private bool GBSPMultiple;
+
+        private bool AllGBSPSolid;
+        private bool AllGBSPWindow;
+        private bool AllGBSPClip;
+        private bool AllGBSPHint;
+        private bool AllGBSPEmpty;
+        private bool AllGBSPWavy;
+        private bool AllGBSPDetail;
+        private bool AllGBSPArea;
+        private bool AllGBSPFlocking;
+        private bool AllGBSPSheet;
+
+        private bool NoneGBSPSolid;
+        private bool NoneGBSPWindow;
+        private bool NoneGBSPClip;
+        private bool NoneGBSPHint;
+        private bool NoneGBSPEmpty;
+        private bool NoneGBSPWavy;
+        private bool NoneGBSPDetail;
+        private bool NoneGBSPArea;
+        private bool NoneGBSPFlocking;
+        private bool NoneGBSPSheet;
+
+        private bool DiffGBSPSolid;
+        private bool DiffGBSPWindow;
+        private bool DiffGBSPClip;
+        private bool DiffGBSPHint;
+        private bool DiffGBSPEmpty;
+        private bool DiffGBSPWavy;
+        private bool DiffGBSPDetail;
+        private bool DiffGBSPArea;
+        private bool DiffGBSPFlocking;
+        private bool DiffGBSPSheet;
+
+
         public ObjectPropertiesDialog(Documents.Document document)
         {
             Document = document;
@@ -50,7 +87,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             Objects = new List<MapObject>();
             _smartEditControls = new Dictionary<VariableType, SmartEditControl>();
 
-            _dumbEditControl = new DumbEditControl {Document = Document};
+            _dumbEditControl = new DumbEditControl { Document = Document };
             _dumbEditControl.ValueChanged += PropertyValueChanged;
             _dumbEditControl.NameChanged += PropertyNameChanged;
 
@@ -67,10 +104,10 @@ namespace Chisel.Editor.UI.ObjectProperties
                 .Where(x => x.GetCustomAttributes(typeof(SmartEditAttribute), false).Any());
             foreach (var type in types)
             {
-                var attrs = type.GetCustomAttributes(typeof (SmartEditAttribute), false);
+                var attrs = type.GetCustomAttributes(typeof(SmartEditAttribute), false);
                 foreach (SmartEditAttribute attr in attrs)
                 {
-                    var inst = (SmartEditControl) Activator.CreateInstance(type);
+                    var inst = (SmartEditControl)Activator.CreateInstance(type);
 
                     inst.Document = Document;
                     inst.ValueChanged += PropertyValueChanged;
@@ -85,8 +122,8 @@ namespace Chisel.Editor.UI.ObjectProperties
         {
             string actionText = null;
             var ac = new ActionCollection();
-            
-            
+
+
             // Check if it's actually editing keyvalues
             if (_values != null)
             {
@@ -263,13 +300,13 @@ namespace Chisel.Editor.UI.ObjectProperties
 
             if (retainCheckStates)
             {
-                 states = VisgroupPanel.GetAllCheckStates();
+                states = VisgroupPanel.GetAllCheckStates();
             }
             else
             {
                 states = Objects.SelectMany(x => x.Visgroups)
                     .GroupBy(x => x)
-                    .Select(x => new {ID = x.Key, Count = x.Count()})
+                    .Select(x => new { ID = x.Key, Count = x.Count() })
                     .Where(g => g.Count > 0)
                     .ToDictionary(g => g.ID, g => g.Count == Objects.Count
                                                       ? CheckState.Checked
@@ -306,7 +343,52 @@ namespace Chisel.Editor.UI.ObjectProperties
             Mediator.UnsubscribeAll(this);
             base.OnClosed(e);
         }
-        
+
+        private void RefreshSolid()
+        {
+            if (!Objects.All(x => x is Solid)) return;
+
+            if (!Tabs.TabPages.Contains(SolidTab))
+            {
+                Tabs.TabPages.Insert(0, SolidTab);
+                Tabs.SelectedIndex = 0;
+            }
+
+            _populating = true;
+            SolidFlags f;
+            for (int x = 0; x < Objects.Count; x++)
+            {
+                f = ((Solid)Objects[x]).Flags;
+                if(x == 0)
+                {
+                    chkSolid.Checked = f.HasFlag(SolidFlags.solid);
+                    chkWindow.Checked = f.HasFlag(SolidFlags.window);
+                    chkClip.Checked = f.HasFlag(SolidFlags.clip);
+                    chkHint.Checked = f.HasFlag(SolidFlags.hint);
+                    chkSolid.Checked = f.HasFlag(SolidFlags.empty);
+                }
+            }
+
+
+            f = ((Solid)Objects[0]).Flags;
+            chkSolid.Checked = chkWindow.Checked = chkClip.Checked = chkHint.Checked = chkEmpty.Checked = false;
+            if (f.HasFlag(SolidFlags.solid)) chkSolid.Checked = true;
+            else if (f.HasFlag(SolidFlags.window)) chkWindow.Checked = true;
+            else if (f.HasFlag(SolidFlags.clip)) chkClip.Checked = true;
+            else if (f.HasFlag(SolidFlags.hint)) chkHint.Checked = true;
+            else if (f.HasFlag(SolidFlags.empty)) chkEmpty.Checked = true;
+
+            chkWavy.Checked = chkDetail.Checked = chkArea.Checked = chkFlocking.Checked = chkSheet.Checked = false;
+            if (f.HasFlag(SolidFlags.wavy)) chkWavy.Checked = true;
+            if (f.HasFlag(SolidFlags.detail)) chkDetail.Checked = true;
+            if (f.HasFlag(SolidFlags.area)) chkArea.Checked = true;
+            if (f.HasFlag(SolidFlags.flocking)) chkFlocking.Checked = true;
+            if (f.HasFlag(SolidFlags.sheet)) chkSheet.Checked = true;
+
+            _populating = false;
+
+        }
+
         private void RefreshData()
         {
             if (!Objects.Any())
@@ -321,12 +403,15 @@ namespace Chisel.Editor.UI.ObjectProperties
 
             if (!Tabs.TabPages.Contains(VisgroupTab)) Tabs.TabPages.Add(VisgroupTab);
 
+            if (!Objects.All(x => x is Solid)) Tabs.TabPages.Remove(SolidTab);
+
             if (!Objects.All(x => x is Entity || x is World))
             {
                 Tabs.TabPages.Remove(ClassInfoTab);
                 Tabs.TabPages.Remove(InputsTab);
                 Tabs.TabPages.Remove(OutputsTab);
                 Tabs.TabPages.Remove(FlagsTab);
+                RefreshSolid();
                 return;
             }
 
@@ -388,6 +473,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             _populating = false;
 
             UpdateKeyValues();
+
         }
 
         private void PopulateFlags(string className, List<int> flags)
@@ -538,7 +624,7 @@ namespace Chisel.Editor.UI.ObjectProperties
         private void PropertyValueChanged(object sender, string propertyname, string propertyvalue)
         {
             var val = _values.FirstOrDefault(x => x.OriginalKey == propertyname);
-            var li = KeyValuesList.Items.OfType<ListViewItem>().FirstOrDefault(x => ((string) x.Tag) == propertyname);
+            var li = KeyValuesList.Items.OfType<ListViewItem>().FirstOrDefault(x => ((string)x.Tag) == propertyname);
             if (val == null)
             {
                 if (li != null) KeyValuesList.Items.Remove(li);
@@ -586,11 +672,11 @@ namespace Chisel.Editor.UI.ObjectProperties
             if (_populating) return;
             PropertyValueChanged(sender, "angles", Angles.GetAnglePropertyString());
             if (KeyValuesList.SelectedIndices.Count > 0
-                && ((string) KeyValuesList.SelectedItems[0].Tag) == "angles"
+                && ((string)KeyValuesList.SelectedItems[0].Tag) == "angles"
                 && SmartEditControlPanel.Controls.Count > 0
                 && SmartEditControlPanel.Controls[0] is SmartEditControl)
             {
-                ((SmartEditControl) SmartEditControlPanel.Controls[0]).SetProperty("angles", "angles", Angles.GetAnglePropertyString(), null);
+                ((SmartEditControl)SmartEditControlPanel.Controls[0]).SetProperty("angles", "angles", Angles.GetAnglePropertyString(), null);
             }
         }
 
@@ -704,5 +790,95 @@ namespace Chisel.Editor.UI.ObjectProperties
             Apply();
             Close();
         }
-    }
+
+        private void GBSPSubTypeReset()
+        {
+            chkWavy.Checked = chkDetail.Checked = chkArea.Checked = chkFlocking.Checked = chkSheet.Checked = false;
+            if (chkWindow.Checked == true) chkDetail.Checked = true;
+
+            _populating = false;
+        }
+
+        private bool GBSPNoneChecked()
+        {
+            if (chkSolid.Checked == false && chkWindow.Checked == false && chkClip.Checked == false && chkHint.Checked == false && chkEmpty.Checked == false) return true;
+            else return false;
+        }
+
+        private void chkSolidClicked(object sender, EventArgs e)
+        {
+            if (_populating) return;
+            _populating = true;
+            if (GBSPNoneChecked()) this.chkSolid.Checked = true;
+
+            if (this.chkSolid.Checked)
+            {
+                chkWavy.Enabled = false;
+                chkDetail.Enabled = chkArea.Enabled = chkFlocking.Enabled = chkSheet.Enabled = true;
+
+                chkWindow.Checked = chkClip.Checked = chkHint.Checked = chkEmpty.Checked = false;
+            }
+            GBSPSubTypeReset();
+        } //Good
+        private void chkWindowClicked(object sender, EventArgs e)
+        {
+            if (_populating) return;
+            _populating = true;
+            if (GBSPNoneChecked()) this.chkWindow.Checked = true;
+
+            if (this.chkWindow.Checked)
+            {
+                chkDetail.Enabled = chkArea.Enabled = chkWavy.Enabled = chkSheet.Enabled = false;
+                chkFlocking.Enabled = true;
+
+                chkSolid.Checked = chkClip.Checked = chkHint.Checked = chkEmpty.Checked = false;
+            }
+            GBSPSubTypeReset();
+        } //Good
+        private void chkClipClicked(object sender, EventArgs e)
+        {
+            if (_populating) return;
+            _populating = true;
+            if (GBSPNoneChecked()) this.chkClip.Checked = true;
+
+            if (this.chkClip.Checked)
+            {
+                chkDetail.Enabled = chkArea.Enabled = chkWavy.Enabled = chkSheet.Enabled = false;
+                chkFlocking.Enabled = true;
+
+                chkSolid.Checked = chkWindow.Checked = chkHint.Checked = chkEmpty.Checked = false;
+            }
+            GBSPSubTypeReset();
+        } //Good
+        private void chkHintClicked(object sender, EventArgs e)
+        {
+            if (_populating) return;
+            _populating = true;
+            if (GBSPNoneChecked()) this.chkHint.Checked = true;
+
+            if (this.chkHint.Checked)
+            {
+                chkDetail.Enabled = chkArea.Enabled = chkWavy.Enabled = chkSheet.Enabled = false;
+                chkFlocking.Enabled = true;
+
+                chkSolid.Checked = chkWindow.Checked = chkClip.Checked = chkEmpty.Checked = false;
+            }
+            GBSPSubTypeReset();
+        } //Good
+        private void chkEmptyClicked(object sender, EventArgs e)
+        {
+            if (_populating) return;
+            _populating = true;
+            if (GBSPNoneChecked()) this.chkEmpty.Checked = true;
+
+            if (this.chkEmpty.Checked)
+            {
+                chkArea.Enabled = false;
+                chkWavy.Enabled = chkDetail.Enabled = chkFlocking.Enabled = chkSheet.Enabled = true;
+
+                chkSolid.Checked = chkWindow.Checked = chkClip.Checked = chkHint.Checked = false;
+            }
+            GBSPSubTypeReset();
+        }
+    }    
 }

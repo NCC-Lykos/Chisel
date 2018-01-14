@@ -104,7 +104,7 @@ namespace Chisel.Editor.Rendering.Renderers
 
             _mapObject2DShader.SelectionTransform = Matrix4.Identity;
             _mapObject2DShader.SelectedOnly = false;
-            _mapObject2DShader.SelectedColour = new Vector4(0.5f, 0, 0, 1);
+            _mapObject2DShader.SelectedColour = new Vector4(0.5f, 0.5f, 0, 1);
 
             if (Document.Map.Show2DGrid)
             {
@@ -175,7 +175,7 @@ namespace Chisel.Editor.Rendering.Renderers
                 _mapObject3DShader.SelectionColourMultiplier = Document.Map.HideFaceMask &&
                                                                Document.Selection.InFaceSelection
                                                                    ? new Vector4(1, 1, 1, 1)
-                                                                   : new Vector4(1, 0.5f, 0.5f, 1);
+                                                                   : new Vector4(1, 0, 1, 1);
 
                 // Render textured polygons
                 _array.RenderTextured(context.Context);
@@ -215,7 +215,7 @@ namespace Chisel.Editor.Rendering.Renderers
 
             // Render wireframe
             _mapObject2DShader.Bind(opts);
-            _mapObject2DShader.SelectedColour = new Vector4(1, 1, 0, 1);
+            _mapObject2DShader.SelectedColour = new Vector4(1, 0, 0, 1);
 
             if (opts.Wireframe)
             {
