@@ -43,6 +43,20 @@ namespace Chisel.Editor.UI.ObjectProperties
 
         private bool _populating;
 
+        private bool GBSPMultiple = false;
+
+        private bool DiffGBSPSolid;
+        private bool DiffGBSPWindow;
+        private bool DiffGBSPClip;
+        private bool DiffGBSPHint;
+        private bool DiffGBSPEmpty;
+        private bool DiffGBSPWavy;
+        private bool DiffGBSPDetail;
+        private bool DiffGBSPArea;
+        private bool DiffGBSPFlocking;
+        private bool DiffGBSPSheet;
+
+
         public ObjectPropertiesDialog(Documents.Document document)
         {
             Document = document;
@@ -50,7 +64,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             Objects = new List<MapObject>();
             _smartEditControls = new Dictionary<VariableType, SmartEditControl>();
 
-            _dumbEditControl = new DumbEditControl {Document = Document};
+            _dumbEditControl = new DumbEditControl { Document = Document };
             _dumbEditControl.ValueChanged += PropertyValueChanged;
             _dumbEditControl.NameChanged += PropertyNameChanged;
 
@@ -67,10 +81,10 @@ namespace Chisel.Editor.UI.ObjectProperties
                 .Where(x => x.GetCustomAttributes(typeof(SmartEditAttribute), false).Any());
             foreach (var type in types)
             {
-                var attrs = type.GetCustomAttributes(typeof (SmartEditAttribute), false);
+                var attrs = type.GetCustomAttributes(typeof(SmartEditAttribute), false);
                 foreach (SmartEditAttribute attr in attrs)
                 {
-                    var inst = (SmartEditControl) Activator.CreateInstance(type);
+                    var inst = (SmartEditControl)Activator.CreateInstance(type);
 
                     inst.Document = Document;
                     inst.ValueChanged += PropertyValueChanged;
@@ -85,8 +99,8 @@ namespace Chisel.Editor.UI.ObjectProperties
         {
             string actionText = null;
             var ac = new ActionCollection();
-            
-            
+
+
             // Check if it's actually editing keyvalues
             if (_values != null)
             {
@@ -111,6 +125,27 @@ namespace Chisel.Editor.UI.ObjectProperties
             {
                 // Run if either action shows changes
                 Document.PerformAction(actionText, ac);
+            }
+
+            if (!GBSPMultiple)
+            {
+                SolidFlags s = (SolidFlags)0;
+                if (chkSolid.Checked) s |= SolidFlags.solid;
+                if (chkWindow.Checked) s |= SolidFlags.window;
+                if (chkClip.Checked) s |= SolidFlags.clip;
+                if (chkHint.Checked) s |= SolidFlags.hint;
+                if (chkEmpty.Checked) s |= SolidFlags.empty;
+
+                if (chkWavy.Checked) s |= SolidFlags.wavy;
+                if (chkDetail.Checked) s |= SolidFlags.detail;
+                if (chkArea.Checked) s |= SolidFlags.area;
+                if (chkFlocking.Checked) s |= SolidFlags.flocking;
+                if (chkSheet.Checked) s |= SolidFlags.sheet;
+                for (int x = 0; x < Objects.Count; x++)
+                {
+                    ((Solid)Objects[x]).Flags = s;
+                }
+
             }
 
             Class.BackColor = Color.White;
@@ -263,13 +298,13 @@ namespace Chisel.Editor.UI.ObjectProperties
 
             if (retainCheckStates)
             {
-                 states = VisgroupPanel.GetAllCheckStates();
+                states = VisgroupPanel.GetAllCheckStates();
             }
             else
             {
                 states = Objects.SelectMany(x => x.Visgroups)
                     .GroupBy(x => x)
-                    .Select(x => new {ID = x.Key, Count = x.Count()})
+                    .Select(x => new { ID = x.Key, Count = x.Count() })
                     .Where(g => g.Count > 0)
                     .ToDictionary(g => g.ID, g => g.Count == Objects.Count
                                                       ? CheckState.Checked
@@ -306,7 +341,85 @@ namespace Chisel.Editor.UI.ObjectProperties
             Mediator.UnsubscribeAll(this);
             base.OnClosed(e);
         }
-        
+
+        private void RefreshSolid()
+        {
+            if (!Objects.All(x => x is Solid)) return;
+
+            GBSPMultiple = false;
+            if (!Tabs.TabPages.Contains(SolidTab))
+            {
+                Tabs.TabPages.Insert(0, SolidTab);
+                Tabs.SelectedIndex = 0;
+            }
+
+            _populating = true;
+            SolidFlags f;
+            for (int x = 0; x < Objects.Count; x++)
+            {
+                f = ((Solid)Objects[x]).Flags;
+                if(x == 0)
+                {
+                    chkSolid.Checked = f.HasFlag(SolidFlags.solid);
+                    chkWindow.Checked = f.HasFlag(SolidFlags.window);
+                    chkClip.Checked = f.HasFlag(SolidFlags.clip);
+                    chkHint.Checked = f.HasFlag(SolidFlags.hint);
+                    chkEmpty.Checked = f.HasFlag(SolidFlags.empty);
+
+                    chkWavy.Checked = f.HasFlag(SolidFlags.wavy);
+                    chkDetail.Checked = f.HasFlag(SolidFlags.detail);
+                    chkArea.Checked = f.HasFlag(SolidFlags.area);
+                    chkFlocking.Checked = f.HasFlag(SolidFlags.flocking);
+                    chkSheet.Checked = f.HasFlag(SolidFlags.sheet);
+                }
+                else
+                {
+                    if (chkSolid.Checked != f.HasFlag(SolidFlags.solid)) DiffGBSPSolid = true;
+                    if (chkWindow.Checked != f.HasFlag(SolidFlags.window)) DiffGBSPWindow = true;
+                    if (chkClip.Checked != f.HasFlag(SolidFlags.clip)) DiffGBSPClip = true;
+                    if (chkHint.Checked != f.HasFlag(SolidFlags.hint)) DiffGBSPHint = true;
+                    if (chkEmpty.Checked != f.HasFlag(SolidFlags.empty)) DiffGBSPEmpty = true;
+
+                    if (chkWavy.Checked != f.HasFlag(SolidFlags.wavy)) DiffGBSPWavy = true;
+                    if (chkDetail.Checked != f.HasFlag(SolidFlags.detail)) DiffGBSPDetail = true;
+                    if (chkArea.Checked != f.HasFlag(SolidFlags.area)) DiffGBSPArea = true;
+                    if (chkFlocking.Checked != f.HasFlag(SolidFlags.flocking)) DiffGBSPFlocking = true;
+                    if (chkSheet.Checked != f.HasFlag(SolidFlags.sheet)) DiffGBSPSheet = true;
+                }
+            }
+
+
+            if (DiffGBSPSolid || DiffGBSPWindow || DiffGBSPClip || DiffGBSPHint || DiffGBSPEmpty)
+            {
+                GBSPMultiple = true;
+                chkSolid.Checked = chkWindow.Checked = chkClip.Checked = chkHint.Checked = chkEmpty.Checked = false;
+                chkWavy.Checked = chkDetail.Checked = chkArea.Checked = chkFlocking.Checked = chkSheet.Checked = false;
+                if (DiffGBSPSolid) chkSolid.CheckState = CheckState.Indeterminate;
+                if (DiffGBSPWindow) chkWindow.CheckState = CheckState.Indeterminate;
+                if (DiffGBSPClip) chkClip.CheckState = CheckState.Indeterminate;
+                if (DiffGBSPHint) chkHint.CheckState = CheckState.Indeterminate;
+                if (DiffGBSPEmpty) chkEmpty.CheckState = CheckState.Indeterminate;
+
+                chkWavy.Enabled = chkDetail.Enabled = chkArea.Enabled = chkFlocking.Enabled = chkSheet.Enabled = false;
+                if (DiffGBSPWavy) chkWavy.CheckState = CheckState.Indeterminate;
+                if (DiffGBSPDetail) chkDetail.CheckState = CheckState.Indeterminate;
+                if (DiffGBSPArea) chkArea.CheckState = CheckState.Indeterminate;
+                if (DiffGBSPFlocking) chkFlocking.CheckState = CheckState.Indeterminate;
+                if (DiffGBSPSheet) chkSheet.CheckState = CheckState.Indeterminate;
+                _populating = false;
+            }
+            else
+            {
+                _populating = false;
+                if (chkSolid.Checked)       { GBSPTypesChecked(SolidFlags.solid,false); }
+                else if (chkWindow.Checked) { GBSPTypesChecked(SolidFlags.window, false); }
+                else if (chkClip.Checked)   { GBSPTypesChecked(SolidFlags.clip, false); }
+                else if (chkHint.Checked)   { GBSPTypesChecked(SolidFlags.hint, false); }
+                else if (chkEmpty.Checked)  { GBSPTypesChecked(SolidFlags.empty, false); }
+            }
+            
+        }
+
         private void RefreshData()
         {
             if (!Objects.Any())
@@ -321,12 +434,15 @@ namespace Chisel.Editor.UI.ObjectProperties
 
             if (!Tabs.TabPages.Contains(VisgroupTab)) Tabs.TabPages.Add(VisgroupTab);
 
+            if (!Objects.All(x => x is Solid)) Tabs.TabPages.Remove(SolidTab);
+
             if (!Objects.All(x => x is Entity || x is World))
             {
                 Tabs.TabPages.Remove(ClassInfoTab);
                 Tabs.TabPages.Remove(InputsTab);
                 Tabs.TabPages.Remove(OutputsTab);
                 Tabs.TabPages.Remove(FlagsTab);
+                RefreshSolid();
                 return;
             }
 
@@ -388,6 +504,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             _populating = false;
 
             UpdateKeyValues();
+
         }
 
         private void PopulateFlags(string className, List<int> flags)
@@ -538,7 +655,7 @@ namespace Chisel.Editor.UI.ObjectProperties
         private void PropertyValueChanged(object sender, string propertyname, string propertyvalue)
         {
             var val = _values.FirstOrDefault(x => x.OriginalKey == propertyname);
-            var li = KeyValuesList.Items.OfType<ListViewItem>().FirstOrDefault(x => ((string) x.Tag) == propertyname);
+            var li = KeyValuesList.Items.OfType<ListViewItem>().FirstOrDefault(x => ((string)x.Tag) == propertyname);
             if (val == null)
             {
                 if (li != null) KeyValuesList.Items.Remove(li);
@@ -586,11 +703,11 @@ namespace Chisel.Editor.UI.ObjectProperties
             if (_populating) return;
             PropertyValueChanged(sender, "angles", Angles.GetAnglePropertyString());
             if (KeyValuesList.SelectedIndices.Count > 0
-                && ((string) KeyValuesList.SelectedItems[0].Tag) == "angles"
+                && ((string)KeyValuesList.SelectedItems[0].Tag) == "angles"
                 && SmartEditControlPanel.Controls.Count > 0
                 && SmartEditControlPanel.Controls[0] is SmartEditControl)
             {
-                ((SmartEditControl) SmartEditControlPanel.Controls[0]).SetProperty("angles", "angles", Angles.GetAnglePropertyString(), null);
+                ((SmartEditControl)SmartEditControlPanel.Controls[0]).SetProperty("angles", "angles", Angles.GetAnglePropertyString(), null);
             }
         }
 
@@ -704,5 +821,87 @@ namespace Chisel.Editor.UI.ObjectProperties
             Apply();
             Close();
         }
-    }
+
+        private void GBSPSubTypeReset(bool ResetSub)
+        {
+            if (ResetSub) chkWavy.Checked = chkDetail.Checked = chkArea.Checked = chkFlocking.Checked = chkSheet.Checked = false;
+            if (chkWindow.Checked == true) chkDetail.Checked = true;
+
+            GBSPMultiple = false;
+            _populating = false;
+        }
+
+        private bool GBSPNoneChecked()
+        {
+            if (chkSolid.Checked == false && chkWindow.Checked == false && chkClip.Checked == false && chkHint.Checked == false && chkEmpty.Checked == false)
+            {
+                chkSolid.Checked = chkWindow.Checked = chkClip.Checked = chkHint.Checked = chkEmpty.Checked = false;
+                return true;
+            }
+            else return false;
+        }
+        private void GBSPTypesChecked(SolidFlags s, bool ResetSub)
+        {
+            if (_populating) return;
+            _populating = true;
+            
+            chkSolid.Checked = chkWindow.Checked = chkClip.Checked = chkHint.Checked = chkEmpty.Checked = false;
+            switch (s)
+            {
+                case SolidFlags.solid:
+                    if (GBSPNoneChecked()) chkSolid.Checked = true;
+                    chkWavy.Enabled = false;
+                    chkDetail.Enabled = chkArea.Enabled = chkFlocking.Enabled = chkSheet.Enabled = true;
+                    chkWindow.Checked = chkClip.Checked = chkHint.Checked = chkEmpty.Checked = false;
+                    break;
+                case SolidFlags.window:
+                    if (GBSPNoneChecked()) chkWindow.Checked = true;
+                    chkDetail.Enabled = chkArea.Enabled = chkWavy.Enabled = chkSheet.Enabled = false;
+                    chkFlocking.Enabled = true;
+                    chkSolid.Checked = chkClip.Checked = chkHint.Checked = chkEmpty.Checked = false;
+                    break;
+                case SolidFlags.clip:
+                    if (GBSPNoneChecked()) chkClip.Checked = true;
+                    chkDetail.Enabled = chkArea.Enabled = chkWavy.Enabled = chkSheet.Enabled = false;
+                    chkFlocking.Enabled = true;
+                    chkSolid.Checked = chkWindow.Checked = chkHint.Checked = chkEmpty.Checked = false;
+                    break;
+                case SolidFlags.hint:
+                    if (GBSPNoneChecked()) chkHint.Checked = true;
+                    chkDetail.Enabled = chkArea.Enabled = chkWavy.Enabled = chkSheet.Enabled = false;
+                    chkFlocking.Enabled = true;
+                    chkSolid.Checked = chkWindow.Checked = chkClip.Checked = chkEmpty.Checked = false;
+                    break;
+                case SolidFlags.empty:
+                    if (GBSPNoneChecked()) chkEmpty.Checked = true;
+                    chkArea.Enabled = false;
+                    chkWavy.Enabled = chkDetail.Enabled = chkFlocking.Enabled = chkSheet.Enabled = true;
+                    chkSolid.Checked = chkWindow.Checked = chkClip.Checked = chkHint.Checked = false;
+                    break;
+            }
+            
+            GBSPSubTypeReset(ResetSub);
+        }
+
+        private void chkSolidClicked(object sender, EventArgs e)
+        {
+            GBSPTypesChecked(SolidFlags.solid, true);
+        }
+        private void chkWindowClicked(object sender, EventArgs e)
+        {
+            GBSPTypesChecked(SolidFlags.window, true);
+        }
+        private void chkClipClicked(object sender, EventArgs e)
+        {
+            GBSPTypesChecked(SolidFlags.clip, true);
+        }
+        private void chkHintClicked(object sender, EventArgs e)
+        {
+            GBSPTypesChecked(SolidFlags.hint, true);
+        }
+        private void chkEmptyClicked(object sender, EventArgs e)
+        {
+            GBSPTypesChecked(SolidFlags.empty, true);
+        }
+    }    
 }

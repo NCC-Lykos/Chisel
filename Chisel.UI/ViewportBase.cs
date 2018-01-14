@@ -232,6 +232,7 @@ namespace Chisel.UI
 
             if (IsDisposed) return;
 
+
             SwapBuffers();
         }
 
