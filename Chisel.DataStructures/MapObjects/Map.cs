@@ -258,8 +258,11 @@ namespace Chisel.DataStructures.MapObjects
                             //RF functions differntly so disable
                             //f.Opacity = textureOpacity(f.Texture.Name.ToLowerInvariant());
                             //if (!HideNullTextures && f.Opacity < 0.1) f.Opacity = 1;
-                            if(!DisableTransparent && (!f.Texture.Flags.HasFlag(FaceFlags.Transparent) && !f.Texture.Flags.HasFlag(FaceFlags.Mirror)))
+                            if(DisableTransparent || f.Texture.Flags.HasFlag(FaceFlags.Mirror) || !f.Texture.Flags.HasFlag(FaceFlags.Transparent))
+                            {
                                 f.Texture.Opacity = 1;
+                            }
+                                
                         }
                     });
                 }

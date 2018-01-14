@@ -826,5 +826,12 @@ namespace Chisel.DataStructures.MapObjects
             var delta = Math.Abs(sum - Math.PI * 2);
             return (delta < 0.001d) ? intersect : null;
         }
+
+        public void Init()
+        {
+            InitFaceAngle();
+            UpdateBoundingBox();
+            AlignTexture();
+        }
     }
 }

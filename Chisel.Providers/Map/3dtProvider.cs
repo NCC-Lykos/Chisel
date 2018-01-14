@@ -148,8 +148,15 @@ namespace Chisel.Providers.Map
             
             face.Texture.Flags = (FaceFlags)int.Parse(properties["Flags"]);
             face.Texture.Translucency = decimal.Parse(properties["Translucency"]);
-            face.Texture.Opacity = (decimal.Parse(properties["Translucency"]) / (decimal)255.0f);
-
+            if(face.Texture.Flags.HasFlag(FaceFlags.Transparent) && !face.Texture.Flags.HasFlag(FaceFlags.Mirror))
+            {
+                face.Texture.Opacity = (decimal.Parse(properties["Translucency"]) / (decimal)255.0f);
+            }
+            else
+            {
+                face.Texture.Opacity = 1;
+            }
+                
             face.Texture.XShift = decimal.Parse(texSplit[4], ns, CultureInfo.InvariantCulture);
             face.Texture.YShift = decimal.Parse(texSplit[5], ns, CultureInfo.InvariantCulture);
             face.Texture.Rotation = decimal.Parse(texSplit[2], ns, CultureInfo.InvariantCulture);

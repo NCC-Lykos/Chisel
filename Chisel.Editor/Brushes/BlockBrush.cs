@@ -35,8 +35,7 @@ namespace Chisel.Editor.Brushes
                     //Flags = FaceFlags.Visible
                 };
                 face.Vertices.AddRange(arr.Select(x => new Vertex(x.Round(roundDecimals), face)));
-                face.UpdateBoundingBox();
-                face.AlignTexture();
+                face.Init();
                 solid.Faces.Add(face);
             }
             solid.UpdateBoundingBox();
