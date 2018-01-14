@@ -79,6 +79,8 @@ namespace Chisel.DataStructures.MapObjects
             Translucency = 255;
             TransformAngleRF = new Matrix();
             PositionRF = new Coordinate(0, 0, 0);
+            Flags = (FaceFlags)0;
+            Flags|= FaceFlags.Visible;
         }
         
         protected TextureReference(SerializationInfo info, StreamingContext context)

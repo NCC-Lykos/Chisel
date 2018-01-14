@@ -40,6 +40,8 @@ namespace Chisel.DataStructures.MapObjects
 
         public Solid(long id) : base(id)
         {
+            Flags = (SolidFlags)0;
+            Flags |= SolidFlags.solid;
             Faces = new List<Face>();
         }
 
@@ -54,11 +56,13 @@ namespace Chisel.DataStructures.MapObjects
         {
             base.GetObjectData(info, context);
             info.AddValue("Faces", Faces.ToArray());
+            info.AddValue("Flags", Flags);
         }
 
         public override MapObject Copy(IDGenerator generator)
         {
             var e = new Solid(generator.GetNextObjectID());
+
             foreach (var f in Faces.Select(x => x.Copy(generator)))
             {
                 f.Parent = e;
@@ -67,6 +71,7 @@ namespace Chisel.DataStructures.MapObjects
                 f.CalculateTextureCoordinates(true);
             }
             CopyBase(e, generator);
+            e.Flags = Flags;
             return e;
         }
 
@@ -82,6 +87,7 @@ namespace Chisel.DataStructures.MapObjects
                 Faces.Add(f);
                 f.UpdateBoundingBox();
             }
+            Flags = e.Flags;
         }
 
         public override MapObject Clone()
@@ -94,6 +100,7 @@ namespace Chisel.DataStructures.MapObjects
                 f.UpdateBoundingBox();
             }
             CopyBase(e, null, true);
+            e.Flags = Flags;
             return e;
         }
 
@@ -109,6 +116,7 @@ namespace Chisel.DataStructures.MapObjects
                 Faces.Add(f);
                 f.UpdateBoundingBox();
             }
+            Flags = e.Flags;
             UpdateBoundingBox();
         }
 

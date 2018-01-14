@@ -257,7 +257,7 @@ namespace Chisel.Providers.Map
             var faces = solid.GetChildren("side").Select(x => ReadFace(x, generator)).ToList();
 
             Solid ret;
-
+            
             if (faces.All(x => x.Vertices.Count >= 3))
             {
                 // Vertices were stored in the VMF
@@ -295,6 +295,7 @@ namespace Chisel.Providers.Map
                 }
             }
 
+            ret.Flags = (SolidFlags)solid.PropertyInteger("flags");
             ret.Colour = editor.PropertyColour("color", Colour.GetRandomBrushColour());
             ret.Visgroups.AddRange(editor.GetAllPropertyValues("visgroupid").Select(int.Parse).Where(x => x > 0));
             foreach (var face in ret.Faces)
@@ -318,6 +319,8 @@ namespace Chisel.Providers.Map
         {
             var ret = new GenericStructure("solid");
             ret["id"] = solid.ID.ToString(CultureInfo.InvariantCulture);
+
+            ret["flags"] = ((int)solid.Flags).ToString(CultureInfo.InvariantCulture);
 
             foreach (var face in solid.Faces.OrderBy(x => x.ID))
             {
