@@ -31,6 +31,9 @@ namespace Chisel.DataStructures.MapObjects
         public Solid Parent { get; set; }
 
         public Box BoundingBox { get; set; }
+
+        public bool HasRenderHighlight { get; set; }
+        public Color RenderColor { get; set; }
         
         public Face(long id)
         {
