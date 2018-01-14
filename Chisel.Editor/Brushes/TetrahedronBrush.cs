@@ -57,9 +57,7 @@ namespace Chisel.Editor.Brushes
                     Texture = { Texture = texture }
                 };
                 face.Vertices.AddRange(arr.Select(x => new Vertex(x, face)));
-                face.UpdateBoundingBox();
-                face.InitFaceAngle();
-                face.AlignTexture();
+                face.Init();
                 solid.Faces.Add(face);
             }
             solid.UpdateBoundingBox();

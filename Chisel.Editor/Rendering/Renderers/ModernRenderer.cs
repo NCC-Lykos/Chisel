@@ -175,7 +175,7 @@ namespace Chisel.Editor.Rendering.Renderers
                 _mapObject3DShader.SelectionColourMultiplier = Document.Map.HideFaceMask &&
                                                                Document.Selection.InFaceSelection
                                                                    ? new Vector4(1, 1, 1, 1)
-                                                                   : new Vector4(1, 0, 1, 1);
+                                                                   : new Vector4(1, 0.85f, 0.85f, 1);
 
                 // Render textured polygons
                 _array.RenderTextured(context.Context);
