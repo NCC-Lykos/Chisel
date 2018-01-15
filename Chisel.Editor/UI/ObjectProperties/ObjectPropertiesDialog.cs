@@ -127,7 +127,7 @@ namespace Chisel.Editor.UI.ObjectProperties
                 Document.PerformAction(actionText, ac);
             }
 
-            if (!GBSPMultiple)
+            if (!GBSPMultiple && Objects.All(x => x is Solid))
             {
                 SolidFlags s = (SolidFlags)0;
                 if (chkSolid.Checked) s |= SolidFlags.solid;
