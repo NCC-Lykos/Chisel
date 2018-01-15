@@ -142,6 +142,11 @@ namespace Chisel.DataStructures.MapObjects
 
         }
 
+        public void SetHighlights()
+        {
+            Faces.ForEach(f => f.SetHighlights(Flags));
+        }
+
         /// <summary>
         /// Returns the intersection point closest to the start of the line.
         /// </summary>

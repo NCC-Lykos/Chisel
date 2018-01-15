@@ -7,6 +7,7 @@ varying float vertexLighting;
 varying vec2 texCoord;
 varying float vertexSelected;
 varying vec4 vertexHighlightColor;
+varying float vertexhasWireframe;
 
 uniform bool isTextured;
 uniform bool isLit;
@@ -17,6 +18,7 @@ uniform sampler2D currentTexture;
 
 void main()
 {
+	if (vertexhasWireframe >= 0.9) discard;
     vec4 outputColor;
 	float lighting = vertexLighting;
 	if (!isLit) lighting = 1;

@@ -650,7 +650,7 @@ namespace Chisel.Editor.Settings
             AddSetting(() => Chisel.Settings.View.DisableTextureFiltering, "Disable texture filtering (try this if textures render incorrectly)");
             AddSetting(() => Chisel.Settings.View.ForcePowerOfTwoTextureResizing, "Force non power of two textures to be resized (try this if only 64, 128, 256, 512, etc size textures work)");
             //NOTE(SVK):Settings
-            AddSetting(() => Chisel.Settings.View.DisableGBSPFlagHighlights, "GBSP Flag highlights");
+            AddSetting(() => Chisel.Settings.View.DisableGBSPFlagHighlights, "Disable GBSP Flag highlights");
 
             AddHeading("Center Handles");
             AddSetting(() => Chisel.Settings.Select.DrawCenterHandles, "Render brush center handles");
