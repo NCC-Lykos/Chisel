@@ -31,10 +31,10 @@ namespace Chisel.DataStructures.MapObjects
         public Solid Parent { get; set; }
 
         public Box BoundingBox { get; set; }
-
-        public bool HasRenderHighlight { get; set; }
-        public Color RenderColor { get; set; }
         
+        public Color RenderHighlightColor { get; set; }
+        public Color RenderWireframeHighlightColor { get; set; }
+
         public Face(long id)
         {
             ID = id;
@@ -425,11 +425,11 @@ namespace Chisel.DataStructures.MapObjects
 
             return f;
         }
-
-
+        
         public void InitFaceAngle()
         {
-            Coordinate ax,p2 = ToRF(Plane.Normal), p = ToRF(Plane.Normal).Absolute();
+            Plane RFPlane = new Plane(ToRF(Vertices[0].Location), ToRF(Vertices[1].Location), ToRF(Vertices[2].Location));
+            Coordinate ax,p2 = RFPlane.Normal, p = RFPlane.Normal.Absolute();
             Matrix r = new Matrix();
             double cosV, theta;
 
@@ -525,8 +525,9 @@ namespace Chisel.DataStructures.MapObjects
             UInt32 Axis = DetermineAxis(this.Plane.Normal);
 
             Matrix t = SetZRotationRF(((double)Texture.Rotation * Math.PI / 180.0f));
+            
             t = Texture.TransformAngleRF * t;
-
+            
             // Z = Y
             // Y = -Z
             switch (Axis)
@@ -548,6 +549,25 @@ namespace Chisel.DataStructures.MapObjects
             //Scaling set in calc texter coords
             
             CalculateTextureCoordinates(true);
+        }
+
+        public void FlipTransform(Matrix m, int d)
+        {
+            
+
+            switch (d)
+            {
+                case 1: //x i.e. u
+                    Texture.TransformAngleRF.Values[0] *= -1;
+                    Texture.TransformAngleRF.Values[4] *= -1;
+                    Texture.TransformAngleRF.Values[8] *= -1;
+                    break;
+                case 2:
+                    Texture.TransformAngleRF.Values[1] *= -1;
+                    Texture.TransformAngleRF.Values[5] *= -1;
+                    Texture.TransformAngleRF.Values[9] *= -1;
+                    break;
+            }
         }
         
         public bool IsTextureAlignedToWorld()
@@ -640,6 +660,14 @@ namespace Chisel.DataStructures.MapObjects
             Texture.Rotation = rotate;
         }
         #endregion
+
+        public void SetHighlights()
+        {
+            if (Texture.Flags.HasFlag(FaceFlags.FullBright)) RenderHighlightColor = Color.FromArgb(255, 255, 255, (int)(0.5 * 255));
+            else if (Texture.Flags.HasFlag(FaceFlags.Sky)) RenderHighlightColor = Color.FromArgb(255, 0, 255, 255);
+            else if (Texture.Flags.HasFlag(FaceFlags.Light)) RenderHighlightColor = Color.FromArgb(255, 0, 0, 255);
+            else RenderHighlightColor = new Color();
+        }
 
         public virtual void UpdateBoundingBox()
         {
@@ -739,7 +767,7 @@ namespace Chisel.DataStructures.MapObjects
             Plane = new Plane(Vertices[0].Location, Vertices[1].Location, Vertices[2].Location);
             UpdateBoundingBox();
         }
-
+        
         /// <summary>
         /// Returns the point that this line intersects with this face.
         /// </summary>

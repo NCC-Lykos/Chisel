@@ -107,6 +107,7 @@ namespace Chisel.Editor.Tools.TextureTool
                 //NoneMirror = NoneFullBright = NoneSky = NoneLight = NoneSelected = NoneFixedHull = true;
                 NoneMirror = NoneFullBright = NoneSky = NoneLight = NoneFixedHull = true;
                 NoneGouraud = NoneFlat = NoneTextureLocked = NoneVisible = NoneSheet = NoneTransparent = true;
+                
             }
 
             public void Reset(IEnumerable<Face> faces)
@@ -728,6 +729,7 @@ namespace Chisel.Editor.Tools.TextureTool
             {
                 if (faces[x].Texture.Flags.HasFlag(f) && !s) faces[x].Texture.Flags -= f;
                 else if (!faces[x].Texture.Flags.HasFlag(f) && s) faces[x].Texture.Flags |= f;
+                faces[x].SetHighlights();
                 //if (s) faces[0].Texture.Flags |= f;
                 //else faces[0].Texture.Flags ^= f;
             }
@@ -804,7 +806,7 @@ namespace Chisel.Editor.Tools.TextureTool
 
             if (chkTextureLocked.Checked) OnTextureAlign(TextureTool.AlignMode.Face);
             else OnTextureAlign(TextureTool.AlignMode.World);
-
+            
             _currentTextureProperties.DifferentGBSPTextureLocked = false;
             PropertiesChanged();
             _freeze = false;

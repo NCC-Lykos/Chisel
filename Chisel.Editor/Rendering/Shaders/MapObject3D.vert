@@ -5,6 +5,7 @@ layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 texture;
 layout(location = 3) in vec4 colour;
 layout(location = 4) in float selected;
+layout(location = 5) in vec4 highlightcolor;
 
 const vec3 lightDirection = normalize(vec3(1, 2, 3));
 const float lightIntensity = 0.5;
@@ -16,6 +17,7 @@ varying float vertexLighting;
 varying vec4 vertexColour;
 varying vec2 texCoord;
 varying float vertexSelected;
+varying vec4 vertexHighlightColor;
 
 uniform mat4 transformation;
 uniform mat4 modelViewMatrix;
@@ -48,4 +50,5 @@ void main()
 
     texCoord = texture;
     vertexSelected = selected;
+	vertexHighlightColor = highlightcolor;
 }

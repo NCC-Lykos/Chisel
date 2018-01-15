@@ -194,13 +194,23 @@ namespace Chisel.Editor.Rendering.Arrays
                   g = face.Colour.G / 255f,
                   b = face.Colour.B / 255f,
                   a = (float)face.Texture.Opacity;
+            
+            float r2 = face.RenderHighlightColor.R / 255f,
+                  g2 = face.RenderHighlightColor.G / 255f,
+                  b2 = face.RenderHighlightColor.B / 255f,
+                  a2 = face.RenderHighlightColor.A / 255f;
+            if ((r2 == 0 && g2 == 0 & b2 == 0 && a2 == 0) || Chisel.Settings.View.DisableGBSPFlagHighlights)
+            {
+                r2 = g2 = b2 = a2 = 1.0f;
+            }
             return face.GetIndexedVertices().Select(vert => new MapObjectVertex
             {
                 Position = new Vector3((float)vert.Location.DX, (float)vert.Location.DY, (float)vert.Location.DZ),
                 Normal = new Vector3(nx, ny, nz),
                 Texture = new Vector2((float)vert.TextureU, (float)vert.TextureV),
                 Colour = new Color4(r, g, b, a),
-                IsSelected = face.IsSelected || (face.Parent != null && face.Parent.IsSelected) ? 1 : 0
+                IsSelected = face.IsSelected || (face.Parent != null && face.Parent.IsSelected) ? 1 : 0,
+                HighlightColor = new Color4(r2, g2, b2, a2)
             });
         }
     }

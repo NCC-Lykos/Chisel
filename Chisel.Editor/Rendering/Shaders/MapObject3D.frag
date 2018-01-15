@@ -6,6 +6,7 @@ varying vec4 vertexColour;
 varying float vertexLighting;
 varying vec2 texCoord;
 varying float vertexSelected;
+varying vec4 vertexHighlightColor;
 
 uniform bool isTextured;
 uniform bool isLit;
@@ -30,7 +31,9 @@ void main()
     }
     if (vertexSelected > 0.9) {
         outputColor = outputColor * selectionColourMultiplier;
-    }
+    } else {
+		outputColor = outputColor * vertexHighlightColor;
+	}
 
     if (showGrid) {
         if (abs(worldNormal).x < 0.9999) outputColor = mix(outputColor, vec4(1, 0, 0, 1), step(mod(worldPosition.x, gridSpacing), 0.5));

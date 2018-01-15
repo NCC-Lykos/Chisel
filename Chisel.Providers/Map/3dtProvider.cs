@@ -162,7 +162,9 @@ namespace Chisel.Providers.Map
             face.Texture.Rotation = decimal.Parse(texSplit[2], ns, CultureInfo.InvariantCulture);
             face.Texture.XScale = decimal.Parse(texSplit[7], ns, CultureInfo.InvariantCulture);
             face.Texture.YScale = decimal.Parse(texSplit[8], ns, CultureInfo.InvariantCulture);
-            
+
+
+            face.SetHighlights();
             face.UpdateBoundingBox();
 
             // Parse light scale
