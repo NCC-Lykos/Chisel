@@ -194,15 +194,28 @@ namespace Chisel.Editor.Rendering.Arrays
                   g = face.Colour.G / 255f,
                   b = face.Colour.B / 255f,
                   a = (float)face.Texture.Opacity;
-            
-            float r2 = face.RenderHighlightColor.R / 255f,
-                  g2 = face.RenderHighlightColor.G / 255f,
-                  b2 = face.RenderHighlightColor.B / 255f,
-                  a2 = face.RenderHighlightColor.A / 255f;
-            if ((r2 == 0 && g2 == 0 & b2 == 0 && a2 == 0) || Chisel.Settings.View.DisableGBSPFlagHighlights)
+
+            float r2, g2, b2, a2;
+            r2 = g2 = b2 = a2 = 1.0f;
+            if (!face.HighlightColor.IsEmpty && !Chisel.Settings.View.DisableGBSPFlagHighlights)
             {
-                r2 = g2 = b2 = a2 = 1.0f;
+                r2 = face.HighlightColor.R / 255f;
+                g2 = face.HighlightColor.G / 255f;
+                b2 = face.HighlightColor.B / 255f;
+                a2 = face.HighlightColor.A / 255f;
             }
+
+            float r3, g3, b3, a3, RenderWireframe = 0;
+            r3 = g3 = b3 = a3 = 1.0f;
+            if (!face.WireframeColor.IsEmpty && !Chisel.Settings.View.DisableGBSPFlagHighlights)
+            {
+                r3 = face.WireframeColor.R / 255f;
+                g3 = face.WireframeColor.G / 255f;
+                b3 = face.WireframeColor.B / 255f;
+                a3 = face.WireframeColor.A / 255f;
+                RenderWireframe = 1;
+            }
+
             return face.GetIndexedVertices().Select(vert => new MapObjectVertex
             {
                 Position = new Vector3((float)vert.Location.DX, (float)vert.Location.DY, (float)vert.Location.DZ),
@@ -210,7 +223,9 @@ namespace Chisel.Editor.Rendering.Arrays
                 Texture = new Vector2((float)vert.TextureU, (float)vert.TextureV),
                 Colour = new Color4(r, g, b, a),
                 IsSelected = face.IsSelected || (face.Parent != null && face.Parent.IsSelected) ? 1 : 0,
-                HighlightColor = new Color4(r2, g2, b2, a2)
+                HighlightColor = new Color4(r2, g2, b2, a2),
+                HasWireframe = RenderWireframe,
+                WireframeColor = new Color4(r3, g3, b3, a3)
             });
         }
     }

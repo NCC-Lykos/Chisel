@@ -6,8 +6,13 @@ layout(location = 2) in vec2 texture;
 layout(location = 3) in vec4 colour;
 layout(location = 4) in float selected;
 
+layout(location = 6) in float haswireframe;
+layout(location = 7) in vec4 wireframecolor;
+
 varying vec4 vertexColour;
 varying float vertexSelected;
+varying float vertexhasWireframe;
+varying vec4 vertexHighlightColor;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 perspectiveMatrix;
@@ -25,4 +30,6 @@ void main()
 
 	vertexColour = colour;
     vertexSelected = selected;
+	vertexhasWireframe = haswireframe;
+	vertexHighlightColor = wireframecolor;
 }

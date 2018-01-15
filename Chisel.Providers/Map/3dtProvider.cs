@@ -258,6 +258,7 @@ namespace Chisel.Providers.Map
             ret.MetaData.Set("ModelId", properties["ModelId"]);
             ret.MetaData.Set("HullSize", properties["HullSize"]);
             ret.MetaData.Set("Type", properties["Type"]);
+            ret.SetHighlights();
 
             int group = int.Parse(properties["GroupId"]);
             if (group > 0)

@@ -144,6 +144,7 @@ namespace Chisel.Editor.UI.ObjectProperties
                 for (int x = 0; x < Objects.Count; x++)
                 {
                     ((Solid)Objects[x]).Flags = s;
+                    ((Solid)Objects[x]).SetHighlights();
                 }
 
             }

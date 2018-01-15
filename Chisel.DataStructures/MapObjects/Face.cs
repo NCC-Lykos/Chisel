@@ -32,8 +32,8 @@ namespace Chisel.DataStructures.MapObjects
 
         public Box BoundingBox { get; set; }
         
-        public Color RenderHighlightColor { get; set; }
-        public Color RenderWireframeHighlightColor { get; set; }
+        public Color HighlightColor { get; set; }
+        public Color WireframeColor { get; set; }
 
         public Face(long id)
         {
@@ -661,12 +661,17 @@ namespace Chisel.DataStructures.MapObjects
         }
         #endregion
 
-        public void SetHighlights()
+        public void SetHighlights(SolidFlags s = 0)
         {
-            if (Texture.Flags.HasFlag(FaceFlags.FullBright)) RenderHighlightColor = Color.FromArgb(255, 255, 255, (int)(0.5 * 255));
-            else if (Texture.Flags.HasFlag(FaceFlags.Sky)) RenderHighlightColor = Color.FromArgb(255, 0, 255, 255);
-            else if (Texture.Flags.HasFlag(FaceFlags.Light)) RenderHighlightColor = Color.FromArgb(255, 0, 0, 255);
-            else RenderHighlightColor = new Color();
+            if (Texture.Flags.HasFlag(FaceFlags.FullBright)) HighlightColor = Color.FromArgb(255, 255, 255, (int)(0.5 * 255));
+            else if (Texture.Flags.HasFlag(FaceFlags.Sky)) HighlightColor = Color.FromArgb(255, 0, 255, 255);
+            else if (Texture.Flags.HasFlag(FaceFlags.Light)) HighlightColor = Color.FromArgb(255, 0, 0, 255);
+            else HighlightColor = new Color();
+
+            if (s.HasFlag(SolidFlags.hint)) WireframeColor = Color.FromArgb(255, 0, 255, 0); //Green
+            else if (s.HasFlag(SolidFlags.clip)) WireframeColor = Color.FromArgb(255, (int)(0.5 * 255), 0, 255); //Purple
+            else if (s.HasFlag(SolidFlags.detail)) WireframeColor = Color.FromArgb(255, 255, (int)(0.5 * 255), 0); //Orange?
+            else WireframeColor = new Color();
         }
 
         public virtual void UpdateBoundingBox()
