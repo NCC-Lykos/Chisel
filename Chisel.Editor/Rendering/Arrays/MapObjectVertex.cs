@@ -10,5 +10,6 @@ namespace Chisel.Editor.Rendering.Arrays
         public Vector2 Texture;
         public Color4 Colour;
         public float IsSelected;
+        public Color4 HighlightColor;
     }
 }

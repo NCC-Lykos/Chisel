@@ -49,6 +49,8 @@ namespace Chisel.Settings
         public static bool DisableTextureFiltering { get; set; }
         public static bool ForcePowerOfTwoTextureResizing { get; set; }
 
+        public static bool DisableGBSPFlagHighlights { get; set; }
+
         public static bool CompileOpenOutput { get; set; }
         public static bool CompileDefaultAdvanced { get; set; }
 
