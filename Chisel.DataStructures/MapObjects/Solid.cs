@@ -8,19 +8,39 @@ using Chisel.DataStructures.Geometric;
 namespace Chisel.DataStructures.MapObjects
 {
     [Flags]
-    public enum SolidFlags
+    public enum SolidFlags : UInt32
     {
-        solid = (1<<0),
-        window = (1 << 1),
-        empty = (1 << 2),
-        translucent = (1 << 3),
-        wavy = (1 << 4),
-        detail = (1 << 5),
-        clip = (1 << 6),
-        hint = (1 << 7),
-        area = (1 << 8),
-        flocking = (1 << 9),
-        sheet = (1 << 10),
+        solid = 0x0001,
+        window = 0x0002,
+        wavy = 0x0004,
+        detail = 0x0008,  //not included in vis calculations		
+        hollowcut = 0x0010,
+        translucent = 0x0020,
+        empty = 0x0040,
+        subtract = 0x0080,
+        clip = 0x0100,
+        flocking = 0x0200,
+        hollow = 0x0400,
+        sheet = 0x0800,
+        hidden = 0x1000,
+        locked = 0x2000,
+        hint = 0x4000,
+        area = 0x8000,
+        Water = 0x00020000,
+        DamageLiquid = 0x10000000,
+        FogSound1 = 0x00040000,
+        FogSound2 = 0x00080000,
+        FogSound3 = 0x00100000,
+        ChangeWorld = 0x00200000,
+        Ground1 = 0x00400000,
+        Ground2 = 0x00800000,
+        Ground3 = 0x01000000,
+        Ground4 = 0x02000000,
+        Function1 = 0x04000000,
+        Function2 = 0x08000000,
+        type12 = 0x20000000,
+        type13 = 0x40000000,
+        DirLightSky = 0x80000000,
     }
 
     [Serializable]
