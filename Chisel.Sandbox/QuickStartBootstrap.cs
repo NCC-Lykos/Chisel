@@ -20,7 +20,6 @@ namespace Chisel.Sandbox
 
         public static void Start()
         {
-            MapProvider.Register(new RmfProvider());
             MapProvider.Register(new VmfProvider());
             GameDataProvider.Register(new FgdProvider());
             TextureProvider.Register(new WadProvider());
