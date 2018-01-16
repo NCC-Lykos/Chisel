@@ -140,9 +140,7 @@ namespace Chisel.Editor
             }
 
             TextureProvider.SetCachePath(SettingsManager.GetTextureCachePath());
-            MapProvider.Register(new RmfProvider());
             MapProvider.Register(new MapFormatProvider());
-            MapProvider.Register(new VmfProvider());
             MapProvider.Register(new ObjProvider());
             MapProvider.Register(new ThreeDtProvider());
             GameDataProvider.Register(new FgdProvider());

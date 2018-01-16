@@ -670,7 +670,7 @@ namespace Chisel.DataStructures.MapObjects
 
             if (s.HasFlag(SolidFlags.hint)) WireframeColor = Color.FromArgb(255, 0, 255, 0); //Green
             else if (s.HasFlag(SolidFlags.clip)) WireframeColor = Color.FromArgb(255, (int)(0.5 * 255), 0, 255); //Purple
-            else if (s.HasFlag(SolidFlags.detail)) WireframeColor = Color.FromArgb(255, 255, (int)(0.5 * 255), 0); //Orange?
+            else if (s.HasFlag(SolidFlags.detail) && !s.HasFlag(SolidFlags.solid) && !s.HasFlag(SolidFlags.window)) WireframeColor = Color.FromArgb(255, 255, (int)(0.5 * 255), 0); //Orange?
             else WireframeColor = new Color();
         }
 

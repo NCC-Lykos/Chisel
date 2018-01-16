@@ -13,13 +13,13 @@ namespace Chisel.Tools.MapFileDebugger
         public MainForm()
         {
             InitializeComponent();
-            MapProvider.Register(new RmfProvider());
+            MapProvider.Register(new ThreeDtProvider());
         }
 
         private void OpenToolStripButtonClick(object sender, EventArgs e)
         {
             var ofd = new OpenFileDialog();
-            ofd.Filter = @"Map Files (*.rmf, *.vmf, *.map, *.3dt)|*.rmf;*.vmf;*.map;*.rmx;*.vmx;*.max;*.3dt";
+            ofd.Filter = @"Map Files (*.3dt, *.map)|*.map;*.max;";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 try
