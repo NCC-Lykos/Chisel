@@ -255,6 +255,11 @@ namespace Chisel.Providers.Map
             ret.Colour = GetGenesisBrushColor(int.Parse(properties["Flags"]));
             //ret.MetaData.Set("Flags", properties["Flags"]);
             ret.Flags = (SolidFlags)int.Parse(properties["Flags"]);
+
+            //Fix for any windows created without the detail flag. This was before we were smart...
+            if (((ret.Flags & SolidFlags.window) != 0) && ((ret.Flags & SolidFlags.detail) == 0))
+                    ret.Flags = ret.Flags | SolidFlags.detail;
+
             ret.MetaData.Set("ModelId", properties["ModelId"]);
             ret.MetaData.Set("HullSize", properties["HullSize"]);
             ret.MetaData.Set("Type", properties["Type"]);
