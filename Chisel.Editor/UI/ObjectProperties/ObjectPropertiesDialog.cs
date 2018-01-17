@@ -480,7 +480,9 @@ namespace Chisel.Editor.UI.ObjectProperties
             var beforeTabs = Tabs.TabPages.OfType<TabPage>().ToArray();
 
             if (!Tabs.TabPages.Contains(VisgroupTab)) Tabs.TabPages.Add(VisgroupTab);
-            
+
+            if (!Objects.All(x => x is Solid)) Tabs.TabPages.Remove(SolidTab);
+
             if (!Objects.All(x => x is Entity || x is World))
             {
                 Tabs.TabPages.Remove(ClassInfoTab);
