@@ -489,7 +489,7 @@ namespace Chisel.Editor.UI.ObjectProperties
                 Tabs.TabPages.Remove(InputsTab);
                 Tabs.TabPages.Remove(OutputsTab);
                 Tabs.TabPages.Remove(FlagsTab);
-                
+                Tabs.TabPages.Remove(SolidTab);
                 RefreshSolid();
                 return;
             }
