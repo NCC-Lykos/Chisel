@@ -363,11 +363,10 @@ namespace Chisel.Editor.UI.ObjectProperties
 
         private void RefreshSolid()
         {
-            //TODO(SVK): Clean up
             if (!Objects.All(x => x is Solid)) return;
-            
             GBSPMultiple = GBSPMultipleCustom = false;
-            
+
+            btnMakeSame.Enabled = false;
 
             Dictionary<string, UInt32> fCustom = Objects[0].Parent.MetaData.Get<Dictionary<string, UInt32>>("CustomBrushFlags");
             var keys = fCustom.Keys.ToArray();
@@ -463,6 +462,7 @@ namespace Chisel.Editor.UI.ObjectProperties
                 else if (chkHint.Checked)   { GBSPTypesChecked(SolidFlags.hint,   false); }
                 else if (chkEmpty.Checked)  { GBSPTypesChecked(SolidFlags.empty,  false); }
             }
+            if (GBSPMultiple || GBSPMultipleCustom) btnMakeSame.Enabled = true;
             
         }
 
