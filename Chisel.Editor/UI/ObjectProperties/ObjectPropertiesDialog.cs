@@ -44,6 +44,7 @@ namespace Chisel.Editor.UI.ObjectProperties
         private bool _populating;
 
         private bool GBSPMultiple = false;
+        private bool GBSPMultipleCustom = false;
 
         private bool DiffGBSPSolid;
         private bool DiffGBSPWindow;
@@ -55,8 +56,7 @@ namespace Chisel.Editor.UI.ObjectProperties
         private bool DiffGBSPArea;
         private bool DiffGBSPFlocking;
         private bool DiffGBSPSheet;
-
-
+        
         public ObjectPropertiesDialog(Documents.Document document)
         {
             Document = document;
@@ -127,28 +127,46 @@ namespace Chisel.Editor.UI.ObjectProperties
                 Document.PerformAction(actionText, ac);
             }
 
-            if (!GBSPMultiple && Objects.All(x => x is Solid))
+            
+            Dictionary<string, UInt32> fCustom = Objects[0].Parent.MetaData.Get<Dictionary<string, UInt32>>("CustomBrushFlags");
+            var keys = fCustom.Keys.ToArray();
+            GBSPMultipleCustom = false;
+            for (int x = 0; x < Objects.Count; x++)
             {
-                SolidFlags s = (SolidFlags)0;
-                if (chkSolid.Checked) s |= SolidFlags.solid;
-                if (chkWindow.Checked) s |= SolidFlags.window;
-                if (chkClip.Checked) s |= SolidFlags.clip;
-                if (chkHint.Checked) s |= SolidFlags.hint;
-                if (chkEmpty.Checked) s |= SolidFlags.empty;
-
-                if (chkWavy.Checked) s |= SolidFlags.wavy;
-                if (chkDetail.Checked) s |= SolidFlags.detail;
-                if (chkArea.Checked) s |= SolidFlags.area;
-                if (chkFlocking.Checked) s |= SolidFlags.flocking;
-                if (chkSheet.Checked) s |= SolidFlags.sheet;
-                for (int x = 0; x < Objects.Count; x++)
-                {
-                    ((Solid)Objects[x]).Flags = s;
-                    ((Solid)Objects[x]).SetHighlights();
-                }
-
+                if (CustomFlags.GetItemCheckState(x) == CheckState.Indeterminate) GBSPMultipleCustom = true;
             }
+            
+            if (Objects.All(x => x is Solid) && !GBSPMultiple && !GBSPMultipleCustom)
+            {
+                UInt32 s = 0;
 
+                    if (chkSolid.Checked)    s |= (UInt32)SolidFlags.solid;
+                    if (chkWindow.Checked)   s |= (UInt32)SolidFlags.window;
+                    if (chkClip.Checked)     s |= (UInt32)SolidFlags.clip;
+                    if (chkHint.Checked)     s |= (UInt32)SolidFlags.hint;
+                    if (chkEmpty.Checked)    s |= (UInt32)SolidFlags.empty;
+
+                    if (chkWavy.Checked)     s |= (UInt32)SolidFlags.wavy;
+                    if (chkDetail.Checked)   s |= (UInt32)SolidFlags.detail;
+                    if (chkArea.Checked)     s |= (UInt32)SolidFlags.area;
+                    if (chkFlocking.Checked) s |= (UInt32)SolidFlags.flocking;
+                    if (chkSheet.Checked)    s |= (UInt32)SolidFlags.sheet;
+
+                    //Custom Flags
+                    for (int x = 0; x < Objects.Count; x++)
+                    {
+                        for (int i = 0; i < fCustom.Count; i++)
+                        {
+                            if (CustomFlags.GetItemCheckState(i) == CheckState.Checked) s |= fCustom[keys[i]];
+                        }
+                        ((Solid)Objects[x]).Flags = s;
+                        ((Solid)Objects[x]).SetHighlights();
+                    }
+            }
+            else
+            {
+                MessageBox.Show("Indeterminate checkboxes found, No changes saved.", "Indeterminate",MessageBoxButtons.OK,MessageBoxIcon.Information);
+            }
             Class.BackColor = Color.White;
         }
 
@@ -345,63 +363,89 @@ namespace Chisel.Editor.UI.ObjectProperties
 
         private void RefreshSolid()
         {
+            //TODO(SVK): Clean up
             if (!Objects.All(x => x is Solid)) return;
+            
+            GBSPMultiple = GBSPMultipleCustom = false;
+            
 
-            GBSPMultiple = false;
+            Dictionary<string, UInt32> fCustom = Objects[0].Parent.MetaData.Get<Dictionary<string, UInt32>>("CustomBrushFlags");
+            var keys = fCustom.Keys.ToArray();
             if (!Tabs.TabPages.Contains(SolidTab))
             {
                 Tabs.TabPages.Insert(0, SolidTab);
                 Tabs.SelectedIndex = 0;
+                for (int x = 0; x < fCustom.Count; x++) CustomFlags.Items.Add(keys[x], CheckState.Unchecked);
             }
 
             _populating = true;
-            SolidFlags f;
+            UInt32 f;
+            
             for (int x = 0; x < Objects.Count; x++)
             {
                 f = ((Solid)Objects[x]).Flags;
                 if(x == 0)
                 {
-                    chkSolid.Checked = f.HasFlag(SolidFlags.solid);
-                    chkWindow.Checked = f.HasFlag(SolidFlags.window);
-                    chkClip.Checked = f.HasFlag(SolidFlags.clip);
-                    chkHint.Checked = f.HasFlag(SolidFlags.hint);
-                    chkEmpty.Checked = f.HasFlag(SolidFlags.empty);
+                    //((s & (UInt32)SolidFlags.clip) != 0)
+                    chkSolid.Checked    = ((f & (UInt32)SolidFlags.solid) != 0);
+                    chkWindow.Checked   = ((f & (UInt32)SolidFlags.window) != 0);
+                    chkClip.Checked     = ((f & (UInt32)SolidFlags.clip) != 0);
+                    chkHint.Checked     = ((f & (UInt32)SolidFlags.hint) != 0);
+                    chkEmpty.Checked    = ((f & (UInt32)SolidFlags.empty) != 0);
 
-                    chkWavy.Checked = f.HasFlag(SolidFlags.wavy);
-                    chkDetail.Checked = f.HasFlag(SolidFlags.detail);
-                    chkArea.Checked = f.HasFlag(SolidFlags.area);
-                    chkFlocking.Checked = f.HasFlag(SolidFlags.flocking);
-                    chkSheet.Checked = f.HasFlag(SolidFlags.sheet);
+                    chkWavy.Checked     = ((f & (UInt32)SolidFlags.wavy) != 0);
+                    chkDetail.Checked   = ((f & (UInt32)SolidFlags.detail) != 0);
+                    chkArea.Checked     = ((f & (UInt32)SolidFlags.area) != 0);
+                    chkFlocking.Checked = ((f & (UInt32)SolidFlags.flocking) != 0);
+                    chkSheet.Checked    = ((f & (UInt32)SolidFlags.sheet) != 0);
+
+                    for (int i = 0; i < fCustom.Count; i++)
+                    {
+                        if (((UInt32)f & fCustom[keys[i]]) != 0) CustomFlags.SetItemCheckState(i, CheckState.Checked);
+                    }
                 }
                 else
                 {
-                    if (chkSolid.Checked != f.HasFlag(SolidFlags.solid)) DiffGBSPSolid = true;
-                    if (chkWindow.Checked != f.HasFlag(SolidFlags.window)) DiffGBSPWindow = true;
-                    if (chkClip.Checked != f.HasFlag(SolidFlags.clip)) DiffGBSPClip = true;
-                    if (chkHint.Checked != f.HasFlag(SolidFlags.hint)) DiffGBSPHint = true;
-                    if (chkEmpty.Checked != f.HasFlag(SolidFlags.empty)) DiffGBSPEmpty = true;
+                    if (chkSolid.Checked  != ((f & (UInt32)SolidFlags.solid)  != 0)) DiffGBSPSolid = true;
+                    if (chkWindow.Checked != ((f & (UInt32)SolidFlags.window) != 0)) DiffGBSPWindow = true;
+                    if (chkClip.Checked   != ((f & (UInt32)SolidFlags.clip)   != 0)) DiffGBSPClip = true;
+                    if (chkHint.Checked   != ((f & (UInt32)SolidFlags.hint)   != 0)) DiffGBSPHint = true;
+                    if (chkEmpty.Checked  != ((f & (UInt32)SolidFlags.empty)  != 0)) DiffGBSPEmpty = true;
 
-                    if (chkWavy.Checked != f.HasFlag(SolidFlags.wavy)) DiffGBSPWavy = true;
-                    if (chkDetail.Checked != f.HasFlag(SolidFlags.detail)) DiffGBSPDetail = true;
-                    if (chkArea.Checked != f.HasFlag(SolidFlags.area)) DiffGBSPArea = true;
-                    if (chkFlocking.Checked != f.HasFlag(SolidFlags.flocking)) DiffGBSPFlocking = true;
-                    if (chkSheet.Checked != f.HasFlag(SolidFlags.sheet)) DiffGBSPSheet = true;
+                    if (chkWavy.Checked     != ((f & (UInt32)SolidFlags.wavy) != 0)) DiffGBSPWavy = true;
+                    if (chkDetail.Checked   != ((f & (UInt32)SolidFlags.detail) != 0)) DiffGBSPDetail = true;
+                    if (chkArea.Checked     != ((f & (UInt32)SolidFlags.area) != 0)) DiffGBSPArea = true;
+                    if (chkFlocking.Checked != ((f & (UInt32)SolidFlags.flocking) != 0)) DiffGBSPFlocking = true;
+                    if (chkSheet.Checked    != ((f & (UInt32)SolidFlags.sheet) != 0)) DiffGBSPSheet = true;
+                    for (int i = 0; i < fCustom.Count; i++)
+                    {
+                        if (!(CustomFlags.GetItemCheckState(i) == CheckState.Indeterminate))
+                        {
+                            bool c = (CustomFlags.GetItemCheckState(i) == CheckState.Checked) ? true : false;
+                            if ((((UInt32)f & fCustom[keys[i]]) != 0) != c)
+                            {
+                                CustomFlags.SetItemCheckState(i, CheckState.Indeterminate);
+                                GBSPMultipleCustom = true;
+                            }
+                        }
+                    }
                 }
             }
 
 
-            if (DiffGBSPSolid || DiffGBSPWindow || DiffGBSPClip || DiffGBSPHint || DiffGBSPEmpty)
+            if (DiffGBSPSolid || DiffGBSPWindow || DiffGBSPClip || DiffGBSPHint || DiffGBSPEmpty || GBSPMultipleCustom)
             {
                 GBSPMultiple = true;
                 chkSolid.Checked = chkWindow.Checked = chkClip.Checked = chkHint.Checked = chkEmpty.Checked = false;
                 chkWavy.Checked = chkDetail.Checked = chkArea.Checked = chkFlocking.Checked = chkSheet.Checked = false;
+                grpGBSPType.Enabled = grpGBSPSubType.Enabled = CustomFlags.Enabled = false;
+
                 if (DiffGBSPSolid) chkSolid.CheckState = CheckState.Indeterminate;
                 if (DiffGBSPWindow) chkWindow.CheckState = CheckState.Indeterminate;
                 if (DiffGBSPClip) chkClip.CheckState = CheckState.Indeterminate;
                 if (DiffGBSPHint) chkHint.CheckState = CheckState.Indeterminate;
                 if (DiffGBSPEmpty) chkEmpty.CheckState = CheckState.Indeterminate;
-
-                chkWavy.Enabled = chkDetail.Enabled = chkArea.Enabled = chkFlocking.Enabled = chkSheet.Enabled = false;
+                
                 if (DiffGBSPWavy) chkWavy.CheckState = CheckState.Indeterminate;
                 if (DiffGBSPDetail) chkDetail.CheckState = CheckState.Indeterminate;
                 if (DiffGBSPArea) chkArea.CheckState = CheckState.Indeterminate;
@@ -411,12 +455,13 @@ namespace Chisel.Editor.UI.ObjectProperties
             }
             else
             {
+                grpGBSPType.Enabled = grpGBSPSubType.Enabled = CustomFlags.Enabled = true;
                 _populating = false;
-                if (chkSolid.Checked)       { GBSPTypesChecked(SolidFlags.solid,false); }
+                if      (chkSolid.Checked)  { GBSPTypesChecked(SolidFlags.solid,  false); }
                 else if (chkWindow.Checked) { GBSPTypesChecked(SolidFlags.window, false); }
-                else if (chkClip.Checked)   { GBSPTypesChecked(SolidFlags.clip, false); }
-                else if (chkHint.Checked)   { GBSPTypesChecked(SolidFlags.hint, false); }
-                else if (chkEmpty.Checked)  { GBSPTypesChecked(SolidFlags.empty, false); }
+                else if (chkClip.Checked)   { GBSPTypesChecked(SolidFlags.clip,   false); }
+                else if (chkHint.Checked)   { GBSPTypesChecked(SolidFlags.hint,   false); }
+                else if (chkEmpty.Checked)  { GBSPTypesChecked(SolidFlags.empty,  false); }
             }
             
         }
@@ -428,21 +473,21 @@ namespace Chisel.Editor.UI.ObjectProperties
                 Tabs.TabPages.Clear();
                 return;
             }
+            while (CustomFlags.Items.Count > 0) CustomFlags.Items.RemoveAt(0);
 
             UpdateVisgroups(false);
 
             var beforeTabs = Tabs.TabPages.OfType<TabPage>().ToArray();
 
             if (!Tabs.TabPages.Contains(VisgroupTab)) Tabs.TabPages.Add(VisgroupTab);
-
-            if (!Objects.All(x => x is Solid)) Tabs.TabPages.Remove(SolidTab);
-
+            
             if (!Objects.All(x => x is Entity || x is World))
             {
                 Tabs.TabPages.Remove(ClassInfoTab);
                 Tabs.TabPages.Remove(InputsTab);
                 Tabs.TabPages.Remove(OutputsTab);
                 Tabs.TabPages.Remove(FlagsTab);
+                Tabs.TabPages.Remove(SolidTab);
                 RefreshSolid();
                 return;
             }
@@ -903,6 +948,11 @@ namespace Chisel.Editor.UI.ObjectProperties
         private void chkEmptyClicked(object sender, EventArgs e)
         {
             GBSPTypesChecked(SolidFlags.empty, true);
+        }
+        private void MakeSameButtonClicked(object sender, EventArgs e)
+        {
+            grpGBSPType.Enabled = grpGBSPSubType.Enabled = CustomFlags.Enabled = true;
+            btnMakeSame.Enabled = false;
         }
     }    
 }

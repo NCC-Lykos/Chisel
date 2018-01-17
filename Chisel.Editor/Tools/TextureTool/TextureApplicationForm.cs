@@ -724,14 +724,12 @@ namespace Chisel.Editor.Tools.TextureTool
         private void GbspFlagChanged(bool s, FaceFlags f)
         {
             var faces = Document.Selection.GetSelectedFaces().ToList();
-            //if (faces.Count == 1)
             for(int x = 0; x < faces.Count; x++)
             {
                 if (faces[x].Texture.Flags.HasFlag(f) && !s) faces[x].Texture.Flags -= f;
                 else if (!faces[x].Texture.Flags.HasFlag(f) && s) faces[x].Texture.Flags |= f;
                 faces[x].SetHighlights();
-                //if (s) faces[0].Texture.Flags |= f;
-                //else faces[0].Texture.Flags ^= f;
+                faces[x].SetOpacity();
             }
         }
         
@@ -838,9 +836,6 @@ namespace Chisel.Editor.Tools.TextureTool
 
             for (int x = 0; x < faces.Count; x++)
             {
-                if (IsChecked) faces[x].Texture.Opacity = ((int)faces[x].Texture.Translucency / (decimal)255.0f);
-                else faces[x].Texture.Opacity = 1;
-                
                 GbspFlagChanged(IsChecked, FaceFlags.Transparent);
             }
             TranslucencyValue.Enabled = IsChecked;
@@ -859,7 +854,8 @@ namespace Chisel.Editor.Tools.TextureTool
             var faces = Document.Selection.GetSelectedFaces().ToList();
             for (int x = 0; x < faces.Count; x++)
             {
-                faces[x].Texture.Opacity = ((int)faces[x].Texture.Translucency / (decimal)255.0f);
+                //faces[x].Texture.Translucency = TranslucencyValue.Value;
+                faces[x].SetOpacity();
             }
 
             _freeze = false;

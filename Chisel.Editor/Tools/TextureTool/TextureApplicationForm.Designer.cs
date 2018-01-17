@@ -86,25 +86,25 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkFullBright = new System.Windows.Forms.CheckBox();
             this.chkMirror = new System.Windows.Forms.CheckBox();
             this.grpGBSPAdvanced = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.chkGBSPAEnableAll = new System.Windows.Forms.CheckBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.textBox9 = new System.Windows.Forms.TextBox();
-            this.lblTransform = new System.Windows.Forms.Label();
-            this.btnGBSPAFlipV = new System.Windows.Forms.Button();
-            this.textBox10 = new System.Windows.Forms.TextBox();
-            this.btnGBSPAFlipU = new System.Windows.Forms.Button();
-            this.textBox11 = new System.Windows.Forms.TextBox();
-            this.textBox12 = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.chkGBSPAEnableFlip = new System.Windows.Forms.CheckBox();
             this.btnGBSPAReset = new System.Windows.Forms.Button();
+            this.chkGBSPAEnableFlip = new System.Windows.Forms.CheckBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textBox12 = new System.Windows.Forms.TextBox();
+            this.textBox11 = new System.Windows.Forms.TextBox();
+            this.btnGBSPAFlipU = new System.Windows.Forms.Button();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.btnGBSPAFlipV = new System.Windows.Forms.Button();
+            this.lblTransform = new System.Windows.Forms.Label();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.chkGBSPAEnableAll = new System.Windows.Forms.CheckBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RotationValue)).BeginInit();
@@ -426,7 +426,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 230F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 231F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.ScaleXValue, 1, 1);
@@ -853,152 +853,15 @@ namespace Chisel.Editor.Tools.TextureTool
             this.grpGBSPAdvanced.TabStop = false;
             this.grpGBSPAdvanced.Text = "GBSP Advanced";
             // 
-            // textBox1
+            // btnGBSPAReset
             // 
-            this.textBox1.Enabled = false;
-            this.textBox1.Location = new System.Drawing.Point(6, 120);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(52, 20);
-            this.textBox1.TabIndex = 0;
-            // 
-            // chkGBSPAEnableAll
-            // 
-            this.chkGBSPAEnableAll.AutoSize = true;
-            this.chkGBSPAEnableAll.Enabled = false;
-            this.chkGBSPAEnableAll.Location = new System.Drawing.Point(6, 19);
-            this.chkGBSPAEnableAll.Name = "chkGBSPAEnableAll";
-            this.chkGBSPAEnableAll.Size = new System.Drawing.Size(73, 17);
-            this.chkGBSPAEnableAll.TabIndex = 1;
-            this.chkGBSPAEnableAll.Text = "Enable All";
-            this.chkGBSPAEnableAll.UseVisualStyleBackColor = true;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Enabled = false;
-            this.textBox2.Location = new System.Drawing.Point(6, 68);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(52, 20);
-            this.textBox2.TabIndex = 2;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Enabled = false;
-            this.textBox3.Location = new System.Drawing.Point(6, 94);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(52, 20);
-            this.textBox3.TabIndex = 3;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Enabled = false;
-            this.textBox4.Location = new System.Drawing.Point(64, 120);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(52, 20);
-            this.textBox4.TabIndex = 4;
-            // 
-            // textBox5
-            // 
-            this.textBox5.Enabled = false;
-            this.textBox5.Location = new System.Drawing.Point(64, 68);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(52, 20);
-            this.textBox5.TabIndex = 5;
-            // 
-            // textBox6
-            // 
-            this.textBox6.Enabled = false;
-            this.textBox6.Location = new System.Drawing.Point(64, 94);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(52, 20);
-            this.textBox6.TabIndex = 6;
-            // 
-            // textBox7
-            // 
-            this.textBox7.Enabled = false;
-            this.textBox7.Location = new System.Drawing.Point(122, 120);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(52, 20);
-            this.textBox7.TabIndex = 7;
-            // 
-            // textBox8
-            // 
-            this.textBox8.Enabled = false;
-            this.textBox8.Location = new System.Drawing.Point(122, 68);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(52, 20);
-            this.textBox8.TabIndex = 8;
-            // 
-            // textBox9
-            // 
-            this.textBox9.Enabled = false;
-            this.textBox9.Location = new System.Drawing.Point(122, 94);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(52, 20);
-            this.textBox9.TabIndex = 9;
-            // 
-            // lblTransform
-            // 
-            this.lblTransform.AutoSize = true;
-            this.lblTransform.Enabled = false;
-            this.lblTransform.Location = new System.Drawing.Point(6, 52);
-            this.lblTransform.Name = "lblTransform";
-            this.lblTransform.Size = new System.Drawing.Size(124, 13);
-            this.lblTransform.TabIndex = 10;
-            this.lblTransform.Text = "Texture Transform Matrix";
-            // 
-            // btnGBSPAFlipV
-            // 
-            this.btnGBSPAFlipV.Enabled = false;
-            this.btnGBSPAFlipV.Location = new System.Drawing.Point(307, 117);
-            this.btnGBSPAFlipV.Name = "btnGBSPAFlipV";
-            this.btnGBSPAFlipV.Size = new System.Drawing.Size(75, 23);
-            this.btnGBSPAFlipV.TabIndex = 11;
-            this.btnGBSPAFlipV.Text = "Flip V";
-            this.btnGBSPAFlipV.UseVisualStyleBackColor = true;
-            // 
-            // textBox10
-            // 
-            this.textBox10.Enabled = false;
-            this.textBox10.Location = new System.Drawing.Point(206, 68);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(52, 20);
-            this.textBox10.TabIndex = 12;
-            // 
-            // btnGBSPAFlipU
-            // 
-            this.btnGBSPAFlipU.Enabled = false;
-            this.btnGBSPAFlipU.Location = new System.Drawing.Point(226, 118);
-            this.btnGBSPAFlipU.Name = "btnGBSPAFlipU";
-            this.btnGBSPAFlipU.Size = new System.Drawing.Size(75, 23);
-            this.btnGBSPAFlipU.TabIndex = 13;
-            this.btnGBSPAFlipU.Text = "Flip U";
-            this.btnGBSPAFlipU.UseVisualStyleBackColor = true;
-            // 
-            // textBox11
-            // 
-            this.textBox11.Enabled = false;
-            this.textBox11.Location = new System.Drawing.Point(264, 68);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.Size = new System.Drawing.Size(52, 20);
-            this.textBox11.TabIndex = 14;
-            // 
-            // textBox12
-            // 
-            this.textBox12.Enabled = false;
-            this.textBox12.Location = new System.Drawing.Point(322, 68);
-            this.textBox12.Name = "textBox12";
-            this.textBox12.Size = new System.Drawing.Size(52, 20);
-            this.textBox12.TabIndex = 15;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Enabled = false;
-            this.label12.Location = new System.Drawing.Point(203, 52);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(83, 13);
-            this.label12.TabIndex = 16;
-            this.label12.Text = "Texture Position";
+            this.btnGBSPAReset.Enabled = false;
+            this.btnGBSPAReset.Location = new System.Drawing.Point(307, 15);
+            this.btnGBSPAReset.Name = "btnGBSPAReset";
+            this.btnGBSPAReset.Size = new System.Drawing.Size(75, 23);
+            this.btnGBSPAReset.TabIndex = 18;
+            this.btnGBSPAReset.Text = "Reset";
+            this.btnGBSPAReset.UseVisualStyleBackColor = true;
             // 
             // chkGBSPAEnableFlip
             // 
@@ -1011,15 +874,152 @@ namespace Chisel.Editor.Tools.TextureTool
             this.chkGBSPAEnableFlip.Text = "Enable Flip";
             this.chkGBSPAEnableFlip.UseVisualStyleBackColor = true;
             // 
-            // btnGBSPAReset
+            // label12
             // 
-            this.btnGBSPAReset.Enabled = false;
-            this.btnGBSPAReset.Location = new System.Drawing.Point(307, 15);
-            this.btnGBSPAReset.Name = "btnGBSPAReset";
-            this.btnGBSPAReset.Size = new System.Drawing.Size(75, 23);
-            this.btnGBSPAReset.TabIndex = 18;
-            this.btnGBSPAReset.Text = "Reset";
-            this.btnGBSPAReset.UseVisualStyleBackColor = true;
+            this.label12.AutoSize = true;
+            this.label12.Enabled = false;
+            this.label12.Location = new System.Drawing.Point(203, 52);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(83, 13);
+            this.label12.TabIndex = 16;
+            this.label12.Text = "Texture Position";
+            // 
+            // textBox12
+            // 
+            this.textBox12.Enabled = false;
+            this.textBox12.Location = new System.Drawing.Point(322, 68);
+            this.textBox12.Name = "textBox12";
+            this.textBox12.Size = new System.Drawing.Size(52, 20);
+            this.textBox12.TabIndex = 15;
+            // 
+            // textBox11
+            // 
+            this.textBox11.Enabled = false;
+            this.textBox11.Location = new System.Drawing.Point(264, 68);
+            this.textBox11.Name = "textBox11";
+            this.textBox11.Size = new System.Drawing.Size(52, 20);
+            this.textBox11.TabIndex = 14;
+            // 
+            // btnGBSPAFlipU
+            // 
+            this.btnGBSPAFlipU.Enabled = false;
+            this.btnGBSPAFlipU.Location = new System.Drawing.Point(226, 118);
+            this.btnGBSPAFlipU.Name = "btnGBSPAFlipU";
+            this.btnGBSPAFlipU.Size = new System.Drawing.Size(75, 23);
+            this.btnGBSPAFlipU.TabIndex = 13;
+            this.btnGBSPAFlipU.Text = "Flip U";
+            this.btnGBSPAFlipU.UseVisualStyleBackColor = true;
+            // 
+            // textBox10
+            // 
+            this.textBox10.Enabled = false;
+            this.textBox10.Location = new System.Drawing.Point(206, 68);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(52, 20);
+            this.textBox10.TabIndex = 12;
+            // 
+            // btnGBSPAFlipV
+            // 
+            this.btnGBSPAFlipV.Enabled = false;
+            this.btnGBSPAFlipV.Location = new System.Drawing.Point(307, 117);
+            this.btnGBSPAFlipV.Name = "btnGBSPAFlipV";
+            this.btnGBSPAFlipV.Size = new System.Drawing.Size(75, 23);
+            this.btnGBSPAFlipV.TabIndex = 11;
+            this.btnGBSPAFlipV.Text = "Flip V";
+            this.btnGBSPAFlipV.UseVisualStyleBackColor = true;
+            // 
+            // lblTransform
+            // 
+            this.lblTransform.AutoSize = true;
+            this.lblTransform.Enabled = false;
+            this.lblTransform.Location = new System.Drawing.Point(6, 52);
+            this.lblTransform.Name = "lblTransform";
+            this.lblTransform.Size = new System.Drawing.Size(124, 13);
+            this.lblTransform.TabIndex = 10;
+            this.lblTransform.Text = "Texture Transform Matrix";
+            // 
+            // textBox9
+            // 
+            this.textBox9.Enabled = false;
+            this.textBox9.Location = new System.Drawing.Point(122, 94);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(52, 20);
+            this.textBox9.TabIndex = 9;
+            // 
+            // textBox8
+            // 
+            this.textBox8.Enabled = false;
+            this.textBox8.Location = new System.Drawing.Point(122, 68);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(52, 20);
+            this.textBox8.TabIndex = 8;
+            // 
+            // textBox7
+            // 
+            this.textBox7.Enabled = false;
+            this.textBox7.Location = new System.Drawing.Point(122, 120);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(52, 20);
+            this.textBox7.TabIndex = 7;
+            // 
+            // textBox6
+            // 
+            this.textBox6.Enabled = false;
+            this.textBox6.Location = new System.Drawing.Point(64, 94);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(52, 20);
+            this.textBox6.TabIndex = 6;
+            // 
+            // textBox5
+            // 
+            this.textBox5.Enabled = false;
+            this.textBox5.Location = new System.Drawing.Point(64, 68);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(52, 20);
+            this.textBox5.TabIndex = 5;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Enabled = false;
+            this.textBox4.Location = new System.Drawing.Point(64, 120);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(52, 20);
+            this.textBox4.TabIndex = 4;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Enabled = false;
+            this.textBox3.Location = new System.Drawing.Point(6, 94);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(52, 20);
+            this.textBox3.TabIndex = 3;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Enabled = false;
+            this.textBox2.Location = new System.Drawing.Point(6, 68);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(52, 20);
+            this.textBox2.TabIndex = 2;
+            // 
+            // chkGBSPAEnableAll
+            // 
+            this.chkGBSPAEnableAll.AutoSize = true;
+            this.chkGBSPAEnableAll.Enabled = false;
+            this.chkGBSPAEnableAll.Location = new System.Drawing.Point(6, 19);
+            this.chkGBSPAEnableAll.Name = "chkGBSPAEnableAll";
+            this.chkGBSPAEnableAll.Size = new System.Drawing.Size(73, 17);
+            this.chkGBSPAEnableAll.TabIndex = 1;
+            this.chkGBSPAEnableAll.Text = "Enable All";
+            this.chkGBSPAEnableAll.UseVisualStyleBackColor = true;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Enabled = false;
+            this.textBox1.Location = new System.Drawing.Point(6, 120);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(52, 20);
+            this.textBox1.TabIndex = 0;
             // 
             // TextureApplicationForm
             // 

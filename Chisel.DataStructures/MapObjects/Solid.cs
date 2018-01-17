@@ -17,7 +17,7 @@ namespace Chisel.DataStructures.MapObjects
         hollowcut = 0x0010,
         translucent = 0x0020,
         empty = 0x0040,
-        subtract = 0x0080,
+        subtract = 0x0080, //cut
         clip = 0x0100,
         flocking = 0x0200,
         hollow = 0x0400,
@@ -26,27 +26,12 @@ namespace Chisel.DataStructures.MapObjects
         locked = 0x2000,
         hint = 0x4000,
         area = 0x8000,
-        Water = 0x00020000,
-        DamageLiquid = 0x10000000,
-        FogSound1 = 0x00040000,
-        FogSound2 = 0x00080000,
-        FogSound3 = 0x00100000,
-        ChangeWorld = 0x00200000,
-        Ground1 = 0x00400000,
-        Ground2 = 0x00800000,
-        Ground3 = 0x01000000,
-        Ground4 = 0x02000000,
-        Function1 = 0x04000000,
-        Function2 = 0x08000000,
-        type12 = 0x20000000,
-        type13 = 0x40000000,
-        DirLightSky = 0x80000000,
     }
 
     [Serializable]
     public class Solid : MapObject
     {
-        public SolidFlags Flags;
+        public UInt32 Flags;
         public List<Face> Faces { get; private set; }
 
         public override Color Colour {
@@ -60,14 +45,14 @@ namespace Chisel.DataStructures.MapObjects
 
         public Solid(long id) : base(id)
         {
-            Flags = (SolidFlags)0;
-            Flags |= SolidFlags.solid;
+            Flags = 0;
+            Flags |= (UInt32)SolidFlags.solid;
             Faces = new List<Face>();
         }
 
         protected Solid(SerializationInfo info, StreamingContext context) : base(info, context)
         {
-            Flags = (SolidFlags)info.GetValue("Flags", typeof(SolidFlags));
+            Flags = (UInt32)info.GetValue("Flags", typeof(UInt32));
             Faces = ((Face[]) info.GetValue("Faces", typeof (Face[]))).ToList();
             Faces.ForEach(x => x.Parent = this);
         }
@@ -164,7 +149,7 @@ namespace Chisel.DataStructures.MapObjects
 
         public void SetHighlights()
         {
-            Faces.ForEach(f => f.SetHighlights(Flags));
+            Faces.ForEach(f => f.SetHighlights((UInt32)Flags));
         }
 
         /// <summary>

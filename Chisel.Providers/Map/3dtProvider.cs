@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Chisel.DataStructures.Geometric;
 using Chisel.Providers;
 
+
 namespace Chisel.Providers.Map
 {
     public class ThreeDtProvider : MapProvider
@@ -254,16 +255,16 @@ namespace Chisel.Providers.Map
             //var ret = Solid.CreateFromIntersectingPlanes(faces.Select(x => x.Plane), generator);
             ret.Colour = GetGenesisBrushColor(int.Parse(properties["Flags"]));
             //ret.MetaData.Set("Flags", properties["Flags"]);
-            ret.Flags = (SolidFlags)int.Parse(properties["Flags"]);
+            ret.Flags = (UInt32)int.Parse(properties["Flags"]);
 
             //Fix for any windows created without the detail flag. This was before we were smart...
-            if (((ret.Flags & SolidFlags.window) != 0) && ((ret.Flags & SolidFlags.detail) == 0))
-                    ret.Flags = ret.Flags | SolidFlags.detail;
+            if (((ret.Flags & (UInt32)SolidFlags.window) != 0) && ((ret.Flags & (UInt32)SolidFlags.detail) == 0))
+                    ret.Flags = ret.Flags | (UInt32)SolidFlags.detail;
 
             ret.MetaData.Set("ModelId", properties["ModelId"]);
             ret.MetaData.Set("HullSize", properties["HullSize"]);
             ret.MetaData.Set("Type", properties["Type"]);
-            ret.SetHighlights();
+            //ret.SetHighlights();
 
             int group = int.Parse(properties["GroupId"]);
             if (group > 0)
@@ -332,6 +333,7 @@ namespace Chisel.Providers.Map
 
                 var s = ReadSolid(rdr, generator, brushName);
                 if (s != null) s.SetParent(ent, false);
+                if (s != null) s.SetHighlights();
             }
 
             ent.UpdateBoundingBox();
@@ -414,9 +416,43 @@ namespace Chisel.Providers.Map
                 (name, value) = ReadProperty(rdr);
                 ret[name] = value;
             }
-
             return ret;
         }
+
+        private static (string name, UInt32 value) ReadBrushProperty(string line)
+        {
+            var split = line.Split('=');
+            return (split[0].Trim(), Convert.ToUInt32(split[1].Trim(),16));
+        }
+
+        private Dictionary<string,UInt32> ReadEntityHeaderFile(StreamReader rdr)
+        {
+            var ret = new Dictionary<string, UInt32>();
+            string name;
+            UInt32 value;
+            
+            string s = rdr.ReadLine();
+            while (s != "#pragma GE_BrushContents")
+            {
+                s = rdr.ReadLine();
+            }
+            s = rdr.ReadLine();
+            s = rdr.ReadLine();
+            s = rdr.ReadLine(); //Start on first new flag
+            while (s != "} UserContentsEnum;")
+            {
+                s = s.Replace("\t", "").Replace(" ","").Replace(",","");
+                if (s != "")
+                {
+                    (name, value) = ReadBrushProperty(s);
+                    ret[name] = value;
+                }
+                s = rdr.ReadLine();
+            }
+            
+            return ret;
+        }
+
         private List<Motion> ReadMotions(int numMotions, StreamReader rdr)
         {
             const NumberStyles ns = NumberStyles.Float;
@@ -684,7 +720,7 @@ namespace Chisel.Providers.Map
                                     entity.ClassName == "directionallight" ||
                                     entity.ClassName == "spotlight"
                                 ) 
-                                ? "origin" : "Origin"
+                                ? "origin" : "Origin" //TODO(SVK): Case logic dependent on class. Header file read
                             ), 
                             FormatIntCoordinate(entity.Origin), 
                             wr
@@ -743,7 +779,7 @@ namespace Chisel.Providers.Map
                 wr.Write(nativeMotion);*/
             }
         }
-
+        
         /// <summary>
         /// Reads a map from a stream in 3DT format.
         /// </summary>
@@ -756,7 +792,7 @@ namespace Chisel.Providers.Map
                 var map = new DataStructures.MapObjects.Map();
                 var stats = ReadMapStats(rdr);
                 map.WorldSpawn.MetaData.Set("stats", stats);
-
+                
                 var allEntities = ReadAllEntities(rdr, map.IDGenerator);
                 var worldspawn = allEntities.FirstOrDefault(x => x.EntityData.Name == "worldspawn")
                                  ?? new Entity(0) { EntityData = { Name = "worldspawn" } };
@@ -776,6 +812,24 @@ namespace Chisel.Providers.Map
 
                 string other = rdr.ReadToEnd();
                 map.WorldSpawn.MetaData.Set("stuff", other);
+
+                //TODO(SVK): Clean this up, Do not output this
+                Stream entityhStream;
+                Dictionary<string, UInt32> CustomBrushFlags;
+                string s = stats["HeadersDir"].Substring(0, stats["HeadersDir"].Length - 1);
+                if (!(s.Substring(s.Length - 2, 2) == "\\")) s += "\\"; //System.IO.Path.Combine didnt work
+                if (File.Exists(s + "entity.h"))
+                {
+                    entityhStream = File.Open(s + "entity.h", FileMode.Open);
+                    var erdr = new StreamReader(entityhStream);
+                    CustomBrushFlags = ReadEntityHeaderFile(erdr);
+                }
+                else
+                {
+                    CustomBrushFlags = new Dictionary<string, UInt32>();
+                    
+                }
+                map.WorldSpawn.MetaData.Set("CustomBrushFlags", CustomBrushFlags);
 
                 return map;
             }

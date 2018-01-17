@@ -23,7 +23,7 @@ namespace Chisel.Editor.Brushes
 
         public IEnumerable<MapObject> Create(IDGenerator generator, Box box, ITexture texture, int roundDecimals)
         {
-            var solid = new Solid(generator.GetNextObjectID()) { Colour = Colour.GetRandomBrushColour(), Flags = SolidFlags.solid };
+            var solid = new Solid(generator.GetNextObjectID()) { Colour = Colour.GetRandomBrushColour(), Flags = (System.UInt32)SolidFlags.solid };
             foreach (var arr in box.GetBoxFaces())
             {
                 var face = new Face(generator.GetNextFaceID())

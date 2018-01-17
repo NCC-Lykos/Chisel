@@ -58,7 +58,7 @@ namespace Chisel.Editor.Brushes
 
         private Solid MakeSolid(IDGenerator generator, IEnumerable<Coordinate[]> faces, ITexture texture, Color col)
         {
-            var solid = new Solid(generator.GetNextObjectID()) { Colour = col, Flags = SolidFlags.solid };
+            var solid = new Solid(generator.GetNextObjectID()) { Colour = col, Flags = (UInt32)SolidFlags.solid };
             foreach (var arr in faces)
             {
                 var face = new Face(generator.GetNextFaceID())

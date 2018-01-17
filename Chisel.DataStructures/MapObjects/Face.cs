@@ -661,17 +661,42 @@ namespace Chisel.DataStructures.MapObjects
         }
         #endregion
 
-        public void SetHighlights(SolidFlags s = 0)
+        public void SetOpacity()
+        {
+            if (Texture.Flags.HasFlag(FaceFlags.Transparent)) Texture.Opacity = Texture.Translucency / 255.0m;
+            else Texture.Opacity = 1;
+        }
+
+        public void SetHighlights(UInt32 s = 0)
         {
             if (Texture.Flags.HasFlag(FaceFlags.FullBright)) HighlightColor = Color.FromArgb(255, 255, 255, (int)(0.5 * 255));
             else if (Texture.Flags.HasFlag(FaceFlags.Sky)) HighlightColor = Color.FromArgb(255, 0, 255, 255);
             else if (Texture.Flags.HasFlag(FaceFlags.Light)) HighlightColor = Color.FromArgb(255, 0, 0, 255);
             else HighlightColor = new Color();
+            
+            if ((s & (UInt32)SolidFlags.hint) != 0)
+            {
+                WireframeColor = Color.FromArgb(255, 0, 255, 0);//Green
+                Texture.Opacity = 0.2m;
+            }
+            //(s.HasFlag(SolidFlags.clip))
+            else if ((s & (UInt32)SolidFlags.clip) != 0)
+            {
+                WireframeColor = Color.FromArgb(255, (int)(0.5 * 255), 0, 255);//Purple
+                Texture.Opacity = 0.2m;
+            }
+            //(s.HasFlag(SolidFlags.window) && !Texture.Flags.HasFlag(FaceFlags.Transparent))
+            else if (((s & (UInt32)SolidFlags.window) != 0) && !Texture.Flags.HasFlag(FaceFlags.Transparent))
+            {
+                WireframeColor = Color.FromArgb(255, 255, (int)(0.5 * 255), 0);//Orange?
+                Texture.Opacity = 0.2m;
+            }
+            else if (!WireframeColor.IsEmpty)
+            {
+                WireframeColor = new Color();
+                SetOpacity();
+            }
 
-            if (s.HasFlag(SolidFlags.hint)) WireframeColor = Color.FromArgb(255, 0, 255, 0); //Green
-            else if (s.HasFlag(SolidFlags.clip)) WireframeColor = Color.FromArgb(255, (int)(0.5 * 255), 0, 255); //Purple
-            else if (s.HasFlag(SolidFlags.detail) && !s.HasFlag(SolidFlags.solid) && !s.HasFlag(SolidFlags.window)) WireframeColor = Color.FromArgb(255, 255, (int)(0.5 * 255), 0); //Orange?
-            else WireframeColor = new Color();
         }
 
         public virtual void UpdateBoundingBox()

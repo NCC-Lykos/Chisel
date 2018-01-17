@@ -61,7 +61,7 @@ namespace Chisel.Editor.Brushes
             }
             faces.Add(points.ToArray());
 
-            var solid = new Solid(generator.GetNextObjectID()) { Colour = Colour.GetRandomBrushColour(), Flags = SolidFlags.solid };
+            var solid = new Solid(generator.GetNextObjectID()) { Colour = Colour.GetRandomBrushColour(), Flags = (System.UInt32)SolidFlags.solid };
             foreach (var arr in faces)
             {
                 var face = new Face(generator.GetNextFaceID())
