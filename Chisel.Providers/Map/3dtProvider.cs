@@ -66,26 +66,7 @@ namespace Chisel.Providers.Map
                    + " " + c.G.ToString("0", CultureInfo.InvariantCulture)
                    + " " + c.B.ToString("0", CultureInfo.InvariantCulture);
         }
-
-        /*NOTE(SVK):Outdated use face.AlignTextureToWorld() now*/
-        /*
-        private static void NCAlignTextureToWorld(Face face)
-        {
-            var direction = NCClosestAxisToNormal(face.Plane);
-            face.Texture.UAxis = direction == Coordinate.UnitX ? Coordinate.UnitY : Coordinate.UnitX;
-            face.Texture.VAxis = direction == Coordinate.UnitZ ? -Coordinate.UnitY : -Coordinate.UnitZ;
-        }
         
-        private static Coordinate NCClosestAxisToNormal(Plane plane)
-        {
-            var norm = plane.Normal.Absolute();
-
-            if (norm.Z >= norm.X && norm.Z >= norm.Y) return Coordinate.UnitZ;
-            if (norm.X >= norm.Y) return Coordinate.UnitX;
-            return Coordinate.UnitY;
-        }
-        */
-
         private static System.Drawing.Color GetGenesisBrushColor(int Flags)
         {
             //Determine type of brush and color it
@@ -812,23 +793,22 @@ namespace Chisel.Providers.Map
 
                 string other = rdr.ReadToEnd();
                 map.WorldSpawn.MetaData.Set("stuff", other);
-
-                //TODO(SVK): Clean this up, Do not output this
+                
                 Stream entityhStream;
                 Dictionary<string, UInt32> CustomBrushFlags;
-                string s = stats["HeadersDir"].Substring(0, stats["HeadersDir"].Length - 1);
-                if (!(s.Substring(s.Length - 2, 2) == "\\")) s += "\\"; //System.IO.Path.Combine didnt work
-                if (File.Exists(s + "entity.h"))
+                var s = stats["HeadersDir"].Substring(0, stats["HeadersDir"].Length - 1).Split(';');
+                CustomBrushFlags = new Dictionary<string, UInt32>();
+                foreach (string s2 in s)
                 {
-                    entityhStream = File.Open(s + "entity.h", FileMode.Open);
-                    var erdr = new StreamReader(entityhStream);
-                    CustomBrushFlags = ReadEntityHeaderFile(erdr);
+                    string s3 = s2 + ((!(s2.Substring(s.Length - 2, 2) == "\\")) ? "\\entity.h" : "entity.h"); //System.IO.Path.Combine didnt work
+                    if (File.Exists(s3))
+                    {
+                        entityhStream = File.Open(s3, FileMode.Open);
+                        var erdr = new StreamReader(entityhStream);
+                        CustomBrushFlags = ReadEntityHeaderFile(erdr);
+                    }
                 }
-                else
-                {
-                    CustomBrushFlags = new Dictionary<string, UInt32>();
-                    
-                }
+                
                 map.WorldSpawn.MetaData.Set("CustomBrushFlags", CustomBrushFlags);
 
                 return map;
