@@ -23,7 +23,7 @@ namespace Chisel.Editor.Brushes
 
         public IEnumerable<MapObject> Create(IDGenerator generator, Box box, ITexture texture, int roundDecimals)
         {
-            var solid = new Solid(generator.GetNextObjectID()) { Colour = Colour.GetRandomBrushColour(), Flags = SolidFlags.solid };
+            var solid = new Solid(generator.GetNextObjectID()) { Colour = Colour.GetRandomBrushColour(), Flags = (System.UInt32)SolidFlags.solid };
             // The lower Z plane will be base, the x planes will be triangles
             var c1 = new Coordinate(box.Start.X, box.Start.Y, box.Start.Z).Round(roundDecimals);
             var c2 = new Coordinate(box.End.X, box.Start.Y, box.Start.Z).Round(roundDecimals);

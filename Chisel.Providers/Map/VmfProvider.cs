@@ -295,7 +295,7 @@ namespace Chisel.Providers.Map
                 }
             }
 
-            ret.Flags = (SolidFlags)solid.PropertyInteger("flags");
+            ret.Flags = (UInt32)solid.PropertyInteger("flags");
             ret.Colour = editor.PropertyColour("color", Colour.GetRandomBrushColour());
             ret.Visgroups.AddRange(editor.GetAllPropertyValues("visgroupid").Select(int.Parse).Where(x => x > 0));
             foreach (var face in ret.Faces)

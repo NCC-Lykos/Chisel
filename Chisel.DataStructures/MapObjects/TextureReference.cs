@@ -63,6 +63,9 @@ namespace Chisel.DataStructures.MapObjects
         public decimal Translucency { get; set; }
         public decimal Opacity { get; set; }
 
+        public ITexture PrevTexture { get; set; }
+        public decimal PrevOpacity { get; set; }
+
         public Matrix TransformAngleRF { get; set; }
         public Coordinate PositionRF { get; set; }
 
@@ -79,8 +82,8 @@ namespace Chisel.DataStructures.MapObjects
             Translucency = 255;
             TransformAngleRF = new Matrix();
             PositionRF = new Coordinate(0, 0, 0);
-            Flags = (FaceFlags)0;
-            Flags|= FaceFlags.Visible;
+            Flags = 0;
+            Flags |= FaceFlags.Visible;
         }
         
         protected TextureReference(SerializationInfo info, StreamingContext context)
