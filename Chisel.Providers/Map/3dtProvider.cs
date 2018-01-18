@@ -800,7 +800,7 @@ namespace Chisel.Providers.Map
                 CustomBrushFlags = new Dictionary<string, UInt32>();
                 foreach (string s2 in s)
                 {
-                    string s3 = s2 + ((!(s2.Substring(s.Length - 2, 2) == "\\")) ? "\\entity.h" : "entity.h"); //System.IO.Path.Combine didnt work
+                    string s3 = s2 + ((!(s2.Substring(s2.Length - 2, 2) == "\\")) ? "\\entity.h" : "entity.h"); //System.IO.Path.Combine didnt work
                     if (File.Exists(s3))
                     {
                         entityhStream = File.Open(s3, FileMode.Open);
