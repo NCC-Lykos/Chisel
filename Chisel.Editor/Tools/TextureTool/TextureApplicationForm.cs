@@ -121,6 +121,7 @@ namespace Chisel.Editor.Tools.TextureTool
                 AllGouraud = AllFlat = AllTextureLocked = AllVisible = AllSheet = AllTransparent = true;
                 foreach (var face in faces)
                 {
+
                     if (face.IsTextureAlignedToFace()) NoneAlignedToFace = false;
                     else AllAlignedToFace = false;
                     if (face.IsTextureAlignedToWorld()) NoneAlignedToWorld = false;
@@ -430,7 +431,7 @@ namespace Chisel.Editor.Tools.TextureTool
 
             var faces = Document.Selection.GetSelectedFaces().ToList();
             _currentTextureProperties.Reset(faces);
-
+            
             ScaleXValue.Value = _currentTextureProperties.XScale;
             ScaleYValue.Value = _currentTextureProperties.YScale;
             ShiftXValue.Value = _currentTextureProperties.XShift;
@@ -517,6 +518,47 @@ namespace Chisel.Editor.Tools.TextureTool
                 textures.Add(item);
             }
 
+            chkGBSPAEnableAll.Checked = false;
+            btnGBSPAReset.Enabled = false;
+            if (faces.Count() == 1)
+            {
+                //0-AX  1-AY  2-AZ 3-TX
+                //4-BX  5-BY  6-BZ 7-TY
+                //8-CX  9-CY 10-CZ 11-TZ
+                txtAX.Text = faces[0].Texture.TransformAngleRF[0].ToString();
+                txtAY.Text = faces[0].Texture.TransformAngleRF[1].ToString();
+                txtAZ.Text = faces[0].Texture.TransformAngleRF[2].ToString();
+                
+                txtBX.Text = faces[0].Texture.TransformAngleRF[4].ToString();
+                txtBY.Text = faces[0].Texture.TransformAngleRF[5].ToString();
+                txtBZ.Text = faces[0].Texture.TransformAngleRF[6].ToString();
+                
+                txtCX.Text = faces[0].Texture.TransformAngleRF[8].ToString();
+                txtCY.Text = faces[0].Texture.TransformAngleRF[9].ToString();
+                txtCZ.Text = faces[0].Texture.TransformAngleRF[10].ToString();
+
+                txtPosX.Text = faces[0].Texture.PositionRF.X.ToString();
+                txtPosY.Text = faces[0].Texture.PositionRF.Y.ToString();
+                txtPosZ.Text = faces[0].Texture.PositionRF.Z.ToString();
+
+                txtUX.Text = faces[0].Texture.UAxis.X.ToString();
+                txtUY.Text = faces[0].Texture.UAxis.Y.ToString();
+                txtUZ.Text = faces[0].Texture.UAxis.Z.ToString();
+
+                txtVX.Text = faces[0].Texture.VAxis.X.ToString();
+                txtVY.Text = faces[0].Texture.VAxis.Y.ToString();
+                txtVZ.Text = faces[0].Texture.VAxis.Z.ToString();
+            } else
+            {
+                txtAX.Text = txtBX.Text = txtCX.Text = "";
+                txtAY.Text = txtBY.Text = txtCY.Text = "";
+                txtAZ.Text = txtBZ.Text = txtCZ.Text = "";
+                txtUX.Text = txtUY.Text = txtUZ.Text = "";
+                txtVX.Text = txtVY.Text = txtVZ.Text = "";
+
+
+            }
+
             if (textures.Any())
             {
                 var t = textures[0];
@@ -582,9 +624,7 @@ namespace Chisel.Editor.Tools.TextureTool
             _currentTextureProperties.DifferentRotationValues = false;
             PropertiesChanged();
         }
-
         
-
         private void LightmapValueChanged(object sender, EventArgs e)
         {
             if (_freeze) return;
@@ -845,7 +885,6 @@ namespace Chisel.Editor.Tools.TextureTool
 
             _freeze = false;
         }
-
         private void TranslucencyValueChanged(object sender, EventArgs e)
         {
             if (_freeze) return;
@@ -862,6 +901,31 @@ namespace Chisel.Editor.Tools.TextureTool
 
             _currentTextureProperties.DifferentTranslucencyValues = false;
             PropertiesChanged();
+        }
+
+        private void btnGBSPReset_Clicked(object sender, EventArgs e)
+        {
+            if (_freeze) return;
+            _freeze = true;
+
+            var faces = Document.Selection.GetSelectedFaces().ToList();
+            foreach (Face f in faces)
+            {
+                f.InitFaceAngle();
+            }
+
+            _freeze = false;
+        }
+
+        private void chkGBSPAEnableAll_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_freeze) return;
+            _freeze = true;
+
+            if (chkGBSPAEnableAll.Checked) btnGBSPAReset.Enabled = true;
+            else btnGBSPAReset.Enabled = false;
+
+            _freeze = false;
         }
     }
 }
