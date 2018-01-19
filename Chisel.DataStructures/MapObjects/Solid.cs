@@ -224,6 +224,7 @@ namespace Chisel.DataStructures.MapObjects
                     break;
                 }
             }
+            front.Faces.Union(back.Faces).ToList().ForEach(x => x.InitFaceAngle());
             front.Faces.Union(back.Faces).ToList().ForEach(x => x.CalculateTextureCoordinates(true));
 
             return true;

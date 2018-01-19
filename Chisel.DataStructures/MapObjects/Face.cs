@@ -19,10 +19,10 @@ namespace Chisel.DataStructures.MapObjects
 
         public bool IsSelected { get; set; }
         public bool IsHidden { get; set; }
-        
-        
+
+
         public int Light { get; set; }
-        
+
         public Coordinate LightScale { get; set; }
 
         public TextureReference Texture { get; set; }
@@ -31,7 +31,7 @@ namespace Chisel.DataStructures.MapObjects
         public Solid Parent { get; set; }
 
         public Box BoundingBox { get; set; }
-        
+
         public Color HighlightColor { get; set; }
         public Color WireframeColor { get; set; }
 
@@ -42,7 +42,7 @@ namespace Chisel.DataStructures.MapObjects
             Vertices = new List<Vertex>();
             IsSelected = false;
         }
-        
+
         protected Face(SerializationInfo info, StreamingContext context)
         {
             ID = info.GetInt64("ID");
@@ -183,7 +183,7 @@ namespace Chisel.DataStructures.MapObjects
             Top,
             Bottom
         }
-        
+
         public virtual void CalculateTextureCoordinates(bool minimizeShiftValues)
         {
             if (minimizeShiftValues) MinimiseTextureShiftValues();
@@ -229,14 +229,14 @@ namespace Chisel.DataStructures.MapObjects
 
                     x = (Texture.XShift - (decimal)uO) / Texture.Texture.Width;
                     y = (Texture.YShift - (decimal)vO) / Texture.Texture.Height;
-                    
+
                     v.TextureU = (v.Location.Dot(uVec) / Texture.Texture.Width) + (x);
                     v.TextureV = (v.Location.Dot(vVec) / Texture.Texture.Height) + (y);
-                    
+
                 }
             }
         }
-        
+
         private Matrix MatrixMultiplyRF(Matrix m1, Matrix m2)
         {
             Matrix r = new Matrix();
@@ -260,20 +260,20 @@ namespace Chisel.DataStructures.MapObjects
             CX2 = m2.Values[8]; CY2 = m2.Values[9]; CZ2 = m2.Values[10];
             TX2 = m2.Values[3]; TY2 = m2.Values[7]; TZ2 = m2.Values[11];
 
-            r.Values[0]  = AX1 * AX2 + AY1 * BX2 + AZ1 * CX2;
-            r.Values[1]  = AX1 * AY2 + AY1 * BY2 + AZ1 * CY2;
-            r.Values[2]  = AX1 * AZ2 + AY1 * BZ2 + AZ1 * CZ2;
+            r.Values[0] = AX1 * AX2 + AY1 * BX2 + AZ1 * CX2;
+            r.Values[1] = AX1 * AY2 + AY1 * BY2 + AZ1 * CY2;
+            r.Values[2] = AX1 * AZ2 + AY1 * BZ2 + AZ1 * CZ2;
 
-            r.Values[4]  = BX1 * AX2 + BY1 * BX2 + BZ1 * CX2;
-            r.Values[5]  = BX1 * AY2 + BY1 * BY2 + BZ1 * CY2;
-            r.Values[6]  = BX1 * AZ2 + BY1 * BZ2 + BZ1 * CZ2;
+            r.Values[4] = BX1 * AX2 + BY1 * BX2 + BZ1 * CX2;
+            r.Values[5] = BX1 * AY2 + BY1 * BY2 + BZ1 * CY2;
+            r.Values[6] = BX1 * AZ2 + BY1 * BZ2 + BZ1 * CZ2;
 
-            r.Values[8]  = CX1 * AX2 + CY1 * BX2 + CZ1 * CX2;
-            r.Values[9]  = CX1 * AY2 + CY1 * BY2 + CZ1 * CY2;
+            r.Values[8] = CX1 * AX2 + CY1 * BX2 + CZ1 * CX2;
+            r.Values[9] = CX1 * AY2 + CY1 * BY2 + CZ1 * CY2;
             r.Values[10] = CX1 * AZ2 + CY1 * BZ2 + CZ1 * CZ2;
 
-            r.Values[3]  = AX1 * TX2 + AY1 * TY2 + AZ1 * TZ2 + TX1;
-            r.Values[7]  = BX1 * TX2 + BY1 * TY2 + BZ1 * TZ2 + TY1;
+            r.Values[3] = AX1 * TX2 + AY1 * TY2 + AZ1 * TZ2 + TX1;
+            r.Values[7] = BX1 * TX2 + BY1 * TY2 + BZ1 * TZ2 + TY1;
             r.Values[11] = CX1 * TX2 + CY1 * TY2 + CZ1 * TZ2 + TX1;
             return r;
         }
@@ -286,8 +286,8 @@ namespace Chisel.DataStructures.MapObjects
             decimal YZ2, YW2, ZW2;    // ...
 
             X2 = 2 * q.X; XX2 = X2 * q.X; XY2 = X2 * q.Y; XZ2 = X2 * q.Z; XW2 = X2 * q.W;
-            Y2 = 2 * q.Y;YY2 = Y2 * q.Y;YZ2 = Y2 * q.Z;YW2 = Y2 * q.W;
-            Z2 = 2 * q.Z;ZZ2 =  Z2 * q.Z;ZW2 = Z2 * q.W;
+            Y2 = 2 * q.Y; YY2 = Y2 * q.Y; YZ2 = Y2 * q.Z; YW2 = Y2 * q.W;
+            Z2 = 2 * q.Z; ZZ2 = Z2 * q.Z; ZW2 = Z2 * q.W;
 
             /*
             0-AX  1-AY  2-AZ
@@ -296,9 +296,9 @@ namespace Chisel.DataStructures.MapObjects
             3-TX  7-TY 11-TZ
             */
 
-            r.Values[0] = 1 - YY2 - ZZ2; r.Values[1] = XY2 - ZW2;      r.Values[2] = XZ2 +YW2;
-            r.Values[4] = XY2 + ZW2;     r.Values[5] = 1 - XX2 - ZZ2;  r.Values[6] = YZ2 - XW2;
-            r.Values[8] = XZ2 - YW2;     r.Values[9] = YZ2 + XW2;     r.Values[10] = 1 - XX2 - YY2;
+            r.Values[0] = 1 - YY2 - ZZ2; r.Values[1] = XY2 - ZW2; r.Values[2] = XZ2 + YW2;
+            r.Values[4] = XY2 + ZW2; r.Values[5] = 1 - XX2 - ZZ2; r.Values[6] = YZ2 - XW2;
+            r.Values[8] = XZ2 - YW2; r.Values[9] = YZ2 + XW2; r.Values[10] = 1 - XX2 - YY2;
             r.Values[3] = r.Values[7] = r.Values[11] = 0;
 
             return r;
@@ -313,7 +313,7 @@ namespace Chisel.DataStructures.MapObjects
             cos = Math.Cos(Rotation);
             sin = Math.Sin(Rotation);
 
-            for(int x = 0; x < 16; x++)
+            for (int x = 0; x < 16; x++)
             {
                 r.Values[x] = 0;
             }
@@ -322,7 +322,7 @@ namespace Chisel.DataStructures.MapObjects
             r.Values[1] = (decimal)-sin;
             r.Values[4] = (decimal)sin;
             r.Values[10] = 1;
-            
+
             return r;
         }
         private Coordinate RotateRF(Matrix m, Coordinate p)
@@ -332,8 +332,8 @@ namespace Chisel.DataStructures.MapObjects
             //8-CX  9-CY 10-CZ 11-TZ
             Coordinate r = new Coordinate(0, 0, 0);
 
-            r.X = (p.X * m.Values[0]) + (p.Y * m.Values[1]) + (p.Z *  m.Values[2]);
-            r.Y = (p.X * m.Values[4]) + (p.Y * m.Values[5]) + (p.Z *  m.Values[6]);
+            r.X = (p.X * m.Values[0]) + (p.Y * m.Values[1]) + (p.Z * m.Values[2]);
+            r.Y = (p.X * m.Values[4]) + (p.Y * m.Values[5]) + (p.Z * m.Values[6]);
             r.Z = (p.X * m.Values[8]) + (p.Y * m.Values[9]) + (p.Z * m.Values[10]);
 
             return r;
@@ -379,7 +379,7 @@ namespace Chisel.DataStructures.MapObjects
         {
             int x = MatrixDirection(m);
             Matrix r = new Matrix();
-            
+
             switch (x)
             {
                 case 1: //x
@@ -401,7 +401,7 @@ namespace Chisel.DataStructures.MapObjects
         private TransformFlags GetTransformFlags(Matrix m)
         {
             TransformFlags f = (TransformFlags)0;
-            
+
             //0-AX  1-AY  2-AZ 3-TX
             //4-BX  5-BY  6-BZ 7-TY
             //8-CX  9-CY 10-CZ 11-TZ
@@ -412,7 +412,7 @@ namespace Chisel.DataStructures.MapObjects
                     Math.Round(m.Values[4], 4) == 0 && Math.Round(m.Values[9], 4) == 0 && Math.Round(m.Values[8], 4) == 0) f |= TransformFlags.Translate;
                 else f |= TransformFlags.Skew;
             }
-            else if (Math.Round(m.Values[1], 4) == 0 && Math.Round(m.Values[2], 4) == 0 && Math.Round(m.Values[6],4) == 0 &&
+            else if (Math.Round(m.Values[1], 4) == 0 && Math.Round(m.Values[2], 4) == 0 && Math.Round(m.Values[6], 4) == 0 &&
                      Math.Round(m.Values[4], 4) == 0 && Math.Round(m.Values[9], 4) == 0 && Math.Round(m.Values[8], 4) == 0)
             {
                 f |= TransformFlags.Translate;
@@ -428,6 +428,7 @@ namespace Chisel.DataStructures.MapObjects
         
         public void InitFaceAngle()
         {
+            
             Plane RFPlane = new Plane(ToRF(Vertices[0].Location), ToRF(Vertices[1].Location), ToRF(Vertices[2].Location));
             Coordinate ax,p2 = RFPlane.Normal, p = RFPlane.Normal.Absolute();
             Matrix r = new Matrix();
@@ -532,15 +533,15 @@ namespace Chisel.DataStructures.MapObjects
             // Y = -Z
             switch (Axis)
             {
-                case 0:
+                case 0: //X
                     Texture.UAxis = new Coordinate(-t.X.X, t.Z.X, -t.Y.X);
                     Texture.VAxis = new Coordinate(-t.X.Y, t.Z.Y, -t.Y.Y);
                     break;
-                case 1:
+                case 1: //Y
                     Texture.UAxis = new Coordinate(t.X.X, -t.Z.X, t.Y.X);
                     Texture.VAxis = new Coordinate(-t.X.Y, t.Z.Y, -t.Y.Y);
                     break;
-                case 2:
+                case 2: //Z
                     Texture.UAxis = new Coordinate(t.X.X, -t.Z.X, t.Y.X);
                     Texture.VAxis = new Coordinate(t.X.Y, -t.Z.Y, t.Y.Y);
                     break;
