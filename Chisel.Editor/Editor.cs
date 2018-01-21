@@ -69,7 +69,7 @@ namespace Chisel.Editor
         {
             try
             {
-                var map = MapProvider.GetMapFromFile(fileName);
+                var map = MapProvider.GetMapFromFile(fileName, game.Fgds[0].Path.ToString());
                 DocumentManager.AddAndSwitch(new Document(fileName, map, game));
             }
             catch (ProviderException e)

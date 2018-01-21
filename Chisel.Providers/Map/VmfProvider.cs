@@ -574,7 +574,7 @@ namespace Chisel.Providers.Map
             }
         }
 
-        protected override DataStructures.MapObjects.Map GetFromStream(Stream stream)
+        protected override DataStructures.MapObjects.Map GetFromStream(Stream stream, string fgd = null)
         {
             using (var reader = new StreamReader(stream))
             {
