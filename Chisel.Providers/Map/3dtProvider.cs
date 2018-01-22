@@ -387,7 +387,7 @@ namespace Chisel.Providers.Map
 
             int index = FindClassIndex(ClassList, entprops["classname"]);
             Assert(index > -1);
-            var origin = entprops["origin"].ToString().Split(' ');
+            var origin = properties["eOrigin"].ToString().Split(' ');
             DataStructures.GameData.GameDataObject gdo = ClassList[index];
 
             entprops.Remove("classname");
