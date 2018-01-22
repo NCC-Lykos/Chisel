@@ -345,6 +345,16 @@ namespace Chisel.Providers.Map
             }
             return ret;
         }
+        private int FindEntityPropertyIndex(List<DataStructures.GameData.Property> list, string p)
+        {
+            int ret = -1;
+            for (int x = 0; x < list.Count(); x++)
+            {
+                if (list[x].Name.ToLower() == p.ToLower()) ret = x;
+            }
+            return ret;
+        }
+
         private Color GetEntityColor(Dictionary<string, string> props)
         {
             Color ret = new Color();
@@ -410,13 +420,15 @@ namespace Chisel.Providers.Map
             for(int x = 0; x < entprops.Count; x++)
             {
                 string val = entprops[Keys[x]].ToString();
-                int PropIndex = FindEntityPropertyIndex(ent.EntityData.Properties, Keys[x]);
+                string key = Keys[x];
+                if (key.ToLower() == "angle") key = "angles";
+                int PropIndex = FindEntityPropertyIndex(ent.EntityData.Properties, key);
 
                 var type = ClassList[index].Properties[PropIndex].VariableType;
                 switch (type)
                 {
                     case DataStructures.GameData.VariableType.Color255:
-                        val = val.Replace(".0", "");
+                        //val = val.Replace(".0", "");
                         val += " 255"; //Add Alpha
                         break;
                     case DataStructures.GameData.VariableType.Origin:
@@ -425,8 +437,18 @@ namespace Chisel.Providers.Map
                         tint = -int.Parse(tval[2]);
                         val = tval[0] + ' ' + tint.ToString() + ' ' + tval[1]; //Add Alpha
                         break;
+                    case DataStructures.GameData.VariableType.Angle:
+                        {
+                            var tval2 = val.Split(' ');
+                            float a, b, c;
+                            a = float.Parse(tval2[0]); if (a < 0) a = 360 + a;
+                            b = float.Parse(tval2[1]); if (b < 0) b = 360 + b;
+                            c = float.Parse(tval2[2]); if (c < 0) c = 360 + c; if (c != 0) c = 360 - c;
+                            val = c.ToString() + ' ' + b.ToString() + ' ' + a.ToString();
+                        }
+                        break;
                 }
-                if (Keys[x] == "%name%")
+                if (key == "%name%")
                 {
                     UInt32 y = UInt32.Parse(val.ToLower().Replace(ent.ClassName, ""));
                     if(y > EntityCounts[ClassList[index].Name]) EntityCounts[ClassList[index].Name] = y;
@@ -668,6 +690,8 @@ namespace Chisel.Providers.Map
                     WriteFace(face, wr);
             }
         }
+
+
         private void WriteEntity(Entity entity, StreamWriter wr)
         {
             WriteProperty("CEntity", "", wr);
@@ -678,19 +702,31 @@ namespace Chisel.Providers.Map
             WriteProperty("ePairCount", (entity.EntityData.Properties.Count() + 2).ToString(), wr);
 
             //Case of class matters
-
-            WriteKeyValue("classname", ClassList[FindClassIndex(ClassList,entity.ClassName)].Description, wr);
+            var cls = ClassList[FindClassIndex(ClassList, entity.ClassName)];
+            WriteKeyValue("classname", cls.Description, wr);
             WriteKeyValue("origin", FormatIntCoordinate(entity.Origin), wr);
             //Order does not need to be consistant.
             foreach (var prop in entity.EntityData.Properties)
             {
+                int PropIndex = FindEntityPropertyIndex(cls.Properties, prop.Key);
+
                 if (prop.Key == "color")
                 {
                     //Assume alpha of 255
-                    WriteKeyValue(prop.Key, prop.Value.Substring(0, prop.Value.Length - 3).TrimEnd(), wr);
+                    WriteKeyValue(cls.Properties[PropIndex].ShortDescription, prop.Value.Substring(0, prop.Value.Length - 3).TrimEnd(), wr);
                 }
+                else if (prop.Key == "angles")
+                {
+                    var val = prop.Value.Split(' ') ;
+                    float a, b, c;
+                    a = float.Parse(val[0]); if (a < 0) a = 360 + a; if (a != 0) a = 360 - a;
+                    b = float.Parse(val[1]); if (b < 0) b = 360 + b;
+                    c = float.Parse(val[2]); if (c < 0) c = 360 + c; 
+                    string valout = c.ToString() + ' ' + b.ToString() + ' ' + a.ToString();
+                    WriteKeyValue(cls.Properties[PropIndex].ShortDescription, valout, wr);
 
-                else WriteKeyValue(prop.Key, prop.Value, wr);
+                }
+                else WriteKeyValue(cls.Properties[PropIndex].ShortDescription, prop.Value, wr);
             }
 
             WriteProperty("End", "CEntity", wr);

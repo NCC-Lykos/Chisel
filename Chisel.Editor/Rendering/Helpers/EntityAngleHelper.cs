@@ -54,7 +54,9 @@ namespace Chisel.Editor.Rendering.Helpers
 
             var min = Math.Min(o.BoundingBox.Width, Math.Min(o.BoundingBox.Height, o.BoundingBox.Length));
             var p1 = viewport.Flatten(o.BoundingBox.Center);
-            var p2 = p1 + viewport.Flatten(m.Transform(Coordinate.UnitX)) * min * 0.4m;
+            //Extend direction
+            //var p2 = p1 + viewport.Flatten(m.Transform(Coordinate.UnitX)) * min * 0.4m;
+            var p2 = p1 + viewport.Flatten(m.Transform(Coordinate.UnitX)) * min * 7.5m;
 
             var multiplier = 4 / viewport.Zoom;
             var dir = (p2 - p1).Normalise();
