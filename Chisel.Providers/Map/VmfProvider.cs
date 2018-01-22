@@ -106,7 +106,12 @@ namespace Chisel.Providers.Map
             foreach (var key in structure.GetPropertyKeys())
             {
                 if (ExcludedKeys.Contains(key.ToLower())) continue;
-                ret.SetPropertyValue(key, structure[key]);
+                if (key == "color")
+                {
+                    string s = structure[key].Replace(".0", "");
+                    ret.SetPropertyValue(key, s);
+                }
+                else ret.SetPropertyValue(key, structure[key]);
             }
             ret.Name = structure["classname"];
             ret.Flags = structure.PropertyInteger("spawnflags");
@@ -197,7 +202,8 @@ namespace Chisel.Providers.Map
             ret.Plane = side.PropertyPlane("plane");
             //NOTE(SVK) Paste RF data
             ret.Texture.Flags = (FaceFlags)side.PropertyInteger("flags");
-            ret.Texture.Translucency = side.PropertyInteger("translucency");
+            ret.Texture.Translucency = (int)side.PropertyDecimal("translucency");
+            ret.Texture.Opacity = side.PropertyDecimal("opacity");
             ret.Texture.PositionRF = side.PropertyCoordinate("positionrf");
             ret.Texture.TransformAngleRF = side.PropertyMatrix("transformanglerf");
             
@@ -230,6 +236,7 @@ namespace Chisel.Providers.Map
             //NOTE(SVK) Copy RF data
             ret["flags"] = ((int)face.Texture.Flags).ToString(CultureInfo.InvariantCulture);
             ret["translucency"] = face.Texture.Translucency.ToString(CultureInfo.InvariantCulture);
+            ret["opacity"] = face.Texture.Opacity.ToString(CultureInfo.InvariantCulture);
             ret["positionrf"] = FormatCoordinate(face.Texture.PositionRF);
             ret["transformanglerf"] = FormatMatrix(face.Texture.TransformAngleRF);
             
