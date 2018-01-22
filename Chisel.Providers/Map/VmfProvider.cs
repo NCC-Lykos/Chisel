@@ -108,8 +108,8 @@ namespace Chisel.Providers.Map
                 if (ExcludedKeys.Contains(key.ToLower())) continue;
                 if (key == "color")
                 {
-                    string s = structure[key].Replace(".0", "");
-                    ret.SetPropertyValue(key, s);
+                    //string s = structure[key].Replace(".0", "");
+                    ret.SetPropertyValue(key, structure[key].Replace(".0", ""));
                 }
                 else ret.SetPropertyValue(key, structure[key]);
             }
