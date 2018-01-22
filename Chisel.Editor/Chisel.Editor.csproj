@@ -827,6 +827,7 @@
     <None Include="app.manifest" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="Resources\HANDGB__.TTF" />
     <None Include="Specifications\GenesisBsp.vdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

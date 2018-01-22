@@ -31,7 +31,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.VersionLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.LTLink = new System.Windows.Forms.LinkLabel();
             this.label3 = new System.Windows.Forms.Label();
@@ -43,12 +42,10 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.TWHLLink = new System.Windows.Forms.LinkLabel();
             this.label10 = new System.Windows.Forms.Label();
-            this.AJLink = new System.Windows.Forms.LinkLabel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.NCLink = new System.Windows.Forms.LinkLabel();
+            this.VersionLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -82,37 +79,25 @@
             this.label1.Size = new System.Drawing.Size(132, 47);
             this.label1.TabIndex = 3;
             this.label1.Text = "Chisel";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
-            // 
-            // VersionLabel
-            // 
-            this.VersionLabel.AutoSize = true;
-            this.VersionLabel.Location = new System.Drawing.Point(74, 16);
-            this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(47, 13);
-            this.VersionLabel.TabIndex = 4;
-            this.VersionLabel.Text = "(version)";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(325, 98);
+            this.label2.Location = new System.Drawing.Point(325, 84);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(172, 13);
             this.label2.TabIndex = 5;
             this.label2.Text = "Based on Sledge by Daniel Walder";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // LTLink
             // 
             this.LTLink.AutoSize = true;
-            this.LTLink.Location = new System.Drawing.Point(364, 111);
+            this.LTLink.Location = new System.Drawing.Point(341, 97);
             this.LTLink.Name = "LTLink";
-            this.LTLink.Size = new System.Drawing.Size(96, 13);
+            this.LTLink.Size = new System.Drawing.Size(127, 13);
             this.LTLink.TabIndex = 6;
             this.LTLink.TabStop = true;
-            this.LTLink.Text = "logic-and-trick.com";
-            this.LTLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LTLink_LinkClicked);
+            this.LTLink.Text = "http://logic-and-trick.com";
             // 
             // label3
             // 
@@ -176,74 +161,63 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(295, 219);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(215, 13);
+            this.label7.Size = new System.Drawing.Size(173, 13);
             this.label7.TabIndex = 8;
-            this.label7.Text = "Strider && Instant Mix (from TWHL) - Graphics";
+            this.label7.Text = "Daniel Walder for the Sledge Base!";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(295, 237);
+            this.label8.Location = new System.Drawing.Point(295, 242);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(123, 13);
+            this.label8.Size = new System.Drawing.Size(178, 26);
             this.label8.TabIndex = 8;
-            this.label8.Text = "AJ Scarcella - Website - ";
+            this.label8.Text = "The Neocron community for pushing\r\nus to do great things for them.";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(289, 255);
+            this.label9.Location = new System.Drawing.Point(296, 278);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(171, 13);
+            this.label9.Size = new System.Drawing.Size(238, 39);
             this.label9.TabIndex = 8;
-            this.label9.Text = "The members of TWHL - Testing - ";
-            // 
-            // TWHLLink
-            // 
-            this.TWHLLink.AutoSize = true;
-            this.TWHLLink.Location = new System.Drawing.Point(464, 255);
-            this.TWHLLink.Name = "TWHLLink";
-            this.TWHLLink.Size = new System.Drawing.Size(46, 13);
-            this.TWHLLink.TabIndex = 6;
-            this.TWHLLink.TabStop = true;
-            this.TWHLLink.Text = "twhl.info";
+            this.label9.Text = "The Neocron Evo Support Team for telling us to\r\nstop playing WoW and get our crap" +
+    " together and\r\nwork on Neocron";
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(295, 291);
+            this.label10.Location = new System.Drawing.Point(313, 324);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(231, 13);
+            this.label10.Size = new System.Drawing.Size(186, 26);
             this.label10.TabIndex = 8;
-            this.label10.Text = "...and everyone else in the modding community!";
+            this.label10.Text = "..and anybody we didn\'t mention here!\r\n              We appreciate you all!";
             // 
-            // AJLink
+            // NCLink
             // 
-            this.AJLink.AutoSize = true;
-            this.AJLink.Location = new System.Drawing.Point(416, 237);
-            this.AJLink.Name = "AJLink";
-            this.AJLink.Size = new System.Drawing.Size(92, 13);
-            this.AJLink.TabIndex = 6;
-            this.AJLink.TabStop = true;
-            this.AJLink.Text = "scrub-studios.com";
+            this.NCLink.AutoSize = true;
+            this.NCLink.Location = new System.Drawing.Point(79, 278);
+            this.NCLink.Name = "NCLink";
+            this.NCLink.Size = new System.Drawing.Size(125, 13);
+            this.NCLink.TabIndex = 6;
+            this.NCLink.TabStop = true;
+            this.NCLink.Text = "Official Neocron Website";
             // 
-            // groupBox1
+            // VersionLabel
             // 
-            this.groupBox1.Controls.Add(this.VersionLabel);
-            this.groupBox1.Location = new System.Drawing.Point(12, 278);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(256, 71);
-            this.groupBox1.TabIndex = 9;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Version Info";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            this.VersionLabel.AutoSize = true;
+            this.VersionLabel.Location = new System.Drawing.Point(384, 55);
+            this.VersionLabel.Name = "VersionLabel";
+            this.VersionLabel.Size = new System.Drawing.Size(47, 13);
+            this.VersionLabel.TabIndex = 4;
+            this.VersionLabel.Text = "(version)";
             // 
             // AboutDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(542, 382);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.VersionLabel);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
@@ -252,8 +226,7 @@
             this.Controls.Add(this.GPLLink);
             this.Controls.Add(this.GithubLink);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.AJLink);
-            this.Controls.Add(this.TWHLLink);
+            this.Controls.Add(this.NCLink);
             this.Controls.Add(this.LTLink);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -270,8 +243,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About Chisel";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -282,7 +253,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label VersionLabel;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.LinkLabel LTLink;
         private System.Windows.Forms.Label label3;
@@ -294,9 +264,8 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.LinkLabel TWHLLink;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.LinkLabel AJLink;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.LinkLabel NCLink;
+        private System.Windows.Forms.Label VersionLabel;
     }
 }
