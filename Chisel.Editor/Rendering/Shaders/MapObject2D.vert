@@ -5,9 +5,10 @@ layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 texture;
 layout(location = 3) in vec4 colour;
 layout(location = 4) in float selected;
-
+//layout(location = 5) in vec4 highlightcolor;
 layout(location = 6) in float haswireframe;
 layout(location = 7) in vec4 wireframecolor;
+//layout(location = 8) in float ignoretexture;
 
 varying vec4 vertexColour;
 varying float vertexSelected;

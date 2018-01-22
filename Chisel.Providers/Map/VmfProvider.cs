@@ -533,7 +533,7 @@ namespace Chisel.Providers.Map
             return stream;
         }
 
-        public static IEnumerable<MapObject> ExtractCopyStream(GenericStructure gs, IDGenerator generator)
+        public static IEnumerable<MapObject> ExtractCopyStream(GenericStructure gs, IDGenerator generator, Dictionary<string, UInt32> entcnt)
         {
             if (gs == null || gs.Name != "clipboard") return null;
             var dummyGen = new IDGenerator();
@@ -542,6 +542,17 @@ namespace Chisel.Providers.Map
             foreach (var entity in gs.GetChildren("entity"))
             {
                 var ent = ReadEntity(entity, dummyGen);
+
+                for (int x = 0; x < ent.EntityData.Properties.Count(); x++)
+                {
+                    if (ent.EntityData.Properties[x].Key == "%name%")
+                    {
+                        entcnt[ent.ClassName.ToLower()] += 1;
+                        ent.EntityData.Properties[x].Value = ent.ClassName.ToLower() + entcnt[ent.ClassName.ToLower()].ToString();
+                        //entity.EntityData.Properties[x] = Document.Map.WorldSpawn.MetaData.Get<string>["EntityCounts"];
+                    }
+                }
+
                 var groupid = entity.Children.Where(x => x.Name == "editor").Select(x => x.PropertyInteger("groupid")).FirstOrDefault();
                 var entParent = groupid > 0 ? world.Find(x => x.ID == groupid && x is Group).FirstOrDefault() ?? world : world;
                 ent.SetParent(entParent);
@@ -574,7 +585,7 @@ namespace Chisel.Providers.Map
             }
         }
 
-        protected override DataStructures.MapObjects.Map GetFromStream(Stream stream)
+        protected override DataStructures.MapObjects.Map GetFromStream(Stream stream, string fgd = null)
         {
             using (var reader = new StreamReader(stream))
             {

@@ -13,5 +13,6 @@ namespace Chisel.Editor.Rendering.Arrays
         public Color4 HighlightColor;
         public float HasWireframe;
         public Color4 WireframeColor;
+        public float IgnoreTexture;
     }
 }

@@ -298,7 +298,7 @@ namespace Chisel.Providers.Map
         /// </summary>
         /// <param name="stream">The stream to read from</param>
         /// <returns>The parsed map</returns>
-        protected override DataStructures.MapObjects.Map GetFromStream(Stream stream)
+        protected override DataStructures.MapObjects.Map GetFromStream(Stream stream, string fgd = null)
         {
             using (var reader = new StreamReader(stream))
             {

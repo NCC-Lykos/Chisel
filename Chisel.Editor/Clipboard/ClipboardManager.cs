@@ -82,7 +82,7 @@ namespace Chisel.Editor.Clipboard
                 try
                 {
                     var gs = GenericStructure.Parse(tr);
-                    return VmfProvider.ExtractCopyStream(gs.FirstOrDefault(), document.Map.IDGenerator);
+                    return VmfProvider.ExtractCopyStream(gs.FirstOrDefault(), document.Map.IDGenerator, document.Map.WorldSpawn.MetaData.Get<Dictionary<string, UInt32>>("EntityCounts"));
                 }
                 catch
                 {

@@ -66,7 +66,11 @@ namespace Chisel.Providers.Map
                    + " " + c.G.ToString("0", CultureInfo.InvariantCulture)
                    + " " + c.B.ToString("0", CultureInfo.InvariantCulture);
         }
-        
+
+        //private Chisel.DataStructures.GameData.GameData gamedata;
+        private List<DataStructures.GameData.GameDataObject> ClassList;
+        Dictionary<string, UInt32> EntityCounts;
+
         private static System.Drawing.Color GetGenesisBrushColor(int Flags)
         {
             //Determine type of brush and color it
@@ -124,8 +128,6 @@ namespace Chisel.Providers.Map
                 Light = int.Parse(properties["Light"]),
             };
 
-            
-            
             face.Vertices.AddRange(poly.Vertices.Select(x => new Vertex(x, face)));
             
             face.Texture.Flags = (FaceFlags)int.Parse(properties["Flags"]);
@@ -144,8 +146,7 @@ namespace Chisel.Providers.Map
             face.Texture.Rotation = decimal.Parse(texSplit[2], ns, CultureInfo.InvariantCulture);
             face.Texture.XScale = decimal.Parse(texSplit[7], ns, CultureInfo.InvariantCulture);
             face.Texture.YScale = decimal.Parse(texSplit[8], ns, CultureInfo.InvariantCulture);
-
-
+            
             face.SetHighlights();
             face.UpdateBoundingBox();
 
@@ -245,7 +246,6 @@ namespace Chisel.Providers.Map
             ret.MetaData.Set("ModelId", properties["ModelId"]);
             ret.MetaData.Set("HullSize", properties["HullSize"]);
             ret.MetaData.Set("Type", properties["Type"]);
-            //ret.SetHighlights();
 
             int group = int.Parse(properties["GroupId"]);
             if (group > 0)
@@ -264,10 +264,8 @@ namespace Chisel.Providers.Map
             else if (key.Equals("origin", StringComparison.OrdinalIgnoreCase))
             {
                 var osp = value.Split(' ');
-                ent.Origin = Coordinate.Parse(osp[0], osp[1], osp[2]);
-                var tmp = ent.Origin.Y;
-                ent.Origin.Y = -ent.Origin.Z;
-                ent.Origin.Z = tmp;
+                ent.Origin = Coordinate.Parse(osp[0], osp[2], osp[1]);
+                ent.Origin.Y = -ent.Origin.Y;
             }
             else if (key == "%name%")
             {
@@ -292,6 +290,14 @@ namespace Chisel.Providers.Map
         private static (string name, string value) ReadProperty(StreamReader rdr)
         {
             var line = rdr.ReadLine();
+            return ReadProperty(line);
+        }
+        private static (string name, string value) ReadEntProperty(StreamReader rdr)
+        {
+            var line = rdr.ReadLine().Replace("Key ","").Replace("Value ","");
+
+            //TODO(SVK): Fix this?
+            line = line.Replace("Origin", "origin");
             return ReadProperty(line);
         }
         private static (string name, string value) ReadProperty(string line)
@@ -320,29 +326,112 @@ namespace Chisel.Providers.Map
             ent.UpdateBoundingBox();
             return ent;
         }
+
+        private int FindClassIndex(List<Chisel.DataStructures.GameData.GameDataObject> c, string name)
+        {
+            int ret = -1;
+            for (int x = 0; x < c.Count; x++)
+            {
+                if (c[x].Name.ToLower() == name.ToLower()) ret = x;
+            }
+            return ret;
+        }
+        private int FindEntityPropertyIndex(List<Property> list, string p)
+        {
+            int ret = -1;
+            for(int x = 0; x < list.Count(); x++)
+            {
+                if (list[x].Key.ToLower() == p.ToLower()) ret = x;
+            }
+            return ret;
+        }
+        private Color GetEntityColor(Dictionary<string, string> props)
+        {
+            Color ret = new Color();
+
+            var Keys = props.Keys.ToArray();
+            for (int x = 0; x < props.Count; x++)
+            {
+                if (Keys[x] == "color")
+                {
+                    var color = props[Keys[x]].Split(' ');
+                    ret = Color.FromArgb(255, int.Parse(color[0]), int.Parse(color[1]), int.Parse(color[2]));
+                }
+
+            }
+            if (ret.IsEmpty) ret = Color.FromArgb(255, 255, 255, 255); //White
+
+            return ret;
+        }
+
         private Entity ReadEntity(StreamReader rdr, IDGenerator generator)
         {
             var properties = new Dictionary<string, string>();
-            var ent = new Entity(generator.GetNextObjectID()) { EntityData = new EntityData(), Colour = Colour.GetRandomBrushColour() };
-
+            var entprops = new Dictionary<string, string>();
             string line = rdr.ReadLine();
             Assert(line.Trim() == "CEntity");
-
+            
             foreach (var prop in EntityProperties)
             {
                 (string name, string value) = ReadProperty(rdr);
                 Assert(name == prop);
                 properties[name] = value;
             }
-            ent.EntityData.Flags = int.Parse(properties["eFlags"]);
 
-            var numPairs = int.Parse(properties["ePairCount"]);
-            for (int i = 0; i < numPairs; ++i)
+            for (int x = 0; x < int.Parse(properties["ePairCount"]); x++)
             {
-                line = rdr.ReadLine();
-                ReadKeyValue(ent, line);
+                (string name, string value) = ReadEntProperty(rdr);
+                Assert(name != "End CEntity");
+                entprops[name] = value;
             }
 
+            int index = FindClassIndex(ClassList, entprops["classname"]);
+            Assert(index > -1);
+            var origin = entprops["origin"].ToString().Split(' ');
+            DataStructures.GameData.GameDataObject gdo = ClassList[index];
+
+            entprops.Remove("classname");
+            entprops.Remove("origin");
+
+            var ent = new Entity(generator.GetNextObjectID())
+            {
+                EntityData = new EntityData(ClassList[index]),
+                ClassName = ClassList[index].Name,
+                Origin = Coordinate.Parse(origin[0], origin[2], origin[1]),
+                Colour = GetEntityColor(entprops)
+            };
+            ent.Origin.Y = -ent.Origin.Y;
+            ent.EntityData.Flags = int.Parse(properties["eFlags"]);
+
+
+            Assert(ent.EntityData.Properties.Count == entprops.Count());
+
+            var Keys = entprops.Keys.ToArray();
+            for(int x = 0; x < entprops.Count; x++)
+            {
+                string val = entprops[Keys[x]].ToString();
+                int PropIndex = FindEntityPropertyIndex(ent.EntityData.Properties, Keys[x]);
+
+                var type = ClassList[index].Properties[PropIndex].VariableType;
+                switch (type)
+                {
+                    case DataStructures.GameData.VariableType.Color255:
+                        val += " 255"; //Add Alpha
+                        break;
+                    case DataStructures.GameData.VariableType.Origin:
+                        var tval = val.Split(' ');
+                        int tint = 0;
+                        tint = -int.Parse(tval[2]);
+                        val = tval[0] + ' ' + tint.ToString() + ' ' + tval[1]; //Add Alpha
+                        break;
+                }
+                if (Keys[x] == "%name%")
+                {
+                    UInt32 y = UInt32.Parse(val.ToLower().Replace(ent.ClassName, ""));
+                    if(y > EntityCounts[ClassList[index].Name]) EntityCounts[ClassList[index].Name] = y;
+                }
+                ent.EntityData.Properties[PropIndex].Value = val;
+            }
             // Swallow end
             line = rdr.ReadLine();
             Assert(line == "End CEntity");
@@ -354,7 +443,7 @@ namespace Chisel.Providers.Map
         {
             var properties = new Dictionary<string, string>();
             var list = new List<Entity>();
-
+            
             list.Add(ReadWorldEntity(rdr, generator));
 
             foreach (var prop in EntityListProperties)
@@ -374,6 +463,7 @@ namespace Chisel.Providers.Map
 
             return list;
         }
+        
         private Dictionary<string, string> ReadMapStats(StreamReader rdr)
         {
             var ret = new Dictionary<string, string>();
@@ -397,40 +487,6 @@ namespace Chisel.Providers.Map
                 (name, value) = ReadProperty(rdr);
                 ret[name] = value;
             }
-            return ret;
-        }
-
-        private static (string name, UInt32 value) ReadBrushProperty(string line)
-        {
-            var split = line.Split('=');
-            return (split[0].Trim(), Convert.ToUInt32(split[1].Trim(),16));
-        }
-
-        private Dictionary<string,UInt32> ReadEntityHeaderFile(StreamReader rdr)
-        {
-            var ret = new Dictionary<string, UInt32>();
-            string name;
-            UInt32 value;
-            
-            string s = rdr.ReadLine();
-            while (s != "#pragma GE_BrushContents")
-            {
-                s = rdr.ReadLine();
-            }
-            s = rdr.ReadLine();
-            s = rdr.ReadLine();
-            s = rdr.ReadLine(); //Start on first new flag
-            while (s != "} UserContentsEnum;")
-            {
-                s = s.Replace("\t", "").Replace(" ","").Replace(",","");
-                if (s != "")
-                {
-                    (name, value) = ReadBrushProperty(s);
-                    ret[name] = value;
-                }
-                s = rdr.ReadLine();
-            }
-            
             return ret;
         }
 
@@ -571,75 +627,6 @@ namespace Chisel.Providers.Map
                 face.Texture.PositionRF.X.ToString("0.000000", CultureInfo.InvariantCulture) + " " +
                 face.Texture.PositionRF.Z.ToString("0.000000", CultureInfo.InvariantCulture) + " " +
                 Temp.ToString("0.000000", CultureInfo.InvariantCulture), wr, false, 1);
-
-            //3DT Version 1.32+ stated the following..
-            //Version 1.32 11/04/99 - Brian - Face Info save out Base Vec for Tex Lock
-            //Version 1.33 08/15/03 - QoD - Added ActorsDirectory, PawnIniPath; TexRotation is saved as float
-            //Version 1.34 11/09/03 - QoD - changed Arch template
-
-            //WriteProperty("Transform", "1.000000 0.000000 -0.000000 0.000000 0.000000 1.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000", wr, false, 1);
-            //WriteProperty("Pos", "0.000000 0.000000 0.000000", wr, false, 1);
-
-
-            /*var fnorm = face.Plane.Normal;
-            if (Math.Abs(fnorm.X) > Math.Abs(fnorm.Z))
-            {
-                if (Math.Abs(fnorm.X) > Math.Abs(fnorm.Y))
-                {
-                    if (fnorm.X > 0)
-                    {
-                        fnorm.X = -fnorm.X;
-                        fnorm.Y = -fnorm.Y;
-                        fnorm.Z = -fnorm.Z;
-                    }
-                }
-                else
-                {
-                    if (fnorm.Y > 0)
-                    {
-                        fnorm.X = -fnorm.X;
-                        fnorm.Y = -fnorm.Y;
-                        fnorm.Z = -fnorm.Z;
-                    }
-                }
-            }
-            else
-            {
-                if (Math.Abs(fnorm.Z) > Math.Abs(fnorm.Y))
-                {
-                    if (fnorm.Y > 0)
-                    {
-                        fnorm.X = -fnorm.X;
-                        fnorm.Y = -fnorm.Y;
-                        fnorm.Z = -fnorm.Z;
-                    }
-                }
-                else
-                {
-                    if (fnorm.Z > 0)
-                    {
-                        fnorm.X = -fnorm.X;
-                        fnorm.Y = -fnorm.Y;
-                        fnorm.Z = -fnorm.Z;
-                    }
-                }
-            }
-
-            var dest = Coordinate.Zero;
-            var axis = dest.Cross(fnorm);
-            var cosv = Math.Min((double)dest.Dot(fnorm), 1.0d);
-            var theta = (decimal)Math.Acos(cosv);
-
-            var tmp = axis.Y;
-            axis.Y = -axis.Z;
-            axis.Z = tmp;
-
-            axis = axis.Normalise();
-            var mat = axis == Coordinate.Zero ? Matrix.RotationX(theta) : Quaternion.AxisAngle(axis, theta).GetMatrix();
-            var value = string.Format("{0} {1} {2} {3}", FormatCoordinateNonSwitch(mat.X), FormatCoordinateNonSwitch(mat.Y), FormatCoordinateNonSwitch(mat.Z), FormatCoordinateNonSwitch(mat.Shift));
-            wr.WriteLine("\tTransform\t{0}", value);
-
-            WriteProperty("Pos", FormatCoordinate(face.BoundingBox.Center), wr, false, 1);*/
         }
         private void WriteKeyValue(string key, string value, StreamWriter wr)
         {
@@ -689,26 +676,15 @@ namespace Chisel.Providers.Map
             WriteProperty("eGroup", "0", wr);
             WriteProperty("ePairCount", (entity.EntityData.Properties.Count() + 2).ToString(), wr);
 
-            WriteKeyValue("classname", entity.ClassName, wr);
-            WriteKeyValue(
-                            (
-                                (
-                                    entity.ClassName == "AmbientSound" || 
-                                    entity.ClassName == "light" || 
-                                    entity.ClassName == "StaticSound" || 
-                                    entity.ClassName == "Corona" || 
-                                    entity.ClassName == "DynamicLight" || 
-                                    entity.ClassName == "directionallight" ||
-                                    entity.ClassName == "spotlight"
-                                ) 
-                                ? "origin" : "Origin" //TODO(SVK): Case logic dependent on class. Header file read
-                            ), 
-                            FormatIntCoordinate(entity.Origin), 
-                            wr
-                        );
-            foreach(var prop in entity.EntityData.Properties)
+            //Case of class matters
+
+            WriteKeyValue("classname", ClassList[FindClassIndex(ClassList,entity.ClassName)].Description, wr);
+            WriteKeyValue("origin", FormatIntCoordinate(entity.Origin), wr);
+            //Order does not need to be consistant.
+            foreach (var prop in entity.EntityData.Properties)
             {
-                WriteKeyValue(prop.Key, prop.Value, wr);
+                if (prop.Key == "color") WriteKeyValue(prop.Key, prop.Value.Substring(0,11).TrimEnd(), wr);
+                else WriteKeyValue(prop.Key, prop.Value, wr);
             }
 
             WriteProperty("End", "CEntity", wr);
@@ -766,14 +742,25 @@ namespace Chisel.Providers.Map
         /// </summary>
         /// <param name="stream">The stream to read from</param>
         /// <returns>The parsed map</returns>
-        protected override DataStructures.MapObjects.Map GetFromStream(Stream stream)
+        protected override DataStructures.MapObjects.Map GetFromStream(Stream stream, string fgd = null)
         {
             using (var rdr = new StreamReader(stream))
             {
                 var map = new DataStructures.MapObjects.Map();
+                
                 var stats = ReadMapStats(rdr);
                 map.WorldSpawn.MetaData.Set("stats", stats);
-                
+
+                var gd = GameData.GameDataProvider.GetGameDataFromFile(fgd);
+                gd.CreateDependencies();
+                ClassList = gd.Classes;
+
+                EntityCounts = new Dictionary<string, UInt32>();
+                for (int x = 0; x < ClassList.Count(); x++)
+                {
+                    if (ClassList[x].ClassType != DataStructures.GameData.ClassType.Base) EntityCounts.Add(ClassList[x].Name, 0);
+                }
+
                 var allEntities = ReadAllEntities(rdr, map.IDGenerator);
                 var worldspawn = allEntities.FirstOrDefault(x => x.EntityData.Name == "worldspawn")
                                  ?? new Entity(0) { EntityData = { Name = "worldspawn" } };
@@ -794,22 +781,17 @@ namespace Chisel.Providers.Map
                 string other = rdr.ReadToEnd();
                 map.WorldSpawn.MetaData.Set("stuff", other);
                 
-                Stream entityhStream;
-                Dictionary<string, UInt32> CustomBrushFlags;
-                var s = stats["HeadersDir"].Substring(0, stats["HeadersDir"].Length - 1).Split(';');
-                CustomBrushFlags = new Dictionary<string, UInt32>();
-                foreach (string s2 in s)
-                {
-                    string s3 = s2 + ((!(s2.Substring(s2.Length - 2, 2) == "\\")) ? "\\entity.h" : "entity.h"); //System.IO.Path.Combine didnt work
-                    if (File.Exists(s3))
-                    {
-                        entityhStream = File.Open(s3, FileMode.Open);
-                        var erdr = new StreamReader(entityhStream);
-                        CustomBrushFlags = ReadEntityHeaderFile(erdr);
-                    }
-                }
                 
+                Dictionary<string, UInt32> CustomBrushFlags = new Dictionary<string, UInt32>();
+
+                int Index = FindClassIndex(ClassList, "BaseEnums");
+                var enums = ClassList[Index].Properties.ToArray();
+                foreach(Chisel.DataStructures.GameData.Property p in enums)
+                {
+                    CustomBrushFlags[p.Name] = Convert.ToUInt32(p.DefaultValue, 16);
+                }
                 map.WorldSpawn.MetaData.Set("CustomBrushFlags", CustomBrushFlags);
+                map.WorldSpawn.MetaData.Set("EntityCounts", EntityCounts);
 
                 return map;
             }
@@ -850,10 +832,7 @@ namespace Chisel.Providers.Map
 
                 // Write Map Header
                 WriteMapStats(stats, solids, entities, map, sw);
-
                 
-                
-
                 // write world entity aka Brushes
                 WriteWorldEntity(solids, sw);
 

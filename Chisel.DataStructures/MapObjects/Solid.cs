@@ -289,3 +289,4 @@ namespace Chisel.DataStructures.MapObjects
         }
     }
 }
+

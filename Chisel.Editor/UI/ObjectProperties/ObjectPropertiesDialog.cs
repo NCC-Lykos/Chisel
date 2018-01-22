@@ -127,30 +127,31 @@ namespace Chisel.Editor.UI.ObjectProperties
                 Document.PerformAction(actionText, ac);
             }
 
-            
-            Dictionary<string, UInt32> fCustom = Objects[0].Parent.MetaData.Get<Dictionary<string, UInt32>>("CustomBrushFlags");
-            var keys = fCustom.Keys.ToArray();
-            GBSPMultipleCustom = false;
-            for (int x = 0; x < Objects.Count; x++)
+            if (Objects.All(x => x is Solid))
             {
-                if (CustomFlags.GetItemCheckState(x) == CheckState.Indeterminate) GBSPMultipleCustom = true;
-            }
-            
-            if (Objects.All(x => x is Solid) && !GBSPMultiple && !GBSPMultipleCustom)
-            {
-                UInt32 s = 0;
+                Dictionary<string, UInt32> fCustom = Objects[0].Parent.MetaData.Get<Dictionary<string, UInt32>>("CustomBrushFlags");
+                var keys = fCustom.Keys.ToArray();
+                GBSPMultipleCustom = false;
+                for (int x = 0; x < Objects.Count; x++)
+                {
+                    if (CustomFlags.GetItemCheckState(x) == CheckState.Indeterminate && Objects.All(y => y is Solid)) GBSPMultipleCustom = true;
+                }
 
-                    if (chkSolid.Checked)    s |= (UInt32)SolidFlags.solid;
-                    if (chkWindow.Checked)   s |= (UInt32)SolidFlags.window;
-                    if (chkClip.Checked)     s |= (UInt32)SolidFlags.clip;
-                    if (chkHint.Checked)     s |= (UInt32)SolidFlags.hint;
-                    if (chkEmpty.Checked)    s |= (UInt32)SolidFlags.empty;
+                if (!GBSPMultiple && !GBSPMultipleCustom)
+                {
+                    UInt32 s = 0;
 
-                    if (chkWavy.Checked)     s |= (UInt32)SolidFlags.wavy;
-                    if (chkDetail.Checked)   s |= (UInt32)SolidFlags.detail;
-                    if (chkArea.Checked)     s |= (UInt32)SolidFlags.area;
+                    if (chkSolid.Checked) s |= (UInt32)SolidFlags.solid;
+                    if (chkWindow.Checked) s |= (UInt32)SolidFlags.window;
+                    if (chkClip.Checked) s |= (UInt32)SolidFlags.clip;
+                    if (chkHint.Checked) s |= (UInt32)SolidFlags.hint;
+                    if (chkEmpty.Checked) s |= (UInt32)SolidFlags.empty;
+
+                    if (chkWavy.Checked) s |= (UInt32)SolidFlags.wavy;
+                    if (chkDetail.Checked) s |= (UInt32)SolidFlags.detail;
+                    if (chkArea.Checked) s |= (UInt32)SolidFlags.area;
                     if (chkFlocking.Checked) s |= (UInt32)SolidFlags.flocking;
-                    if (chkSheet.Checked)    s |= (UInt32)SolidFlags.sheet;
+                    if (chkSheet.Checked) s |= (UInt32)SolidFlags.sheet;
 
                     //Custom Flags
                     for (int x = 0; x < Objects.Count; x++)
@@ -162,11 +163,13 @@ namespace Chisel.Editor.UI.ObjectProperties
                         ((Solid)Objects[x]).Flags = s;
                         ((Solid)Objects[x]).SetHighlights();
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Indeterminate checkboxes found, No changes saved.", "Indeterminate", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
-            else
-            {
-                MessageBox.Show("Indeterminate checkboxes found, No changes saved.", "Indeterminate",MessageBoxButtons.OK,MessageBoxIcon.Information);
-            }
+            
             Class.BackColor = Color.White;
         }
 
@@ -378,8 +381,21 @@ namespace Chisel.Editor.UI.ObjectProperties
             }
 
             _populating = true;
+            if(Objects.Count == 1)
+            {
+                txtModelID.Text = ((Solid)Objects[0]).MetaData.Get<string>("ModelId");
+                txtHullSize.Text = ((Solid)Objects[0]).MetaData.Get<string>("HullSize");
+                txtType.Text = ((Solid)Objects[0]).MetaData.Get<string>("Type");
+                txtName.Text = ((Solid)Objects[0]).ClassName;
+            }
+            else
+            {
+                txtModelID.Text = "";
+                txtHullSize.Text = "";
+                txtType.Text = "";
+                txtName.Text = "";
+            }
             UInt32 f;
-            
             for (int x = 0; x < Objects.Count; x++)
             {
                 f = ((Solid)Objects[x]).Flags;

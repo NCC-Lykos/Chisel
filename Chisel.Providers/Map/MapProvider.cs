@@ -29,13 +29,13 @@ namespace Chisel.Providers.Map
             RegisteredProviders.Clear();
         }
 
-        public static DataStructures.MapObjects.Map GetMapFromFile(string fileName)
+        public static DataStructures.MapObjects.Map GetMapFromFile(string fileName, string fgd)
         {
             if (!File.Exists(fileName)) throw new ProviderException("The supplied file doesn't exist.");
             var provider = RegisteredProviders.FirstOrDefault(p => p.IsValidForFileName(fileName));
             if (provider != null)
             {
-                return provider.GetFromFile(fileName);
+                return provider.GetFromFile(fileName, fgd);
             }
             throw new ProviderNotFoundException("No map provider was found for this file.");
         }
@@ -61,11 +61,11 @@ namespace Chisel.Providers.Map
             throw new ProviderNotFoundException("No map provider was found for this file format.");
         }
 
-        protected virtual DataStructures.MapObjects.Map GetFromFile(string filename)
+        protected virtual DataStructures.MapObjects.Map GetFromFile(string filename, string fgd = null)
         {
             using (var strm = new FileStream(filename, FileMode.Open, FileAccess.Read))
             {
-                return GetFromStream(strm);
+                return GetFromStream(strm, fgd);
             }
         }
 
@@ -78,7 +78,7 @@ namespace Chisel.Providers.Map
         }
 
         protected abstract bool IsValidForFileName(string filename);
-        protected abstract DataStructures.MapObjects.Map GetFromStream(Stream stream);
+        protected abstract DataStructures.MapObjects.Map GetFromStream(Stream stream, string fgd = null);
         protected abstract void SaveToStream(Stream stream, DataStructures.MapObjects.Map map);
         protected abstract IEnumerable<MapFeature> GetFormatFeatures();
     }

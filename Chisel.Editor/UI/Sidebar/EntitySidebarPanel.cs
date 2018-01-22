@@ -45,7 +45,7 @@ namespace Chisel.Editor.UI.Sidebar
         }
 
         public GameDataObject GetSelectedEntity()
-        {
+        { 
             return EntityTypeList.SelectedItem as GameDataObject;
         }
     }
