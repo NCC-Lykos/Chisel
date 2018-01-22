@@ -34,6 +34,7 @@ namespace Chisel.DataStructures.MapObjects
 
         public Color HighlightColor { get; set; }
         public Color WireframeColor { get; set; }
+        public bool IgnoreTexture { get; set; }
 
         public Face(long id)
         {
@@ -679,23 +680,32 @@ namespace Chisel.DataStructures.MapObjects
             {
                 WireframeColor = Color.FromArgb(255, 0, 255, 0);//Green
                 Texture.Opacity = 0.2m;
+                IgnoreTexture = true;
             }
             //(s.HasFlag(SolidFlags.clip))
             else if ((s & (UInt32)SolidFlags.clip) != 0)
             {
                 WireframeColor = Color.FromArgb(255, (int)(0.5 * 255), 0, 255);//Purple
                 Texture.Opacity = 0.2m;
+                IgnoreTexture = true;
             }
             //(s.HasFlag(SolidFlags.window) && !Texture.Flags.HasFlag(FaceFlags.Transparent))
             else if (((s & (UInt32)SolidFlags.window) != 0) && !Texture.Flags.HasFlag(FaceFlags.Transparent))
             {
                 WireframeColor = Color.FromArgb(255, 255, (int)(0.5 * 255), 0);//Orange?
                 Texture.Opacity = 0.2m;
+                IgnoreTexture = true;
+            }
+            else if (Parent.MetaData.Get<string>("ModelId") != null && (int.Parse(Parent.MetaData.Get<string>("ModelId")) > 0))
+            {
+                WireframeColor = Color.FromArgb(255, 255, 255, 255);//White
+                IgnoreTexture = false;
             }
             else if (!WireframeColor.IsEmpty)
             {
                 WireframeColor = new Color();
                 SetOpacity();
+                IgnoreTexture = false;
             }
 
         }

@@ -93,6 +93,8 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.FlagsTab = new System.Windows.Forms.TabPage();
             this.FlagsTable = new System.Windows.Forms.CheckedListBox();
             this.SolidTab = new System.Windows.Forms.TabPage();
+            this.btnMakeSame = new System.Windows.Forms.Button();
+            this.CustomFlags = new System.Windows.Forms.CheckedListBox();
             this.grpGBSPSubType = new System.Windows.Forms.GroupBox();
             this.lblHullThickness = new System.Windows.Forms.Label();
             this.chkSheet = new System.Windows.Forms.CheckBox();
@@ -115,10 +117,17 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.btnCancel = new System.Windows.Forms.Button();
             this.OkButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.CustomFlags = new System.Windows.Forms.CheckedListBox();
-            this.btnMakeSame = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lblModelID = new System.Windows.Forms.Label();
+            this.txtModelID = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtHullSize = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtType = new System.Windows.Forms.TextBox();
             this.Angles = new Chisel.Editor.UI.AngleControl();
             this.VisgroupPanel = new Chisel.Editor.Visgroups.VisgroupPanel();
+            this.label13 = new System.Windows.Forms.Label();
+            this.txtName = new System.Windows.Forms.TextBox();
             this.Tabs.SuspendLayout();
             this.ClassInfoTab.SuspendLayout();
             this.OutputsTab.SuspendLayout();
@@ -130,6 +139,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.grpGBSPSubType.SuspendLayout();
             this.grpGBSPType.SuspendLayout();
             this.VisgroupTab.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // Tabs
@@ -664,6 +674,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             // 
             // SolidTab
             // 
+            this.SolidTab.Controls.Add(this.groupBox2);
             this.SolidTab.Controls.Add(this.btnMakeSame);
             this.SolidTab.Controls.Add(this.CustomFlags);
             this.SolidTab.Controls.Add(this.grpGBSPSubType);
@@ -675,6 +686,25 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.SolidTab.TabIndex = 5;
             this.SolidTab.Text = "Solid Properties";
             this.SolidTab.UseVisualStyleBackColor = true;
+            // 
+            // btnMakeSame
+            // 
+            this.btnMakeSame.Location = new System.Drawing.Point(384, 346);
+            this.btnMakeSame.Name = "btnMakeSame";
+            this.btnMakeSame.Size = new System.Drawing.Size(131, 23);
+            this.btnMakeSame.TabIndex = 12;
+            this.btnMakeSame.Text = "Make all same type";
+            this.btnMakeSame.UseVisualStyleBackColor = true;
+            this.btnMakeSame.Click += new System.EventHandler(this.MakeSameButtonClicked);
+            // 
+            // CustomFlags
+            // 
+            this.CustomFlags.FormattingEnabled = true;
+            this.CustomFlags.Location = new System.Drawing.Point(384, 6);
+            this.CustomFlags.Name = "CustomFlags";
+            this.CustomFlags.Size = new System.Drawing.Size(284, 334);
+            this.CustomFlags.TabIndex = 11;
+            this.CustomFlags.ThreeDCheckBoxes = true;
             // 
             // grpGBSPSubType
             // 
@@ -688,7 +718,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.grpGBSPSubType.Controls.Add(this.chkHollow);
             this.grpGBSPSubType.Location = new System.Drawing.Point(118, 6);
             this.grpGBSPSubType.Name = "grpGBSPSubType";
-            this.grpGBSPSubType.Size = new System.Drawing.Size(260, 364);
+            this.grpGBSPSubType.Size = new System.Drawing.Size(113, 363);
             this.grpGBSPSubType.TabIndex = 3;
             this.grpGBSPSubType.TabStop = false;
             this.grpGBSPSubType.Text = "GBSP Sub Options";
@@ -697,16 +727,16 @@ namespace Chisel.Editor.UI.ObjectProperties
             // 
             this.lblHullThickness.AutoSize = true;
             this.lblHullThickness.Enabled = false;
-            this.lblHullThickness.Location = new System.Drawing.Point(104, 21);
+            this.lblHullThickness.Location = new System.Drawing.Point(6, 21);
             this.lblHullThickness.Name = "lblHullThickness";
-            this.lblHullThickness.Size = new System.Drawing.Size(77, 13);
+            this.lblHullThickness.Size = new System.Drawing.Size(56, 13);
             this.lblHullThickness.TabIndex = 9;
-            this.lblHullThickness.Text = "Hull Thickness";
+            this.lblHullThickness.Text = "Thickness";
             // 
             // chkSheet
             // 
             this.chkSheet.AutoSize = true;
-            this.chkSheet.Location = new System.Drawing.Point(7, 134);
+            this.chkSheet.Location = new System.Drawing.Point(9, 156);
             this.chkSheet.Name = "chkSheet";
             this.chkSheet.Size = new System.Drawing.Size(54, 17);
             this.chkSheet.TabIndex = 6;
@@ -716,7 +746,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             // chkFlocking
             // 
             this.chkFlocking.AutoSize = true;
-            this.chkFlocking.Location = new System.Drawing.Point(7, 111);
+            this.chkFlocking.Location = new System.Drawing.Point(9, 133);
             this.chkFlocking.Name = "chkFlocking";
             this.chkFlocking.Size = new System.Drawing.Size(66, 17);
             this.chkFlocking.TabIndex = 5;
@@ -726,7 +756,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             // chkArea
             // 
             this.chkArea.AutoSize = true;
-            this.chkArea.Location = new System.Drawing.Point(7, 88);
+            this.chkArea.Location = new System.Drawing.Point(9, 110);
             this.chkArea.Name = "chkArea";
             this.chkArea.Size = new System.Drawing.Size(48, 17);
             this.chkArea.TabIndex = 4;
@@ -736,7 +766,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             // chkDetail
             // 
             this.chkDetail.AutoSize = true;
-            this.chkDetail.Location = new System.Drawing.Point(7, 65);
+            this.chkDetail.Location = new System.Drawing.Point(9, 87);
             this.chkDetail.Name = "chkDetail";
             this.chkDetail.Size = new System.Drawing.Size(53, 17);
             this.chkDetail.TabIndex = 3;
@@ -746,7 +776,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             // chkWavy
             // 
             this.chkWavy.AutoSize = true;
-            this.chkWavy.Location = new System.Drawing.Point(7, 42);
+            this.chkWavy.Location = new System.Drawing.Point(9, 64);
             this.chkWavy.Name = "chkWavy";
             this.chkWavy.Size = new System.Drawing.Size(54, 17);
             this.chkWavy.TabIndex = 2;
@@ -756,9 +786,9 @@ namespace Chisel.Editor.UI.ObjectProperties
             // txtHullThickness
             // 
             this.txtHullThickness.Enabled = false;
-            this.txtHullThickness.Location = new System.Drawing.Point(187, 18);
+            this.txtHullThickness.Location = new System.Drawing.Point(68, 18);
             this.txtHullThickness.Name = "txtHullThickness";
-            this.txtHullThickness.Size = new System.Drawing.Size(67, 20);
+            this.txtHullThickness.Size = new System.Drawing.Size(39, 20);
             this.txtHullThickness.TabIndex = 1;
             this.txtHullThickness.Text = "1";
             this.txtHullThickness.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -767,7 +797,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             // 
             this.chkHollow.AutoSize = true;
             this.chkHollow.Enabled = false;
-            this.chkHollow.Location = new System.Drawing.Point(7, 20);
+            this.chkHollow.Location = new System.Drawing.Point(9, 42);
             this.chkHollow.Name = "chkHollow";
             this.chkHollow.Size = new System.Drawing.Size(58, 17);
             this.chkHollow.TabIndex = 0;
@@ -784,7 +814,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.grpGBSPType.Controls.Add(this.chkSolid);
             this.grpGBSPType.Location = new System.Drawing.Point(6, 6);
             this.grpGBSPType.Name = "grpGBSPType";
-            this.grpGBSPType.Size = new System.Drawing.Size(106, 364);
+            this.grpGBSPType.Size = new System.Drawing.Size(106, 363);
             this.grpGBSPType.TabIndex = 2;
             this.grpGBSPType.TabStop = false;
             this.grpGBSPType.Text = "GBSP Type";
@@ -918,24 +948,79 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.ApplyButtonClicked);
             // 
-            // CustomFlags
+            // groupBox2
             // 
-            this.CustomFlags.FormattingEnabled = true;
-            this.CustomFlags.Location = new System.Drawing.Point(384, 6);
-            this.CustomFlags.Name = "CustomFlags";
-            this.CustomFlags.Size = new System.Drawing.Size(284, 334);
-            this.CustomFlags.TabIndex = 11;
-            this.CustomFlags.ThreeDCheckBoxes = true;
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Controls.Add(this.txtName);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.txtType);
+            this.groupBox2.Controls.Add(this.label2);
+            this.groupBox2.Controls.Add(this.txtHullSize);
+            this.groupBox2.Controls.Add(this.lblModelID);
+            this.groupBox2.Controls.Add(this.txtModelID);
+            this.groupBox2.Location = new System.Drawing.Point(237, 6);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(122, 363);
+            this.groupBox2.TabIndex = 13;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "GBSP Metadata";
             // 
-            // btnMakeSame
+            // lblModelID
             // 
-            this.btnMakeSame.Location = new System.Drawing.Point(385, 346);
-            this.btnMakeSame.Name = "btnMakeSame";
-            this.btnMakeSame.Size = new System.Drawing.Size(131, 23);
-            this.btnMakeSame.TabIndex = 12;
-            this.btnMakeSame.Text = "Make all same type";
-            this.btnMakeSame.UseVisualStyleBackColor = true;
-            this.btnMakeSame.Click += new System.EventHandler(this.MakeSameButtonClicked);
+            this.lblModelID.AutoSize = true;
+            this.lblModelID.Enabled = false;
+            this.lblModelID.Location = new System.Drawing.Point(6, 21);
+            this.lblModelID.Name = "lblModelID";
+            this.lblModelID.Size = new System.Drawing.Size(50, 13);
+            this.lblModelID.TabIndex = 9;
+            this.lblModelID.Text = "Model ID";
+            // 
+            // txtModelID
+            // 
+            this.txtModelID.Enabled = false;
+            this.txtModelID.Location = new System.Drawing.Point(62, 18);
+            this.txtModelID.Name = "txtModelID";
+            this.txtModelID.Size = new System.Drawing.Size(54, 20);
+            this.txtModelID.TabIndex = 1;
+            this.txtModelID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Enabled = false;
+            this.label2.Location = new System.Drawing.Point(6, 43);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(48, 13);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Hull Size";
+            // 
+            // txtHullSize
+            // 
+            this.txtHullSize.Enabled = false;
+            this.txtHullSize.Location = new System.Drawing.Point(62, 40);
+            this.txtHullSize.Name = "txtHullSize";
+            this.txtHullSize.Size = new System.Drawing.Size(54, 20);
+            this.txtHullSize.TabIndex = 10;
+            this.txtHullSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Enabled = false;
+            this.label12.Location = new System.Drawing.Point(6, 66);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(31, 13);
+            this.label12.TabIndex = 13;
+            this.label12.Text = "Type";
+            // 
+            // txtType
+            // 
+            this.txtType.Enabled = false;
+            this.txtType.Location = new System.Drawing.Point(62, 63);
+            this.txtType.Name = "txtType";
+            this.txtType.Size = new System.Drawing.Size(54, 20);
+            this.txtType.TabIndex = 12;
+            this.txtType.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // Angles
             // 
@@ -961,6 +1046,25 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.VisgroupPanel.Size = new System.Drawing.Size(662, 319);
             this.VisgroupPanel.SortAutomaticFirst = false;
             this.VisgroupPanel.TabIndex = 2;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Enabled = false;
+            this.label13.Location = new System.Drawing.Point(6, 89);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(35, 13);
+            this.label13.TabIndex = 15;
+            this.label13.Text = "Name";
+            // 
+            // txtName
+            // 
+            this.txtName.Enabled = false;
+            this.txtName.Location = new System.Drawing.Point(62, 86);
+            this.txtName.Name = "txtName";
+            this.txtName.Size = new System.Drawing.Size(54, 20);
+            this.txtName.TabIndex = 14;
+            this.txtName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // ObjectPropertiesDialog
             // 
@@ -994,6 +1098,8 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.grpGBSPType.ResumeLayout(false);
             this.grpGBSPType.PerformLayout();
             this.VisgroupTab.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
 		}
@@ -1080,5 +1186,14 @@ namespace Chisel.Editor.UI.ObjectProperties
         private System.Windows.Forms.CheckBox chkSolid;
         private System.Windows.Forms.CheckedListBox CustomFlags;
         private System.Windows.Forms.Button btnMakeSame;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label lblModelID;
+        private System.Windows.Forms.TextBox txtModelID;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox txtType;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtHullSize;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox txtName;
     }
 }

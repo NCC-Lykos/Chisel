@@ -79,9 +79,6 @@ namespace Chisel.DataStructures.MapObjects
         {
             if (GameData == null && !Children.Any())
             {
-                //var sub = new Coordinate(-16, -16, -16);
-                //var add = new Coordinate(16, 16, 16);
-                //NOTE(SVK):Smaller entity boxes.
                 var sub = new Coordinate(-8, -8, -8);
                 var add = new Coordinate(8, 8, 8);
                 BoundingBox = new Box(Origin + sub, Origin + add);
@@ -96,9 +93,6 @@ namespace Chisel.DataStructures.MapObjects
             }
             else if (GameData != null && GameData.ClassType == ClassType.Point)
             {
-                //var sub = new Coordinate(-16, -16, -16);
-                //var add = new Coordinate(16, 16, 16);
-                //NOTE(SVK):Smaller entity boxes.
                 var sub = new Coordinate(-8, -8, -8);
                 var add = new Coordinate(8, 8, 8);
                 var behav = GameData.Behaviours.SingleOrDefault(x => x.Name == "size");

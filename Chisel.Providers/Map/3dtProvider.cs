@@ -69,6 +69,7 @@ namespace Chisel.Providers.Map
 
         //private Chisel.DataStructures.GameData.GameData gamedata;
         private List<DataStructures.GameData.GameDataObject> ClassList;
+        Dictionary<string, UInt32> EntityCounts;
 
         private static System.Drawing.Color GetGenesisBrushColor(int Flags)
         {
@@ -245,7 +246,6 @@ namespace Chisel.Providers.Map
             ret.MetaData.Set("ModelId", properties["ModelId"]);
             ret.MetaData.Set("HullSize", properties["HullSize"]);
             ret.MetaData.Set("Type", properties["Type"]);
-            //ret.SetHighlights();
 
             int group = int.Parse(properties["GroupId"]);
             if (group > 0)
@@ -332,7 +332,7 @@ namespace Chisel.Providers.Map
             int ret = -1;
             for (int x = 0; x < c.Count; x++)
             {
-                if (c[x].Name == name.ToLower()) ret = x;
+                if (c[x].Name.ToLower() == name.ToLower()) ret = x;
             }
             return ret;
         }
@@ -390,6 +390,9 @@ namespace Chisel.Providers.Map
             var origin = entprops["origin"].ToString().Split(' ');
             DataStructures.GameData.GameDataObject gdo = ClassList[index];
 
+            entprops.Remove("classname");
+            entprops.Remove("origin");
+
             var ent = new Entity(generator.GetNextObjectID())
             {
                 EntityData = new EntityData(ClassList[index]),
@@ -397,13 +400,9 @@ namespace Chisel.Providers.Map
                 Origin = Coordinate.Parse(origin[0], origin[2], origin[1]),
                 Colour = GetEntityColor(entprops)
             };
-
             ent.Origin.Y = -ent.Origin.Y;
             ent.EntityData.Flags = int.Parse(properties["eFlags"]);
 
-            entprops.Remove("classname");
-            entprops.Remove("origin");
-            entprops.Remove("%name%"); //remove and rebuild??
 
             Assert(ent.EntityData.Properties.Count == entprops.Count());
 
@@ -413,7 +412,7 @@ namespace Chisel.Providers.Map
                 string val = entprops[Keys[x]].ToString();
                 int PropIndex = FindEntityPropertyIndex(ent.EntityData.Properties, Keys[x]);
 
-                var type = ClassList[index].Properties[x].VariableType;
+                var type = ClassList[index].Properties[PropIndex].VariableType;
                 switch (type)
                 {
                     case DataStructures.GameData.VariableType.Color255:
@@ -426,16 +425,13 @@ namespace Chisel.Providers.Map
                         val = tval[0] + ' ' + tint.ToString() + ' ' + tval[1]; //Add Alpha
                         break;
                 }
+                if (Keys[x] == "%name%")
+                {
+                    UInt32 y = UInt32.Parse(val.ToLower().Replace(ent.ClassName, ""));
+                    if(y > EntityCounts[ClassList[index].Name]) EntityCounts[ClassList[index].Name] = y;
+                }
                 ent.EntityData.Properties[PropIndex].Value = val;
             }
-
-            //var numPairs = int.Parse(properties["ePairCount"]);
-            //for (int i = 0; i < numPairs; ++i)
-            //{
-            //    line = rdr.ReadLine();
-            //    ReadKeyValue(ent, line);
-            //}
-
             // Swallow end
             line = rdr.ReadLine();
             Assert(line == "End CEntity");
@@ -467,8 +463,7 @@ namespace Chisel.Providers.Map
 
             return list;
         }
-
-
+        
         private Dictionary<string, string> ReadMapStats(StreamReader rdr)
         {
             var ret = new Dictionary<string, string>();
@@ -492,38 +487,6 @@ namespace Chisel.Providers.Map
                 (name, value) = ReadProperty(rdr);
                 ret[name] = value;
             }
-            return ret;
-        }
-        private static (string name, UInt32 value) ReadBrushProperty(string line)
-        {
-            var split = line.Split('=');
-            return (split[0].Trim(), Convert.ToUInt32(split[1].Trim(),16));
-        }
-        private Dictionary<string,UInt32> ReadEntityHeaderFile(StreamReader rdr)
-        {
-            var ret = new Dictionary<string, UInt32>();
-            string name;
-            UInt32 value;
-            
-            string s = rdr.ReadLine();
-            while (s != "#pragma GE_BrushContents")
-            {
-                s = rdr.ReadLine();
-            }
-            s = rdr.ReadLine();
-            s = rdr.ReadLine();
-            s = rdr.ReadLine(); //Start on first new flag
-            while (s != "} UserContentsEnum;")
-            {
-                s = s.Replace("\t", "").Replace(" ","").Replace(",","");
-                if (s != "")
-                {
-                    (name, value) = ReadBrushProperty(s);
-                    ret[name] = value;
-                }
-                s = rdr.ReadLine();
-            }
-            
             return ret;
         }
 
@@ -713,26 +676,15 @@ namespace Chisel.Providers.Map
             WriteProperty("eGroup", "0", wr);
             WriteProperty("ePairCount", (entity.EntityData.Properties.Count() + 2).ToString(), wr);
 
-            WriteKeyValue("classname", entity.ClassName, wr);
-            WriteKeyValue(
-                            (
-                                (
-                                    entity.ClassName == "AmbientSound" || 
-                                    entity.ClassName == "light" || 
-                                    entity.ClassName == "StaticSound" || 
-                                    entity.ClassName == "Corona" || 
-                                    entity.ClassName == "DynamicLight" || 
-                                    entity.ClassName == "directionallight" ||
-                                    entity.ClassName == "spotlight"
-                                ) 
-                                ? "origin" : "Origin" //TODO(SVK): Case logic dependent on class. Header file read
-                            ), 
-                            FormatIntCoordinate(entity.Origin), 
-                            wr
-                        );
-            foreach(var prop in entity.EntityData.Properties)
+            //Case of class matters
+
+            WriteKeyValue("classname", ClassList[FindClassIndex(ClassList,entity.ClassName)].Description, wr);
+            WriteKeyValue("origin", FormatIntCoordinate(entity.Origin), wr);
+            //Order does not need to be consistant.
+            foreach (var prop in entity.EntityData.Properties)
             {
-                WriteKeyValue(prop.Key, prop.Value, wr);
+                if (prop.Key == "color") WriteKeyValue(prop.Key, prop.Value.Substring(0,11).TrimEnd(), wr);
+                else WriteKeyValue(prop.Key, prop.Value, wr);
             }
 
             WriteProperty("End", "CEntity", wr);
@@ -802,6 +754,13 @@ namespace Chisel.Providers.Map
                 var gd = GameData.GameDataProvider.GetGameDataFromFile(fgd);
                 gd.CreateDependencies();
                 ClassList = gd.Classes;
+
+                EntityCounts = new Dictionary<string, UInt32>();
+                for (int x = 0; x < ClassList.Count(); x++)
+                {
+                    if (ClassList[x].ClassType != DataStructures.GameData.ClassType.Base) EntityCounts.Add(ClassList[x].Name, 0);
+                }
+
                 var allEntities = ReadAllEntities(rdr, map.IDGenerator);
                 var worldspawn = allEntities.FirstOrDefault(x => x.EntityData.Name == "worldspawn")
                                  ?? new Entity(0) { EntityData = { Name = "worldspawn" } };
@@ -822,22 +781,17 @@ namespace Chisel.Providers.Map
                 string other = rdr.ReadToEnd();
                 map.WorldSpawn.MetaData.Set("stuff", other);
                 
-                Stream entityhStream;
-                Dictionary<string, UInt32> CustomBrushFlags;
-                var s = stats["HeadersDir"].Substring(0, stats["HeadersDir"].Length - 1).Split(';');
-                CustomBrushFlags = new Dictionary<string, UInt32>();
-                foreach (string s2 in s)
-                {
-                    string s3 = s2 + ((!(s2.Substring(s2.Length - 2, 2) == "\\")) ? "\\entity.h" : "entity.h"); //System.IO.Path.Combine didnt work
-                    if (File.Exists(s3))
-                    {
-                        entityhStream = File.Open(s3, FileMode.Open);
-                        var erdr = new StreamReader(entityhStream);
-                        CustomBrushFlags = ReadEntityHeaderFile(erdr);
-                    }
-                }
                 
+                Dictionary<string, UInt32> CustomBrushFlags = new Dictionary<string, UInt32>();
+
+                int Index = FindClassIndex(ClassList, "BaseEnums");
+                var enums = ClassList[Index].Properties.ToArray();
+                foreach(Chisel.DataStructures.GameData.Property p in enums)
+                {
+                    CustomBrushFlags[p.Name] = Convert.ToUInt32(p.DefaultValue, 16);
+                }
                 map.WorldSpawn.MetaData.Set("CustomBrushFlags", CustomBrushFlags);
+                map.WorldSpawn.MetaData.Set("EntityCounts", EntityCounts);
 
                 return map;
             }
@@ -878,10 +832,7 @@ namespace Chisel.Providers.Map
 
                 // Write Map Header
                 WriteMapStats(stats, solids, entities, map, sw);
-
                 
-                
-
                 // write world entity aka Brushes
                 WriteWorldEntity(solids, sw);
 

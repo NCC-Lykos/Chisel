@@ -8,6 +8,7 @@ layout(location = 4) in float selected;
 layout(location = 5) in vec4 highlightcolor;
 layout(location = 6) in float haswireframe;
 layout(location = 7) in vec4 wireframecolor;
+layout(location = 8) in float ignoretexture;
 
 const vec3 lightDirection = normalize(vec3(1, 2, 3));
 const float lightIntensity = 0.5;
@@ -22,6 +23,7 @@ varying float vertexSelected;
 varying vec4 vertexHighlightColor;
 varying float vertexhasWireframe;
 varying vec4 vertexWireframeColor;
+varying float vertexignoretexture;
 
 uniform mat4 transformation;
 uniform mat4 modelViewMatrix;
@@ -57,4 +59,5 @@ void main()
 	vertexHighlightColor = highlightcolor;
 	vertexhasWireframe = haswireframe;
 	vertexWireframeColor = wireframecolor;
+	vertexignoretexture = ignoretexture;
 }

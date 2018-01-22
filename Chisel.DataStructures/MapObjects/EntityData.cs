@@ -28,7 +28,7 @@ namespace Chisel.DataStructures.MapObjects
             Name = gd.Name;
             foreach (var prop in gd.Properties.Where(x => x.Name != "spawnflags"))
             {
-                Properties.Add(new Property {Key = prop.Name, Value = prop.DefaultValue});
+                Properties.Add(new Property { Key = prop.Name, Value = prop.DefaultValue });
             }
         }
 

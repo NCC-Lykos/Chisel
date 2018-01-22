@@ -225,7 +225,8 @@ namespace Chisel.Editor.Rendering.Arrays
                 IsSelected = face.IsSelected || (face.Parent != null && face.Parent.IsSelected) ? 1 : 0,
                 HighlightColor = new Color4(r2, g2, b2, a2),
                 HasWireframe = RenderWireframe,
-                WireframeColor = new Color4(r3, g3, b3, a3)
+                WireframeColor = new Color4(r3, g3, b3, a3),
+                IgnoreTexture = face.IgnoreTexture ? 1 : 0
             });
         }
     }

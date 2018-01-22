@@ -381,8 +381,21 @@ namespace Chisel.Editor.UI.ObjectProperties
             }
 
             _populating = true;
+            if(Objects.Count == 1)
+            {
+                txtModelID.Text = ((Solid)Objects[0]).MetaData.Get<string>("ModelId");
+                txtHullSize.Text = ((Solid)Objects[0]).MetaData.Get<string>("HullSize");
+                txtType.Text = ((Solid)Objects[0]).MetaData.Get<string>("Type");
+                txtName.Text = ((Solid)Objects[0]).ClassName;
+            }
+            else
+            {
+                txtModelID.Text = "";
+                txtHullSize.Text = "";
+                txtType.Text = "";
+                txtName.Text = "";
+            }
             UInt32 f;
-            
             for (int x = 0; x < Objects.Count; x++)
             {
                 f = ((Solid)Objects[x]).Flags;

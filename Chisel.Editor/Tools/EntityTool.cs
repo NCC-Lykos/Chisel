@@ -222,7 +222,7 @@ namespace Chisel.Editor.Tools
 
             var col = gd.Behaviours.Where(x => x.Name == "color").ToArray();
             var colour = col.Any() ? col[0].GetColour(0) : Colour.GetDefaultEntityColour();
-
+            
             var entity = new Entity(Document.Map.IDGenerator.GetNextObjectID())
             {
                 EntityData = new EntityData(gd),
@@ -230,6 +230,17 @@ namespace Chisel.Editor.Tools
                 Colour = colour,
                 Origin = origin
             };
+
+            for (int x = 0; x < entity.EntityData.Properties.Count(); x++)
+            {
+                if (entity.EntityData.Properties[x].Key == "%name%")
+                {
+                    var v = Document.Map.WorldSpawn.MetaData.Get<Dictionary<string, UInt32>>("EntityCounts");
+                    v[gd.Name] += 1;
+                    entity.EntityData.Properties[x].Value = gd.Name + v[gd.Name].ToString();
+                    //entity.EntityData.Properties[x] = Document.Map.WorldSpawn.MetaData.Get<string>["EntityCounts"];
+                }
+            }
 
             if (Select.SelectCreatedEntity) entity.IsSelected = true;
 
