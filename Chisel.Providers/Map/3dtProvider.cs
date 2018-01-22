@@ -416,6 +416,7 @@ namespace Chisel.Providers.Map
                 switch (type)
                 {
                     case DataStructures.GameData.VariableType.Color255:
+                        val = val.Replace(".0", "");
                         val += " 255"; //Add Alpha
                         break;
                     case DataStructures.GameData.VariableType.Origin:
@@ -683,7 +684,12 @@ namespace Chisel.Providers.Map
             //Order does not need to be consistant.
             foreach (var prop in entity.EntityData.Properties)
             {
-                if (prop.Key == "color") WriteKeyValue(prop.Key, prop.Value.Substring(0,11).TrimEnd(), wr);
+                if (prop.Key == "color")
+                {
+                    //Assume alpha of 255
+                    WriteKeyValue(prop.Key, prop.Value.Substring(0, prop.Value.Length - 3).TrimEnd(), wr);
+                }
+
                 else WriteKeyValue(prop.Key, prop.Value, wr);
             }
 
