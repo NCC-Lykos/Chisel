@@ -197,6 +197,7 @@ namespace Chisel.Providers.Map
             ret.Plane = side.PropertyPlane("plane");
             //NOTE(SVK) Paste RF data
             ret.Texture.Flags = (FaceFlags)side.PropertyInteger("flags");
+            ret.Texture.Translucency = side.PropertyInteger("translucency");
             ret.Texture.PositionRF = side.PropertyCoordinate("positionrf");
             ret.Texture.TransformAngleRF = side.PropertyMatrix("transformanglerf");
             
@@ -228,6 +229,7 @@ namespace Chisel.Providers.Map
 
             //NOTE(SVK) Copy RF data
             ret["flags"] = ((int)face.Texture.Flags).ToString(CultureInfo.InvariantCulture);
+            ret["translucency"] = face.Texture.Translucency.ToString(CultureInfo.InvariantCulture);
             ret["positionrf"] = FormatCoordinate(face.Texture.PositionRF);
             ret["transformanglerf"] = FormatMatrix(face.Texture.TransformAngleRF);
             
