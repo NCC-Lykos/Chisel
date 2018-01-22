@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chisel.UI", "Chisel.UI\Chisel.UI.csproj", "{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}"
 EndProject
@@ -54,8 +54,8 @@ Global
 		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Debug|x64.ActiveCfg = Debug|x64
 		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Debug|x86.ActiveCfg = Debug|x86
 		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Debug|x86.Build.0 = Debug|x86
-		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Release|Any CPU.ActiveCfg = Release|x86
-		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Release|Any CPU.Build.0 = Release|x86
+		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Release|Mixed Platforms.Build.0 = Release|x86
 		{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}.Release|x64.ActiveCfg = Release|x64
@@ -86,8 +86,8 @@ Global
 		{DFF00869-B064-483D-95C0-A88039C471C7}.Debug|x64.Build.0 = Debug|x64
 		{DFF00869-B064-483D-95C0-A88039C471C7}.Debug|x86.ActiveCfg = Debug|x86
 		{DFF00869-B064-483D-95C0-A88039C471C7}.Debug|x86.Build.0 = Debug|x86
-		{DFF00869-B064-483D-95C0-A88039C471C7}.Release|Any CPU.ActiveCfg = Release|x86
-		{DFF00869-B064-483D-95C0-A88039C471C7}.Release|Any CPU.Build.0 = Release|x86
+		{DFF00869-B064-483D-95C0-A88039C471C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFF00869-B064-483D-95C0-A88039C471C7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DFF00869-B064-483D-95C0-A88039C471C7}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{DFF00869-B064-483D-95C0-A88039C471C7}.Release|Mixed Platforms.Build.0 = Release|x86
 		{DFF00869-B064-483D-95C0-A88039C471C7}.Release|x64.ActiveCfg = Release|x64
@@ -147,8 +147,8 @@ Global
 		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Debug|x64.ActiveCfg = Debug|x64
 		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Debug|x86.ActiveCfg = Debug|x86
 		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Debug|x86.Build.0 = Debug|x86
-		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Release|Any CPU.ActiveCfg = Release|x86
-		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Release|Any CPU.Build.0 = Release|x86
+		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Release|Mixed Platforms.Build.0 = Release|x86
 		{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}.Release|x64.ActiveCfg = Release|x64
@@ -161,8 +161,8 @@ Global
 		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Debug|x64.ActiveCfg = Debug|x64
 		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Debug|x86.ActiveCfg = Debug|x86
 		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Debug|x86.Build.0 = Debug|x86
-		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|Any CPU.ActiveCfg = Release|x86
-		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|Any CPU.Build.0 = Release|x86
+		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|Mixed Platforms.Build.0 = Release|x86
 		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|x64.ActiveCfg = Release|x64
