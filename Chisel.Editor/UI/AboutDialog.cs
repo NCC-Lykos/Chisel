@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -19,16 +20,10 @@ namespace Chisel.Editor.UI
 
             VersionLabel.Text = FileVersionInfo.GetVersionInfo(typeof (Editor).Assembly.Location).FileVersion;
 
-            LTLink.Click += (s, e) => Mediator.Publish(EditorMediator.OpenWebsite, "http://www.neocron.org");
+            LTLink.Click += (s, e) => Mediator.Publish(EditorMediator.OpenWebsite, "http://logic-and-trick.com");
             GithubLink.Click += (s, e) => Mediator.Publish(EditorMediator.OpenWebsite, "https://github.com/NCC-Lykos/Chisel");
             GPLLink.Click += (s, e) => Mediator.Publish(EditorMediator.OpenWebsite, "http://www.gnu.org/licenses/gpl-2.0.html");
-            AJLink.Click += (s, e) => Mediator.Publish(EditorMediator.OpenWebsite, "http://scrub-studios.com");
-            TWHLLink.Click += (s, e) => Mediator.Publish(EditorMediator.OpenWebsite, "http://twhl.info");
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
+            NCLink.Click += (s, e) => Mediator.Publish(EditorMediator.OpenWebsite, "http://www.neocron.org");
         }
     }
 }
