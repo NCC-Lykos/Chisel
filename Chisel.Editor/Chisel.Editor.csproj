@@ -487,6 +487,12 @@
     <Compile Include="UI\MapTreeWindow.Designer.cs">
       <DependentUpon>MapTreeWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\MotionsEditor\MotionsEditorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\MotionsEditor\MotionsEditorDialog.Designer.cs">
+      <DependentUpon>MotionsEditorDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ObjectProperties\SmartEdit\SmartEditBoolean.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -778,6 +784,9 @@
     <EmbeddedResource Include="UI\MapTreeWindow.resx">
       <DependentUpon>MapTreeWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\MotionsEditor\MotionsEditorDialog.resx">
+      <DependentUpon>MotionsEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\ObjectProperties\ObjectPropertiesDialog.resx">
       <DependentUpon>ObjectPropertiesDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -1015,6 +1024,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>"$(SolutionDir)Build\InsertIcons.exe" "$(TargetPath)" "$(ProjectDir)Resources\embedded_icons.txt"</PostBuildEvent>

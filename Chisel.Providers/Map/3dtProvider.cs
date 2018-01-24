@@ -673,11 +673,24 @@ namespace Chisel.Providers.Map
 
             wr.WriteLine(bld.ToString());
         }
+
+        private int GBSPGroup(List<int> l)
+        {
+            int ret = 0;
+
+            foreach(int x in l)
+            {
+                if (x > 0) ret = x;
+            }
+            
+            return ret;
+        }
+
         private void WriteWorldEntity(List<Solid> solids, StreamWriter wr)
         {
             foreach(var solid in solids)
             {
-                int vis = solid.Visgroups[0];
+                int vis = GBSPGroup(solid.Visgroups);
 
                 WriteProperty("Brush", solid.ClassName ?? "NoName", wr, true);
                 WriteProperty("Flags", ((int)solid.Flags).ToString(), wr, false, 1);

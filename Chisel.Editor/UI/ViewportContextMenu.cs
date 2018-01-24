@@ -26,6 +26,8 @@ namespace Chisel.Editor.UI
             Items.Add(new ToolStripSeparator());
             Add(doc.History.GetUndoString(), HotkeysMediator.HistoryUndo, doc.History.CanUndo());
             Add(doc.History.GetRedoString(), HotkeysMediator.HistoryRedo, doc.History.CanRedo());
+            Items.Add(new ToolStripSeparator());
+            Add("Motions Editor", HotkeysMediator.MotionsEditor);
         }
 
         public void AddSelectionItems(Document doc, ViewportBase viewport)
