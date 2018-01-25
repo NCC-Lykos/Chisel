@@ -210,6 +210,9 @@ namespace Chisel.Settings
         [Description("Go to Previous Tab")]
         PreviousTab,
         [Description("Go to Next Tab")]
-        NextTab
+        NextTab,
+
+        [Description("Motions Editor")]
+        MotionsEditor
     }
 }

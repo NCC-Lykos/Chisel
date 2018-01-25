@@ -27,6 +27,7 @@ using Chisel.Editor.Tools;
 using Chisel.Editor.Tools.SelectTool;
 using Chisel.Editor.UI;
 using Chisel.Editor.UI.ObjectProperties;
+using Chisel.Editor.UI.MotionsEditor;
 using Chisel.Editor.Visgroups;
 using Chisel.Extensions;
 using Chisel.Providers.Texture;
@@ -78,6 +79,7 @@ namespace Chisel.Editor.Documents
             Mediator.Subscribe(HotkeysMediator.SelectionClear, this);
             Mediator.Subscribe(HotkeysMediator.SelectAll, this);
             Mediator.Subscribe(HotkeysMediator.ObjectProperties, this);
+            Mediator.Subscribe(HotkeysMediator.MotionsEditor, this);
 
             Mediator.Subscribe(HotkeysMediator.QuickHideSelected, this);
             Mediator.Subscribe(HotkeysMediator.QuickHideUnselected, this);
@@ -362,6 +364,12 @@ namespace Chisel.Editor.Documents
         public void ObjectProperties()
         {
             var pd = new ObjectPropertiesDialog(_document);
+            pd.Show(Editor.Instance);
+        }
+
+        public void MotionsEditor()
+        {
+            var pd = new MotionsEditorDialog(_document);
             pd.Show(Editor.Instance);
         }
 

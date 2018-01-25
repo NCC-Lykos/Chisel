@@ -56,7 +56,8 @@ namespace Chisel.Editor.UI.ObjectProperties
         private bool DiffGBSPArea;
         private bool DiffGBSPFlocking;
         private bool DiffGBSPSheet;
-        
+        private List<int> addvis;
+
         public ObjectPropertiesDialog(Documents.Document document)
         {
             Document = document;
@@ -95,6 +96,18 @@ namespace Chisel.Editor.UI.ObjectProperties
             }
         }
 
+        private int CountVis()
+        {
+            int ret = 0;
+
+            foreach(int x in addvis)
+            {
+                if (x > 0) ret++;
+            }
+
+            return ret;
+        }
+
         private void Apply()
         {
             string actionText = null;
@@ -114,7 +127,13 @@ namespace Chisel.Editor.UI.ObjectProperties
             }
 
             var visgroupAction = GetUpdateVisgroupsAction();
-            if (visgroupAction != null)
+
+            var count = CountVis();
+            if (count > 1)
+            {
+                MessageBox.Show("Multiple VisGroups Selected, Please select only 1.", "Multiple Visgroups", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else if (visgroupAction != null)
             {
                 // Visgroup change shows if entity data not changed
                 if (actionText == null) actionText = "Edit object visgroups";
@@ -249,6 +268,7 @@ namespace Chisel.Editor.UI.ObjectProperties
         {
             var states = VisgroupPanel.GetAllCheckStates();
             var add = states.Where(x => x.Value == CheckState.Checked).Select(x => x.Key).ToList();
+            addvis = add;
             var rem = states.Where(x => x.Value == CheckState.Unchecked).Select(x => x.Key).ToList();
             // If all the objects are in the add groups and none are in the remove groups, nothing needs to be changed
             if (Objects.All(x => add.All(y => x.IsInVisgroup(y, false)) && !rem.Any(y => x.IsInVisgroup(y, false)))) return null;
