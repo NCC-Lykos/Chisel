@@ -114,6 +114,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.txtUY = new System.Windows.Forms.TextBox();
             this.txtVX = new System.Windows.Forms.TextBox();
             this.txtUX = new System.Windows.Forms.TextBox();
+            this.LightValue = new System.Windows.Forms.NumericUpDown();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RotationValue)).BeginInit();
@@ -127,6 +128,7 @@ namespace Chisel.Editor.Tools.TextureTool
             ((System.ComponentModel.ISupportInitialize)(this.TranslucencyValue)).BeginInit();
             this.grpGBSPAdvanced.SuspendLayout();
             this.grpTexUV.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LightValue)).BeginInit();
             this.SuspendLayout();
             // 
             // label11
@@ -157,7 +159,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // HideMaskCheckbox
             // 
             this.HideMaskCheckbox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.HideMaskCheckbox.Location = new System.Drawing.Point(303, 152);
+            this.HideMaskCheckbox.Location = new System.Drawing.Point(389, 152);
             this.HideMaskCheckbox.Name = "HideMaskCheckbox";
             this.HideMaskCheckbox.Size = new System.Drawing.Size(102, 23);
             this.HideMaskCheckbox.TabIndex = 34;
@@ -238,7 +240,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.groupBox1.Controls.Add(this.JustifyBottomButton);
             this.groupBox1.Controls.Add(this.JustifyCenterButton);
             this.groupBox1.Controls.Add(this.JustifyLeftButton);
-            this.groupBox1.Location = new System.Drawing.Point(303, 12);
+            this.groupBox1.Location = new System.Drawing.Point(389, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(102, 137);
             this.groupBox1.TabIndex = 29;
@@ -436,7 +438,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 242F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 243F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.ScaleXValue, 1, 1);
@@ -649,7 +651,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.RecentTexturesList.BackColor = System.Drawing.Color.Black;
             this.RecentTexturesList.EnableDrag = false;
             this.RecentTexturesList.ImageSize = 64;
-            this.RecentTexturesList.Location = new System.Drawing.Point(318, 178);
+            this.RecentTexturesList.Location = new System.Drawing.Point(404, 178);
             this.RecentTexturesList.Name = "RecentTexturesList";
             this.RecentTexturesList.Size = new System.Drawing.Size(87, 179);
             this.RecentTexturesList.SortDescending = false;
@@ -667,7 +669,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.SelectedTexturesList.ImageSize = 64;
             this.SelectedTexturesList.Location = new System.Drawing.Point(12, 178);
             this.SelectedTexturesList.Name = "SelectedTexturesList";
-            this.SelectedTexturesList.Size = new System.Drawing.Size(300, 179);
+            this.SelectedTexturesList.Size = new System.Drawing.Size(391, 179);
             this.SelectedTexturesList.SortDescending = false;
             this.SelectedTexturesList.SortOrder = Chisel.Editor.UI.TextureListPanel.TextureSortOrder.Name;
             this.SelectedTexturesList.TabIndex = 37;
@@ -675,6 +677,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // 
             // gbspGroup
             // 
+            this.gbspGroup.Controls.Add(this.LightValue);
             this.gbspGroup.Controls.Add(this.TranslucencyValue);
             this.gbspGroup.Controls.Add(this.chkSheet);
             this.gbspGroup.Controls.Add(this.chkVisible);
@@ -689,7 +692,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.gbspGroup.Controls.Add(this.chkMirror);
             this.gbspGroup.Location = new System.Drawing.Point(15, 417);
             this.gbspGroup.Name = "gbspGroup";
-            this.gbspGroup.Size = new System.Drawing.Size(388, 88);
+            this.gbspGroup.Size = new System.Drawing.Size(476, 88);
             this.gbspGroup.TabIndex = 39;
             this.gbspGroup.TabStop = false;
             this.gbspGroup.Text = "GBSP";
@@ -716,7 +719,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkSheet
             // 
             this.chkSheet.AutoSize = true;
-            this.chkSheet.Location = new System.Drawing.Point(280, 42);
+            this.chkSheet.Location = new System.Drawing.Point(257, 42);
             this.chkSheet.Name = "chkSheet";
             this.chkSheet.Size = new System.Drawing.Size(54, 17);
             this.chkSheet.TabIndex = 10;
@@ -727,7 +730,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkVisible
             // 
             this.chkVisible.AutoSize = true;
-            this.chkVisible.Location = new System.Drawing.Point(280, 19);
+            this.chkVisible.Location = new System.Drawing.Point(364, 19);
             this.chkVisible.Name = "chkVisible";
             this.chkVisible.Size = new System.Drawing.Size(56, 17);
             this.chkVisible.TabIndex = 9;
@@ -738,7 +741,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkTextureLocked
             // 
             this.chkTextureLocked.AutoSize = true;
-            this.chkTextureLocked.Location = new System.Drawing.Point(280, 65);
+            this.chkTextureLocked.Location = new System.Drawing.Point(257, 65);
             this.chkTextureLocked.Name = "chkTextureLocked";
             this.chkTextureLocked.Size = new System.Drawing.Size(101, 17);
             this.chkTextureLocked.TabIndex = 8;
@@ -749,7 +752,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkFlat
             // 
             this.chkFlat.AutoSize = true;
-            this.chkFlat.Location = new System.Drawing.Point(173, 42);
+            this.chkFlat.Location = new System.Drawing.Point(177, 42);
             this.chkFlat.Name = "chkFlat";
             this.chkFlat.Size = new System.Drawing.Size(43, 17);
             this.chkFlat.TabIndex = 7;
@@ -760,7 +763,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkGouraud
             // 
             this.chkGouraud.AutoSize = true;
-            this.chkGouraud.Location = new System.Drawing.Point(173, 19);
+            this.chkGouraud.Location = new System.Drawing.Point(177, 19);
             this.chkGouraud.Name = "chkGouraud";
             this.chkGouraud.Size = new System.Drawing.Size(67, 17);
             this.chkGouraud.TabIndex = 6;
@@ -782,7 +785,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkLight
             // 
             this.chkLight.AutoSize = true;
-            this.chkLight.Location = new System.Drawing.Point(95, 42);
+            this.chkLight.Location = new System.Drawing.Point(6, 42);
             this.chkLight.Name = "chkLight";
             this.chkLight.Size = new System.Drawing.Size(49, 17);
             this.chkLight.TabIndex = 4;
@@ -793,7 +796,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkSky
             // 
             this.chkSky.AutoSize = true;
-            this.chkSky.Location = new System.Drawing.Point(173, 65);
+            this.chkSky.Location = new System.Drawing.Point(177, 65);
             this.chkSky.Name = "chkSky";
             this.chkSky.Size = new System.Drawing.Size(44, 17);
             this.chkSky.TabIndex = 3;
@@ -815,7 +818,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkFullBright
             // 
             this.chkFullBright.AutoSize = true;
-            this.chkFullBright.Location = new System.Drawing.Point(6, 42);
+            this.chkFullBright.Location = new System.Drawing.Point(6, 19);
             this.chkFullBright.Name = "chkFullBright";
             this.chkFullBright.Size = new System.Drawing.Size(72, 17);
             this.chkFullBright.TabIndex = 1;
@@ -826,7 +829,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkMirror
             // 
             this.chkMirror.AutoSize = true;
-            this.chkMirror.Location = new System.Drawing.Point(6, 19);
+            this.chkMirror.Location = new System.Drawing.Point(257, 19);
             this.chkMirror.Name = "chkMirror";
             this.chkMirror.Size = new System.Drawing.Size(52, 17);
             this.chkMirror.TabIndex = 0;
@@ -857,7 +860,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.grpGBSPAdvanced.Controls.Add(this.txtCX);
             this.grpGBSPAdvanced.Location = new System.Drawing.Point(15, 511);
             this.grpGBSPAdvanced.Name = "grpGBSPAdvanced";
-            this.grpGBSPAdvanced.Size = new System.Drawing.Size(388, 152);
+            this.grpGBSPAdvanced.Size = new System.Drawing.Size(476, 152);
             this.grpGBSPAdvanced.TabIndex = 40;
             this.grpGBSPAdvanced.TabStop = false;
             this.grpGBSPAdvanced.Text = "GBSP Advanced";
@@ -865,7 +868,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // btnGBSPAReset
             // 
             this.btnGBSPAReset.Enabled = false;
-            this.btnGBSPAReset.Location = new System.Drawing.Point(307, 15);
+            this.btnGBSPAReset.Location = new System.Drawing.Point(395, 13);
             this.btnGBSPAReset.Name = "btnGBSPAReset";
             this.btnGBSPAReset.Size = new System.Drawing.Size(75, 23);
             this.btnGBSPAReset.TabIndex = 18;
@@ -876,7 +879,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // chkGBSPAEnableFlip
             // 
             this.chkGBSPAEnableFlip.AutoSize = true;
-            this.chkGBSPAEnableFlip.Location = new System.Drawing.Point(226, 96);
+            this.chkGBSPAEnableFlip.Location = new System.Drawing.Point(314, 96);
             this.chkGBSPAEnableFlip.Name = "chkGBSPAEnableFlip";
             this.chkGBSPAEnableFlip.Size = new System.Drawing.Size(78, 17);
             this.chkGBSPAEnableFlip.TabIndex = 17;
@@ -887,7 +890,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // 
             this.label12.AutoSize = true;
             this.label12.Enabled = false;
-            this.label12.Location = new System.Drawing.Point(187, 52);
+            this.label12.Location = new System.Drawing.Point(275, 52);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(83, 13);
             this.label12.TabIndex = 16;
@@ -896,7 +899,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // txtPosZ
             // 
             this.txtPosZ.Enabled = false;
-            this.txtPosZ.Location = new System.Drawing.Point(322, 68);
+            this.txtPosZ.Location = new System.Drawing.Point(410, 68);
             this.txtPosZ.Name = "txtPosZ";
             this.txtPosZ.Size = new System.Drawing.Size(60, 20);
             this.txtPosZ.TabIndex = 15;
@@ -904,7 +907,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // txtPosY
             // 
             this.txtPosY.Enabled = false;
-            this.txtPosY.Location = new System.Drawing.Point(256, 68);
+            this.txtPosY.Location = new System.Drawing.Point(344, 68);
             this.txtPosY.Name = "txtPosY";
             this.txtPosY.Size = new System.Drawing.Size(60, 20);
             this.txtPosY.TabIndex = 14;
@@ -912,7 +915,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // btnGBSPAFlipU
             // 
             this.btnGBSPAFlipU.Enabled = false;
-            this.btnGBSPAFlipU.Location = new System.Drawing.Point(226, 118);
+            this.btnGBSPAFlipU.Location = new System.Drawing.Point(314, 118);
             this.btnGBSPAFlipU.Name = "btnGBSPAFlipU";
             this.btnGBSPAFlipU.Size = new System.Drawing.Size(75, 23);
             this.btnGBSPAFlipU.TabIndex = 13;
@@ -922,7 +925,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // txtPosX
             // 
             this.txtPosX.Enabled = false;
-            this.txtPosX.Location = new System.Drawing.Point(190, 68);
+            this.txtPosX.Location = new System.Drawing.Point(278, 68);
             this.txtPosX.Name = "txtPosX";
             this.txtPosX.Size = new System.Drawing.Size(60, 20);
             this.txtPosX.TabIndex = 12;
@@ -930,7 +933,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // btnGBSPAFlipV
             // 
             this.btnGBSPAFlipV.Enabled = false;
-            this.btnGBSPAFlipV.Location = new System.Drawing.Point(307, 117);
+            this.btnGBSPAFlipV.Location = new System.Drawing.Point(395, 117);
             this.btnGBSPAFlipV.Name = "btnGBSPAFlipV";
             this.btnGBSPAFlipV.Size = new System.Drawing.Size(75, 23);
             this.btnGBSPAFlipV.TabIndex = 11;
@@ -950,49 +953,49 @@ namespace Chisel.Editor.Tools.TextureTool
             // txtBZ
             // 
             this.txtBZ.Enabled = false;
-            this.txtBZ.Location = new System.Drawing.Point(122, 94);
+            this.txtBZ.Location = new System.Drawing.Point(148, 94);
             this.txtBZ.Name = "txtBZ";
-            this.txtBZ.Size = new System.Drawing.Size(52, 20);
+            this.txtBZ.Size = new System.Drawing.Size(65, 20);
             this.txtBZ.TabIndex = 9;
             // 
             // txtAZ
             // 
             this.txtAZ.Enabled = false;
-            this.txtAZ.Location = new System.Drawing.Point(122, 68);
+            this.txtAZ.Location = new System.Drawing.Point(148, 68);
             this.txtAZ.Name = "txtAZ";
-            this.txtAZ.Size = new System.Drawing.Size(52, 20);
+            this.txtAZ.Size = new System.Drawing.Size(65, 20);
             this.txtAZ.TabIndex = 8;
             // 
             // txtCZ
             // 
             this.txtCZ.Enabled = false;
-            this.txtCZ.Location = new System.Drawing.Point(122, 120);
+            this.txtCZ.Location = new System.Drawing.Point(148, 120);
             this.txtCZ.Name = "txtCZ";
-            this.txtCZ.Size = new System.Drawing.Size(52, 20);
+            this.txtCZ.Size = new System.Drawing.Size(65, 20);
             this.txtCZ.TabIndex = 7;
             // 
             // txtBY
             // 
             this.txtBY.Enabled = false;
-            this.txtBY.Location = new System.Drawing.Point(64, 94);
+            this.txtBY.Location = new System.Drawing.Point(77, 94);
             this.txtBY.Name = "txtBY";
-            this.txtBY.Size = new System.Drawing.Size(52, 20);
+            this.txtBY.Size = new System.Drawing.Size(65, 20);
             this.txtBY.TabIndex = 6;
             // 
             // txtAY
             // 
             this.txtAY.Enabled = false;
-            this.txtAY.Location = new System.Drawing.Point(64, 68);
+            this.txtAY.Location = new System.Drawing.Point(77, 68);
             this.txtAY.Name = "txtAY";
-            this.txtAY.Size = new System.Drawing.Size(52, 20);
+            this.txtAY.Size = new System.Drawing.Size(65, 20);
             this.txtAY.TabIndex = 5;
             // 
             // txtCY
             // 
             this.txtCY.Enabled = false;
-            this.txtCY.Location = new System.Drawing.Point(64, 120);
+            this.txtCY.Location = new System.Drawing.Point(77, 120);
             this.txtCY.Name = "txtCY";
-            this.txtCY.Size = new System.Drawing.Size(52, 20);
+            this.txtCY.Size = new System.Drawing.Size(65, 20);
             this.txtCY.TabIndex = 4;
             // 
             // txtBX
@@ -1000,7 +1003,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.txtBX.Enabled = false;
             this.txtBX.Location = new System.Drawing.Point(6, 94);
             this.txtBX.Name = "txtBX";
-            this.txtBX.Size = new System.Drawing.Size(52, 20);
+            this.txtBX.Size = new System.Drawing.Size(65, 20);
             this.txtBX.TabIndex = 3;
             // 
             // txtAX
@@ -1008,7 +1011,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.txtAX.Enabled = false;
             this.txtAX.Location = new System.Drawing.Point(6, 68);
             this.txtAX.Name = "txtAX";
-            this.txtAX.Size = new System.Drawing.Size(52, 20);
+            this.txtAX.Size = new System.Drawing.Size(65, 20);
             this.txtAX.TabIndex = 2;
             // 
             // chkGBSPAEnableAll
@@ -1027,7 +1030,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.txtCX.Enabled = false;
             this.txtCX.Location = new System.Drawing.Point(6, 120);
             this.txtCX.Name = "txtCX";
-            this.txtCX.Size = new System.Drawing.Size(52, 20);
+            this.txtCX.Size = new System.Drawing.Size(65, 20);
             this.txtCX.TabIndex = 0;
             // 
             // grpTexUV
@@ -1043,7 +1046,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.grpTexUV.Enabled = false;
             this.grpTexUV.Location = new System.Drawing.Point(15, 669);
             this.grpTexUV.Name = "grpTexUV";
-            this.grpTexUV.Size = new System.Drawing.Size(388, 61);
+            this.grpTexUV.Size = new System.Drawing.Size(476, 61);
             this.grpTexUV.TabIndex = 41;
             this.grpTexUV.TabStop = false;
             this.grpTexUV.Text = "Texture UV";
@@ -1052,7 +1055,7 @@ namespace Chisel.Editor.Tools.TextureTool
             // 
             this.label14.AutoSize = true;
             this.label14.Enabled = false;
-            this.label14.Location = new System.Drawing.Point(211, 16);
+            this.label14.Location = new System.Drawing.Point(238, 16);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(68, 13);
             this.label14.TabIndex = 11;
@@ -1071,41 +1074,41 @@ namespace Chisel.Editor.Tools.TextureTool
             // txtVZ
             // 
             this.txtVZ.Enabled = false;
-            this.txtVZ.Location = new System.Drawing.Point(330, 32);
+            this.txtVZ.Location = new System.Drawing.Point(393, 32);
             this.txtVZ.Name = "txtVZ";
-            this.txtVZ.Size = new System.Drawing.Size(52, 20);
+            this.txtVZ.Size = new System.Drawing.Size(70, 20);
             this.txtVZ.TabIndex = 9;
             // 
             // txtUZ
             // 
             this.txtUZ.Enabled = false;
-            this.txtUZ.Location = new System.Drawing.Point(122, 32);
+            this.txtUZ.Location = new System.Drawing.Point(158, 32);
             this.txtUZ.Name = "txtUZ";
-            this.txtUZ.Size = new System.Drawing.Size(52, 20);
+            this.txtUZ.Size = new System.Drawing.Size(70, 20);
             this.txtUZ.TabIndex = 8;
             // 
             // txtVY
             // 
             this.txtVY.Enabled = false;
-            this.txtVY.Location = new System.Drawing.Point(272, 32);
+            this.txtVY.Location = new System.Drawing.Point(317, 32);
             this.txtVY.Name = "txtVY";
-            this.txtVY.Size = new System.Drawing.Size(52, 20);
+            this.txtVY.Size = new System.Drawing.Size(70, 20);
             this.txtVY.TabIndex = 6;
             // 
             // txtUY
             // 
             this.txtUY.Enabled = false;
-            this.txtUY.Location = new System.Drawing.Point(64, 32);
+            this.txtUY.Location = new System.Drawing.Point(82, 32);
             this.txtUY.Name = "txtUY";
-            this.txtUY.Size = new System.Drawing.Size(52, 20);
+            this.txtUY.Size = new System.Drawing.Size(70, 20);
             this.txtUY.TabIndex = 5;
             // 
             // txtVX
             // 
             this.txtVX.Enabled = false;
-            this.txtVX.Location = new System.Drawing.Point(214, 32);
+            this.txtVX.Location = new System.Drawing.Point(241, 32);
             this.txtVX.Name = "txtVX";
-            this.txtVX.Size = new System.Drawing.Size(52, 20);
+            this.txtVX.Size = new System.Drawing.Size(70, 20);
             this.txtVX.TabIndex = 3;
             // 
             // txtUX
@@ -1113,14 +1116,32 @@ namespace Chisel.Editor.Tools.TextureTool
             this.txtUX.Enabled = false;
             this.txtUX.Location = new System.Drawing.Point(6, 32);
             this.txtUX.Name = "txtUX";
-            this.txtUX.Size = new System.Drawing.Size(52, 20);
+            this.txtUX.Size = new System.Drawing.Size(70, 20);
             this.txtUX.TabIndex = 2;
+            // 
+            // LightValue
+            // 
+            this.LightValue.Enabled = false;
+            this.LightValue.Location = new System.Drawing.Point(95, 39);
+            this.LightValue.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.LightValue.Name = "LightValue";
+            this.LightValue.Size = new System.Drawing.Size(58, 20);
+            this.LightValue.TabIndex = 41;
+            this.LightValue.Value = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
             // 
             // TextureApplicationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(417, 732);
+            this.ClientSize = new System.Drawing.Size(503, 732);
             this.Controls.Add(this.grpTexUV);
             this.Controls.Add(this.grpGBSPAdvanced);
             this.Controls.Add(this.gbspGroup);
@@ -1171,6 +1192,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.grpGBSPAdvanced.PerformLayout();
             this.grpTexUV.ResumeLayout(false);
             this.grpTexUV.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LightValue)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1261,5 +1283,6 @@ namespace Chisel.Editor.Tools.TextureTool
         private System.Windows.Forms.TextBox txtUY;
         private System.Windows.Forms.TextBox txtVX;
         private System.Windows.Forms.TextBox txtUX;
+        private System.Windows.Forms.NumericUpDown LightValue;
     }
 }

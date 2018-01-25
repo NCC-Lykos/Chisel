@@ -28,13 +28,23 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.MotionsList = new System.Windows.Forms.CheckedListBox();
             this.SuspendLayout();
+            // 
+            // MotionsList
+            // 
+            this.MotionsList.FormattingEnabled = true;
+            this.MotionsList.Location = new System.Drawing.Point(12, 12);
+            this.MotionsList.Name = "MotionsList";
+            this.MotionsList.Size = new System.Drawing.Size(120, 484);
+            this.MotionsList.TabIndex = 0;
             // 
             // MotionsEditorDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1053, 514);
+            this.ClientSize = new System.Drawing.Size(784, 514);
+            this.Controls.Add(this.MotionsList);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MotionsEditorDialog";
@@ -47,5 +57,7 @@
         }
 
         #endregion
+
+        private System.Windows.Forms.CheckedListBox MotionsList;
     }
 }
