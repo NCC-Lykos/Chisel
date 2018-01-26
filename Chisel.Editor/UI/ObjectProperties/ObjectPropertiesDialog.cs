@@ -153,7 +153,13 @@ namespace Chisel.Editor.UI.ObjectProperties
                 GBSPMultipleCustom = false;
                 for (int x = 0; x < Objects.Count; x++)
                 {
-                    if (CustomFlags.GetItemCheckState(x) == CheckState.Indeterminate && Objects.All(y => y is Solid)) GBSPMultipleCustom = true;
+                    for (int y = 0; y < CustomFlags.Items.Count; y++)
+                    {
+                        if (CustomFlags.GetItemCheckState(y) == CheckState.Indeterminate)
+                        {
+                            GBSPMultipleCustom = true;
+                        }
+                    }
                 }
 
                 if (!GBSPMultiple && !GBSPMultipleCustom)

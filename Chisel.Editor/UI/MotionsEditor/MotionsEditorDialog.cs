@@ -16,7 +16,19 @@ namespace Chisel.Editor.UI.MotionsEditor
         public MotionsEditorDialog(Documents.Document document)
         {
             InitializeComponent();
+            Initialize(document);
         }
+
+        private Documents.Document Document { get; set; }
+
+        private void Initialize(Documents.Document d)
+        {
+            Document = d;
+
+                //CustomFlags.Items.Add(keys[x], CheckState.Unchecked);
+        }
+
+        
         
         public void Notify(string message, object data) {}
     }
