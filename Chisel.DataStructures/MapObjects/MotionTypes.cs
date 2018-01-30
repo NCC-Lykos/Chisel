@@ -14,7 +14,7 @@ namespace Chisel.DataStructures.MapObjects
         public float rotX { get; set; }
         public float rotY { get; set; }
         public float rotZ { get; set; }
-        public const float rotD = 0.0f;
+        public float rotD = 0.0f;
         /*Translation*/
         public float traX { get; set; }
         public float traY { get; set; }

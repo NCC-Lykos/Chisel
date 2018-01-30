@@ -660,9 +660,9 @@ namespace Chisel.Providers.Map
                     line = rdr.ReadLine();
                     model.RawModelLines.Add(line);
                     split = line.Split(' ');
-                    Coordinate c = new Coordinate(Convert.ToDecimal(split[1]),
-                                                  Convert.ToDecimal(split[2]),
-                                                  Convert.ToDecimal(split[3]));
+                    Coordinate c = new Coordinate( Convert.ToDecimal(split[1]),
+                                                  -Convert.ToDecimal(split[3]),
+                                                   Convert.ToDecimal(split[2]));
                     model.KeyFrames[x].SetTranslation(c);
                 }
 

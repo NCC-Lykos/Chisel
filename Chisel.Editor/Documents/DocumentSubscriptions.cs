@@ -99,6 +99,7 @@ namespace Chisel.Editor.Documents
             Mediator.Subscribe(HotkeysMediator.ReplaceTextures, this);
             Mediator.Subscribe(HotkeysMediator.SnapSelectionToGrid, this);
             Mediator.Subscribe(HotkeysMediator.SnapSelectionToGridIndividually, this);
+            
             Mediator.Subscribe(HotkeysMediator.AlignXMax, this);
             Mediator.Subscribe(HotkeysMediator.AlignXMin, this);
             Mediator.Subscribe(HotkeysMediator.AlignYMax, this);

@@ -1,23 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using OpenTK.Graphics.OpenGL;
-using Chisel.Common;
-using Chisel.Common.Mediator;
-using Chisel.DataStructures.Geometric;
-using Chisel.DataStructures.MapObjects;
-using Chisel.Editor.Actions;
-using Chisel.Editor.Actions.MapObjects.Operations;
-using Chisel.Editor.Actions.MapObjects.Selection;
-using Chisel.Editor.Documents;
-using Chisel.Editor.History;
+﻿using System.Drawing;
 using Chisel.Editor.Properties;
-using Chisel.Graphics.Helpers;
-using Chisel.Providers.Texture;
 using Chisel.Settings;
 using Chisel.UI;
+using Chisel.Common.Mediator;
 
 namespace Chisel.Editor.Tools.MotionsTool
 {
@@ -47,7 +32,7 @@ namespace Chisel.Editor.Tools.MotionsTool
         {
             _form.Show(Editor.Instance);
             Editor.Instance.Focus();
-
+            
             _form.OnShow();
         }
 
@@ -107,6 +92,7 @@ namespace Chisel.Editor.Tools.MotionsTool
                 case HotkeysMediator.OperationsPaste:
                 case HotkeysMediator.OperationsPasteSpecial:
                 case HotkeysMediator.OperationsDelete:
+                case HotkeysMediator.Transform:
                     return HotkeyInterceptResult.Abort;
             }
             return HotkeyInterceptResult.Continue;

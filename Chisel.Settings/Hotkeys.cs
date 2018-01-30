@@ -59,8 +59,7 @@ namespace Chisel.Settings
                                     new HotkeyDefinition("Rotate Selection Counter-Clockwise", "Rotate the selected objects 90 degrees counter-clockwise", HotkeysMediator.RotateCounterClockwise, "M"),
 
                                     new HotkeyDefinition("Create New Visgroup", "Create a new visgroup", HotkeysMediator.VisgroupCreateNew, "Alt+V"),
-
-                //Add("View", new SimpleMenuBuilder("Center All Views on Selection", HotkeysMediator.CenterAllViewsOnSelection) { Image = Resources.Menu_CenterSelectionAll, IsVisible = mapOpen, IsActive = itemsSelected });
+                                    
                                     new HotkeyDefinition("Center All Views on Selection", "Center all viewports on the current selection", HotkeysMediator.CenterAllViewsOnSelection, "Ctrl+Alt+E"),
                                     new HotkeyDefinition("Center 2D View on Selection", "Center the 2D viewports on the current selection", HotkeysMediator.Center2DViewsOnSelection, "Ctrl+E"),
                                     new HotkeyDefinition("Center 3D View on Selection", "Center the 3D viewport on the current selection", HotkeysMediator.Center3DViewsOnSelection, "Ctrl+Shift+E"),

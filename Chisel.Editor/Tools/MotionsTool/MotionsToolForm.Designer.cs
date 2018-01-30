@@ -43,11 +43,16 @@ namespace Chisel.Editor.Tools.MotionsTool
         {
             this.MotionsList = new System.Windows.Forms.CheckedListBox();
             this.grpRaw = new System.Windows.Forms.GroupBox();
+            this.txtOrigZ = new System.Windows.Forms.TextBox();
+            this.txtOrigY = new System.Windows.Forms.TextBox();
+            this.btnUpdateMotion = new System.Windows.Forms.Button();
+            this.txtOrigX = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.btnSetOriginCenter = new System.Windows.Forms.Button();
             this.txtCurrentKey = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.txtMotionID = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.txtMotionName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.AddMotion = new System.Windows.Forms.Button();
@@ -57,17 +62,12 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.btnSetMovement = new System.Windows.Forms.Button();
             this.btnRemoveKeyframe = new System.Windows.Forms.Button();
             this.btnAddKeyFrame = new System.Windows.Forms.Button();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.btnUpdateMotion = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.txtOrigX = new System.Windows.Forms.TextBox();
-            this.txtOrigY = new System.Windows.Forms.TextBox();
-            this.txtOrigZ = new System.Windows.Forms.TextBox();
+            this.KeyFrameData = new System.Windows.Forms.DataGridView();
             this.btnAnimate = new System.Windows.Forms.Button();
             this.btnStopAnimation = new System.Windows.Forms.Button();
             this.grpRaw.SuspendLayout();
             this.grpEditKeyframes.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.KeyFrameData)).BeginInit();
             this.SuspendLayout();
             // 
             // MotionsList
@@ -100,37 +100,67 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.grpRaw.TabStop = false;
             this.grpRaw.Text = "Motion Data";
             // 
+            // txtOrigZ
+            // 
+            this.txtOrigZ.Location = new System.Drawing.Point(422, 25);
+            this.txtOrigZ.Name = "txtOrigZ";
+            this.txtOrigZ.Size = new System.Drawing.Size(75, 20);
+            this.txtOrigZ.TabIndex = 37;
+            // 
+            // txtOrigY
+            // 
+            this.txtOrigY.Location = new System.Drawing.Point(341, 25);
+            this.txtOrigY.Name = "txtOrigY";
+            this.txtOrigY.Size = new System.Drawing.Size(75, 20);
+            this.txtOrigY.TabIndex = 36;
+            // 
+            // btnUpdateMotion
+            // 
+            this.btnUpdateMotion.Location = new System.Drawing.Point(509, 52);
+            this.btnUpdateMotion.Name = "btnUpdateMotion";
+            this.btnUpdateMotion.Size = new System.Drawing.Size(60, 23);
+            this.btnUpdateMotion.TabIndex = 30;
+            this.btnUpdateMotion.Text = "Update Motion";
+            this.btnUpdateMotion.UseVisualStyleBackColor = true;
+            // 
+            // txtOrigX
+            // 
+            this.txtOrigX.Location = new System.Drawing.Point(260, 25);
+            this.txtOrigX.Name = "txtOrigX";
+            this.txtOrigX.Size = new System.Drawing.Size(75, 20);
+            this.txtOrigX.TabIndex = 35;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(220, 28);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(34, 13);
+            this.label4.TabIndex = 34;
+            this.label4.Text = "Origin";
+            // 
             // btnSetOriginCenter
             // 
-            this.btnSetOriginCenter.Location = new System.Drawing.Point(409, 23);
+            this.btnSetOriginCenter.Location = new System.Drawing.Point(260, 52);
             this.btnSetOriginCenter.Name = "btnSetOriginCenter";
-            this.btnSetOriginCenter.Size = new System.Drawing.Size(160, 23);
+            this.btnSetOriginCenter.Size = new System.Drawing.Size(237, 23);
             this.btnSetOriginCenter.TabIndex = 4;
             this.btnSetOriginCenter.Text = "Set Origin to center of Solids";
             this.btnSetOriginCenter.UseVisualStyleBackColor = true;
             // 
             // txtCurrentKey
             // 
-            this.txtCurrentKey.Location = new System.Drawing.Point(262, 47);
+            this.txtCurrentKey.Location = new System.Drawing.Point(166, 51);
             this.txtCurrentKey.Name = "txtCurrentKey";
-            this.txtCurrentKey.Size = new System.Drawing.Size(141, 20);
+            this.txtCurrentKey.Size = new System.Drawing.Size(48, 20);
             this.txtCurrentKey.TabIndex = 5;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(194, 50);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(62, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Current Key";
             // 
             // txtMotionID
             // 
             this.txtMotionID.Enabled = false;
-            this.txtMotionID.Location = new System.Drawing.Point(47, 47);
+            this.txtMotionID.Location = new System.Drawing.Point(47, 51);
             this.txtMotionID.Name = "txtMotionID";
-            this.txtMotionID.Size = new System.Drawing.Size(141, 20);
+            this.txtMotionID.Size = new System.Drawing.Size(45, 20);
             this.txtMotionID.TabIndex = 3;
             // 
             // label2
@@ -142,11 +172,20 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.label2.TabIndex = 2;
             this.label2.Text = "ID";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(98, 54);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(62, 13);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Current Key";
+            // 
             // txtMotionName
             // 
             this.txtMotionName.Location = new System.Drawing.Point(47, 25);
             this.txtMotionName.Name = "txtMotionName";
-            this.txtMotionName.Size = new System.Drawing.Size(141, 20);
+            this.txtMotionName.Size = new System.Drawing.Size(167, 20);
             this.txtMotionName.TabIndex = 1;
             // 
             // label1
@@ -182,7 +221,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.grpEditKeyframes.Controls.Add(this.btnSetMovement);
             this.grpEditKeyframes.Controls.Add(this.btnRemoveKeyframe);
             this.grpEditKeyframes.Controls.Add(this.btnAddKeyFrame);
-            this.grpEditKeyframes.Controls.Add(this.dataGridView2);
+            this.grpEditKeyframes.Controls.Add(this.KeyFrameData);
             this.grpEditKeyframes.Location = new System.Drawing.Point(138, 41);
             this.grpEditKeyframes.Name = "grpEditKeyframes";
             this.grpEditKeyframes.Size = new System.Drawing.Size(575, 216);
@@ -226,52 +265,13 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.btnAddKeyFrame.Text = "Add Key";
             this.btnAddKeyFrame.UseVisualStyleBackColor = true;
             // 
-            // dataGridView2
+            // KeyFrameData
             // 
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Location = new System.Drawing.Point(6, 19);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.Size = new System.Drawing.Size(563, 159);
-            this.dataGridView2.TabIndex = 26;
-            // 
-            // btnUpdateMotion
-            // 
-            this.btnUpdateMotion.Location = new System.Drawing.Point(509, 49);
-            this.btnUpdateMotion.Name = "btnUpdateMotion";
-            this.btnUpdateMotion.Size = new System.Drawing.Size(60, 23);
-            this.btnUpdateMotion.TabIndex = 30;
-            this.btnUpdateMotion.Text = "Update Motion";
-            this.btnUpdateMotion.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(194, 28);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(34, 13);
-            this.label4.TabIndex = 34;
-            this.label4.Text = "Origin";
-            // 
-            // txtOrigX
-            // 
-            this.txtOrigX.Location = new System.Drawing.Point(262, 25);
-            this.txtOrigX.Name = "txtOrigX";
-            this.txtOrigX.Size = new System.Drawing.Size(43, 20);
-            this.txtOrigX.TabIndex = 35;
-            // 
-            // txtOrigY
-            // 
-            this.txtOrigY.Location = new System.Drawing.Point(311, 25);
-            this.txtOrigY.Name = "txtOrigY";
-            this.txtOrigY.Size = new System.Drawing.Size(43, 20);
-            this.txtOrigY.TabIndex = 36;
-            // 
-            // txtOrigZ
-            // 
-            this.txtOrigZ.Location = new System.Drawing.Point(360, 25);
-            this.txtOrigZ.Name = "txtOrigZ";
-            this.txtOrigZ.Size = new System.Drawing.Size(43, 20);
-            this.txtOrigZ.TabIndex = 37;
+            this.KeyFrameData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.KeyFrameData.Location = new System.Drawing.Point(6, 19);
+            this.KeyFrameData.Name = "KeyFrameData";
+            this.KeyFrameData.Size = new System.Drawing.Size(563, 159);
+            this.KeyFrameData.TabIndex = 26;
             // 
             // btnAnimate
             // 
@@ -314,7 +314,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.grpRaw.ResumeLayout(false);
             this.grpRaw.PerformLayout();
             this.grpEditKeyframes.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.KeyFrameData)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -337,7 +337,7 @@ namespace Chisel.Editor.Tools.MotionsTool
         private System.Windows.Forms.Button btnSetMovement;
         private System.Windows.Forms.Button btnRemoveKeyframe;
         private System.Windows.Forms.Button btnAddKeyFrame;
-        private System.Windows.Forms.DataGridView dataGridView2;
+        private System.Windows.Forms.DataGridView KeyFrameData;
         private System.Windows.Forms.Button btnUpdateMotion;
         private TextBox txtOrigX;
         private Label label4;
