@@ -30,6 +30,7 @@ namespace Chisel.Editor.Tools
             Tools.Add(new VMTool.VMTool());
             Tools.Add(new CordonTool());
             //Tools.Add(new SketchTool());
+            Tools.Add(new MotionsTool.MotionsTool());
         }
 
         public static void Deactivate(bool preventHistory = false)

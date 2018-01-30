@@ -518,39 +518,158 @@ namespace Chisel.Providers.Map
             const NumberStyles ns = NumberStyles.Float;
             FileStream fs = (FileStream)rdr.BaseStream;
             List<Motion> models = new List<Motion>();
-
-            string line = null;
-            bool newModel = true;
+            
+            
             for (int i = 0; i < numMotions; ++i)
             {
-                var model = new Motion();
+                string line = null;
+                var start = rdr.GetPosition();
+                if (line == null) line = rdr.ReadLine();
 
-                bool inModel = true;
-                while (inModel)
+                Assert(line.StartsWith("Model "));
+                string nameline = line;
+
+                var split = line.Split('"');
+                var name = split[1].ToString();
+
+                line = rdr.ReadLine();
+                string idline = line;
+                split = line.Trim().Split(' ');
+                var model = new Motion(Convert.ToInt32(split[1]));
+
+                model.Name = name;
+                model.RawModelLines.Add(nameline);
+                model.RawModelLines.Add(idline);
+                
+                for(int x = 0; x < 16; x++)
                 {
-                    var start = rdr.GetPosition();
-                    if (line == null)
-                        line = rdr.ReadLine();
-
-                    if (!newModel && line.StartsWith("Model \""))
-                    {
-                        models.Add(model);
-                        newModel = true;
-                        break;
-                    }
-                    else if (line.StartsWith("Group \""))
-                    {
-                        models.Add(model);
-                        rdr.SetPosition(start);
-                        return models;
-                    }
-
+                    line = rdr.ReadLine();
                     model.RawModelLines.Add(line);
-                    line = null;
-                    newModel = false;
-                }
-            }
+                    char tab = '\u0009';
+                    line = line.Replace(tab.ToString(),"").Trim();
+                    if (!line.StartsWith("Transform"))
+                    {
+                        split = line.Split(' ');
+                        switch (split[0])
+                        {
+                            case "CurrentKeyTime":
+                                model.CurrentKeyTime = Convert.ToDouble(split[1]);
+                                break;
+                            case "Motion":
+                                Assert(split[1] == "1");
+                                break;
+                            case "MOTN":
+                                Assert(split[1] == "0.F0");
+                                break;
+                            case "NameID":
+                                //Assert(split[1] == null);
+                                break;
+                            case "MaintainNames":
+                                Assert(split[1] == "1");
+                                break;
+                            case "PathCount":
+                                Assert(split[1] == "1");
+                                break;
+                            case "NameChecksum":
+                                Assert(split[1] == "2379");
+                                break;
+                            case "Events":
+                                Assert(split[1] == "0");
+                                break;
+                            case "NameArray":
+                                Assert(split[1] == "1");
+                                break;
+                            case "SBLK":
+                                Assert(split[1] == "0.F0");
+                                break;
+                            case "Strings":
+                                Assert(split[1] == "1");
+                                break;
+                            case "PathInfo":
+                                //Assert(split[1] == null);
+                                break;
+                            case "PathArray":
+                                Assert(split[1] == "1");
+                                break;
+                            case "PATH":
+                                Assert(split[1] == "0.F2");
+                                break;
+                            case "Rotation":
+                                Assert(split[1] == "1");
+                                Assert(split[2] == "4");
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        //Transform
+                        line = rdr.ReadLine();
+                        model.RawModelLines.Add(line);
+                        split = line.Split(' ');
+                        Matrix m = new Matrix();
+                        m.Values[0] = Convert.ToDecimal(split[0]);
+                        m.Values[1] = Convert.ToDecimal(split[1]);
+                        m.Values[2] = Convert.ToDecimal(split[2]);
+                        m.Values[4] = Convert.ToDecimal(split[3]);
+                        m.Values[5] = Convert.ToDecimal(split[4]);
+                        m.Values[6] = Convert.ToDecimal(split[5]);
+                        m.Values[8] = Convert.ToDecimal(split[6]);
+                        m.Values[9] = Convert.ToDecimal(split[7]);
+                        m.Values[10] = Convert.ToDecimal(split[8]);
+                        m.Values[3] = Convert.ToDecimal(split[9]);
+                        m.Values[7] = Convert.ToDecimal(split[11]);
+                        m.Values[11] = -Convert.ToDecimal(split[10]);
+                        model.Transform = m;
+                    }
 
+                }
+                
+                //At Rotation  TODO
+                Assert(line.StartsWith("Rotation"));
+
+                line = rdr.ReadLine();
+                model.RawModelLines.Add(line);
+                split = line.Split(' ');
+
+                int KeyCount = Convert.ToInt32(split[1]);
+                for (int x = 0; x < KeyCount; x++)
+                {
+                    line = rdr.ReadLine();
+                    model.RawModelLines.Add(line);
+                    split = line.Split(' ');
+                    MotionKeyFrames k = new MotionKeyFrames((float)Convert.ToDouble(split[0]), model);
+                    Coordinate c = new Coordinate(Convert.ToDecimal(split[1]),
+                                                  Convert.ToDecimal(split[2]),
+                                                  Convert.ToDecimal(split[3]));
+                    k.SetRotation(c);
+                    model.KeyFrames.Add(k);
+                }
+
+                for(int x = 0; x < 2; x++)
+                {
+                    line = rdr.ReadLine();
+                    model.RawModelLines.Add(line);
+                }
+
+                Assert(line.StartsWith("Keys"));
+                split = line.Split(' ');
+                Assert(Convert.ToInt32(split[1]) == KeyCount);
+
+                for (int x = 0; x < KeyCount; x++)
+                {
+                    line = rdr.ReadLine();
+                    model.RawModelLines.Add(line);
+                    split = line.Split(' ');
+                    Coordinate c = new Coordinate(Convert.ToDecimal(split[1]),
+                                                  Convert.ToDecimal(split[2]),
+                                                  Convert.ToDecimal(split[3]));
+                    model.KeyFrames[x].SetTranslation(c);
+                }
+
+                models.Add(model);
+            }
+            
+            //rdr.SetPosition(start);
             return models;
         }
         private List<Visgroup> ReadGroups(int numGroups, StreamReader rdr)
@@ -615,7 +734,7 @@ namespace Chisel.Providers.Map
                 WriteProperty("LightScale", "1.000000 1.000000", wr, false, 2);
 
             /*
-                NOTE(SVK): Keep RF YZ
+                NOTE(SVK): Keep G3D YZ
                 Chisel
                 0-AX  1-AY  2-AZ  3-TX
                 4-BX  5-BY  6-BZ  7-TY
@@ -781,14 +900,6 @@ namespace Chisel.Providers.Map
             {
                 foreach (var line in motion.RawModelLines)
                     wr.WriteLine(line);
-                /*WriteProperty("Model", motion.Name, wr, true);
-                WriteProperty("ModelId", motion.ID.ToString(), wr, false, 1);
-                WriteProperty("CurrentKeyTime", motion.CurrentKeyTime.ToString("0.000000", CultureInfo.InvariantCulture), wr, false, 1);
-                WriteProperty("Transform", motion.Transform, wr, false, 1, true);
-                WriteProperty("Motion", motion.IsMotion ? "1" : "0", wr, false, 1);
-                var nativeMotion = motion.NativeMotion.WriteToString();
-                nativeMotion = nativeMotion.Replace("\n\n", "\n");
-                wr.Write(nativeMotion);*/
             }
         }
         

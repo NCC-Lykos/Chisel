@@ -335,6 +335,7 @@
     <Compile Include="Tools\BaseTool.cs" />
     <Compile Include="Tools\BrushTool.cs" />
     <Compile Include="Tools\ClipTool.cs" />
+    <Compile Include="Tools\MotionsTool\MotionsTool.cs" />
     <Compile Include="Tools\SelectTool\SelectToolSidebarPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -487,11 +488,11 @@
     <Compile Include="UI\MapTreeWindow.Designer.cs">
       <DependentUpon>MapTreeWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\MotionsEditor\MotionsEditorDialog.cs">
+    <Compile Include="Tools\MotionsTool\MotionsToolForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\MotionsEditor\MotionsEditorDialog.Designer.cs">
-      <DependentUpon>MotionsEditorDialog.cs</DependentUpon>
+    <Compile Include="Tools\MotionsTool\MotionsToolForm.Designer.cs">
+      <DependentUpon>MotionsToolForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\ObjectProperties\SmartEdit\SmartEditBoolean.cs">
       <SubType>Component</SubType>
@@ -784,8 +785,8 @@
     <EmbeddedResource Include="UI\MapTreeWindow.resx">
       <DependentUpon>MapTreeWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\MotionsEditor\MotionsEditorDialog.resx">
-      <DependentUpon>MotionsEditorDialog.cs</DependentUpon>
+    <EmbeddedResource Include="Tools\MotionsTool\MotionsToolForm.resx">
+      <DependentUpon>MotionsToolForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ObjectProperties\ObjectPropertiesDialog.resx">
       <DependentUpon>ObjectPropertiesDialog.cs</DependentUpon>
