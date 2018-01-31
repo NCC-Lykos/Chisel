@@ -12,6 +12,11 @@ namespace Chisel.Editor.Tools.MotionsTool
     public partial class MotionsToolForm : UI.HotkeyForm
     {
         public Documents.Document _document { get; set; }
+        public bool InAnimation = false;
+        public List<Solid> Solids;
+        public List<Solid> SolidsClone;
+        public Coordinate SolidsOrigin;
+        public float CurrentKeyFrame;
 
         public void SetDocument(Documents.Document Document)
         {
@@ -21,16 +26,21 @@ namespace Chisel.Editor.Tools.MotionsTool
         public MotionsToolForm()
         {
             InitializeComponent();
+            SolidsClone = new List<Solid>();
         }
 
         public void Clear()
         {
+            btnStopAnimation.Enabled = false;
+            btnAnimate.Enabled = true;
+
             MotionsList.Items.Clear();
             KeyFrameData.Rows.Clear();
             KeyFrameData.Columns.Clear();
             
             _document.Selection.Clear();
             _document.RenderAll();
+            
             Mediator.Publish(EditorMediator.SelectionChanged);
         }
 
@@ -64,18 +74,22 @@ namespace Chisel.Editor.Tools.MotionsTool
             Clear();
             PopulateMotions();
         }
-        
+
+        private void Assert(bool b, string message = "Assert failed.")
+        {
+            if (!b) throw new Exception(message);
+        }
+
         public void Notify(string message, object data) {}
         
         private void Update(int i)
         {
             _document.Selection.Clear();
-            
-            var objs = _document.Map.WorldSpawn.GetChildren().OfType<Solid>().Where(x => x.MetaData.Get<string>("ModelId") == _document.Map.Motions[i].ID.ToString()).ToList();
-
+            Solids = _document.Map.WorldSpawn.GetChildren().OfType<Solid>().Where(x => x.MetaData.Get<string>("ModelId") == _document.Map.Motions[i].ID.ToString()).ToList();
+            CurrentKeyFrame = (float)_document.Map.Motions[i].CurrentKeyTime;
             txtMotionName.Text = _document.Map.Motions[i].Name.ToString();
             txtMotionID.Text = _document.Map.Motions[i].ID.ToString();
-            txtCurrentKey.Text = _document.Map.Motions[i].CurrentKeyTime.ToString();
+            txtCurrentKey.Text = CurrentKeyFrame.ToString();
 
             var orig = _document.Map.Motions[i].GetOrigin();
 
@@ -84,12 +98,34 @@ namespace Chisel.Editor.Tools.MotionsTool
             txtOrigZ.Text = orig.Z.ToString();
 
             KeyFrameData.Rows.Clear();
+            
+            int CurrentRow = 0;
             foreach (MotionKeyFrames k in _document.Map.Motions[i].KeyFrames)
             {
                 KeyFrameData.Rows.Add(k.KeyTime, k.traX, k.traY, k.traZ, k.rotX, k.rotY, k.rotZ, k.rotD);
+                if (k.KeyTime == CurrentKeyFrame) CurrentRow = KeyFrameData.Rows.Count - 1;
+            }
+            KeyFrameData.ClearSelection();
+            KeyFrameData.CurrentCell = KeyFrameData.Rows[CurrentRow].Cells[0];
+            KeyFrameData.Rows[CurrentRow].Selected = true;
+
+            
+
+            SolidsClone.Clear();
+            foreach(Solid s in Solids)
+            {
+                SolidsClone.Add((Solid)s.Copy(_document.Map.IDGenerator));
+                //foreach(Face f in s.Faces) f.Texture.Opacity *= 0.4m;
+                s.IsRenderHidden2D = true;
+                s.IsRenderHidden3D = true;
             }
 
-            _document.Selection.Select(objs);
+            if (Solids.Count > 0)
+            {
+                _document.Selection.Select(SolidsClone);
+                SolidsOrigin = _document.Selection.GetSelectionBoundingBox().Center;
+            }
+
 
             _document.RenderAll();
             Mediator.Publish(EditorMediator.SelectionChanged);
@@ -103,9 +139,6 @@ namespace Chisel.Editor.Tools.MotionsTool
                 Update(e.Index);
             }
             else KeyFrameData.Rows.Clear();
-            
-            
-             
         }
 
         private void OnClosing(object sender, FormClosingEventArgs e)
@@ -115,11 +148,22 @@ namespace Chisel.Editor.Tools.MotionsTool
                 e.Cancel = true;
                 Mediator.Publish(HotkeysMediator.SwitchTool, HotkeyTool.Selection);
             }
+            foreach(Solid s in Solids)
+            {
+                s.IsRenderHidden3D = false;
+                s.IsRenderHidden2D = false;
+            }
+            foreach(Solid s in SolidsClone)
+            {
+                s.SetParent(null, false); //This should delete??
+            }
         }
-
-        private void textBox6_TextChanged(object sender, EventArgs e)
+        
+        private void AnimateClicked(object sender, EventArgs e)
         {
-
+            InAnimation = true;
+            btnStopAnimation.Enabled = true;
+            btnAnimate.Enabled = false;
         }
     }
 }

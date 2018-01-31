@@ -11,7 +11,6 @@ using System.Diagnostics;
 using Chisel.DataStructures.Geometric;
 using Chisel.Providers;
 
-
 namespace Chisel.Providers.Map
 {
     public class ThreeDtProvider : MapProvider
@@ -550,6 +549,10 @@ namespace Chisel.Providers.Map
                     if (!line.StartsWith("Transform"))
                     {
                         split = line.Split(' ');
+                        if (split[0] == "" || split[0] == null) 
+                        {
+                            line = line.Replace(tab.ToString(), "").Trim();
+                        }
                         switch (split[0])
                         {
                             case "CurrentKeyTime":
@@ -571,7 +574,7 @@ namespace Chisel.Providers.Map
                                 Assert(split[1] == "1");
                                 break;
                             case "NameChecksum":
-                                Assert(split[1] == "2379");
+                                //Assert(split[1] == "2379");
                                 break;
                             case "Events":
                                 Assert(split[1] == "0");
@@ -603,7 +606,16 @@ namespace Chisel.Providers.Map
                     else
                     {
                         //Transform
-                        line = rdr.ReadLine();
+                        if(line.Length <= 10) 
+                        {
+                            line = rdr.ReadLine();
+                        }
+                        else 
+                        {
+                            line = line.Replace("Transform", "").Trim();
+                        }
+                        
+
                         model.RawModelLines.Add(line);
                         split = line.Split(' ');
                         Matrix m = new Matrix();
@@ -617,8 +629,8 @@ namespace Chisel.Providers.Map
                         m.Values[9] = Convert.ToDecimal(split[7]);
                         m.Values[10] = Convert.ToDecimal(split[8]);
                         m.Values[3] = Convert.ToDecimal(split[9]);
-                        m.Values[7] = Convert.ToDecimal(split[11]);
-                        m.Values[11] = -Convert.ToDecimal(split[10]);
+                        m.Values[7] = -Convert.ToDecimal(split[11]);
+                        m.Values[11] = Convert.ToDecimal(split[10]);
                         model.Transform = m;
                     }
 
@@ -639,8 +651,8 @@ namespace Chisel.Providers.Map
                     split = line.Split(' ');
                     MotionKeyFrames k = new MotionKeyFrames((float)Convert.ToDouble(split[0]), model);
                     Coordinate c = new Coordinate(Convert.ToDecimal(split[1]),
-                                                  Convert.ToDecimal(split[2]),
-                                                  Convert.ToDecimal(split[3]));
+                                                  -Convert.ToDecimal(split[3]),
+                                                  Convert.ToDecimal(split[2]));
                     k.SetRotation(c);
                     model.KeyFrames.Add(k);
                 }

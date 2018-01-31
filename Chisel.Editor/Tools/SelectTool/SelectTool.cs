@@ -837,25 +837,16 @@ namespace Chisel.Editor.Tools.SelectTool
             var start = viewport.Flatten(State.BoxStart);
             var end = viewport.Flatten(State.BoxEnd);
 
-            if (ShouldDrawBox(viewport))
-            {
-                RenderBox(viewport, start, end);
-            }
+            if (ShouldDrawBox(viewport)) RenderBox(viewport, start, end);
 
-            if (ShouldRenderSnapHandle(viewport))
-            {
-                RenderSnapHandle(viewport);
-            }
+            if (ShouldRenderSnapHandle(viewport)) RenderSnapHandle(viewport);
 
             if (ShouldRenderResizeBox(viewport))
             {
                 RenderResizeBox(viewport, start, end);
             }
-
-            if (ShouldRenderHandles())
-            {
-                RenderHandles(viewport, start, end);
-            }
+            
+            if (ShouldRenderHandles()) RenderHandles(viewport, start, end);
 
             if (State.Action == BoxAction.Resizing && CurrentTransform.HasValue)
             {

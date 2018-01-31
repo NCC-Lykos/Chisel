@@ -275,15 +275,18 @@ namespace Chisel.Editor.Tools.MotionsTool
             // 
             // btnAnimate
             // 
+            this.btnAnimate.Enabled = false;
             this.btnAnimate.Location = new System.Drawing.Point(138, 12);
             this.btnAnimate.Name = "btnAnimate";
             this.btnAnimate.Size = new System.Drawing.Size(74, 23);
             this.btnAnimate.TabIndex = 31;
             this.btnAnimate.Text = "Animate";
             this.btnAnimate.UseVisualStyleBackColor = true;
+            this.btnAnimate.Click += new System.EventHandler(this.AnimateClicked);
             // 
             // btnStopAnimation
             // 
+            this.btnStopAnimation.Enabled = false;
             this.btnStopAnimation.Location = new System.Drawing.Point(218, 12);
             this.btnStopAnimation.Name = "btnStopAnimation";
             this.btnStopAnimation.Size = new System.Drawing.Size(80, 23);

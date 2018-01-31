@@ -6,26 +6,16 @@ using Chisel.Common.Mediator;
 
 namespace Chisel.Editor.Tools.MotionsTool
 {
-    class MotionsTool : BaseTool
+    class MotionsTool : BaseBoxTool
     {
         private readonly MotionsToolForm _form;
+        
         //private readonly TextureToolSidebarPanel _sidebarPanel;
 
         public MotionsTool()
         {
-            Usage = ToolUsage.View3D;
+            Usage = ToolUsage.Both;
             _form = new MotionsToolForm();
-            //_form.PropertyChanged += TexturePropertyChanged;
-            //_form.TextureAlign += TextureAligned;
-            //_form.TextureApply += TextureApplied;
-            //_form.TextureJustify += TextureJustified;
-            //_form.HideMaskToggled += HideMaskToggled;
-            //_form.TextureChanged += TextureChanged;
-
-            //_sidebarPanel = new TextureToolSidebarPanel();
-            //_sidebarPanel.TileFit += TileFit;
-            //_sidebarPanel.RandomiseXShiftValues += RandomiseXShiftValues;
-            //_sidebarPanel.RandomiseYShiftValues += RandomiseYShiftValues;
         }
 
         public override void ToolSelected(bool preventHistory)
@@ -41,13 +31,34 @@ namespace Chisel.Editor.Tools.MotionsTool
             _form.Clear();
             _form.Hide();
         }
-
-
+        
         public override void DocumentChanged()
         {
             _form.SetDocument(Document);
         }
 
+        protected override void Render2D(Viewport2D viewport)
+        {
+            if (!_form.InAnimation)
+            {
+                base.Render2D(viewport);
+                return;
+            }
+            var box = Document.Selection.GetSelectionBoundingBox();
+            State.BoxStart = box.Start;
+            State.BoxEnd = box.End;
+
+            var start = viewport.Flatten(State.BoxStart);
+            var end = viewport.Flatten(State.BoxEnd);
+            
+            if (true)
+            {
+                RenderResizeBox(viewport, start, end);
+            }
+        }
+
+        #region inherit
+        
         public override Image GetIcon()
         {
             return Resources.Menu_ObjectProperties;
@@ -68,21 +79,56 @@ namespace Chisel.Editor.Tools.MotionsTool
             return "";
         }
 
-        public override void MouseDown(ViewportBase viewport, ViewportEvent e)
+        public override void MouseMove(ViewportBase viewport, ViewportEvent e)
         {
-            //
+            base.MouseMove(viewport, e);
         }
 
-        public override void KeyDown(ViewportBase viewport, ViewportEvent e)
+        public override void MouseDown(ViewportBase viewport, ViewportEvent e)
         {
-            //throw new NotImplementedException();
+            base.MouseDown(viewport, e);
+        }
+
+        public override void MouseUp(ViewportBase viewport, ViewportEvent e)
+        {
+            base.MouseUp(viewport, e);
+        }
+
+        public override void MouseClick(ViewportBase viewport, ViewportEvent e)
+        {
+            base.MouseClick(viewport, e);
+        }
+
+        public override void MouseEnter(ViewportBase viewport, ViewportEvent e)
+        {
+            base.MouseEnter(viewport, e);
+        }
+
+        public override void MouseLeave(ViewportBase viewport, ViewportEvent e)
+        {
+            base.MouseLeave(viewport, e);
+        }
+
+        public override void PreRender(ViewportBase viewport)
+        {
+            base.PreRender(viewport);
         }
 
         public override void Render(ViewportBase viewport)
         {
-            //
+            base.Render(viewport);
         }
 
+        public override void UpdateFrame(ViewportBase viewport, FrameInfo frame)
+        {
+            base.UpdateFrame(viewport, frame);
+        }
+        
+        public override void KeyDown(ViewportBase viewport, ViewportEvent e)
+        {
+            //throw new NotImplementedException();
+        }
+        
         public override HotkeyInterceptResult InterceptHotkey(HotkeysMediator hotkeyMessage, object parameters)
         {
             switch (hotkeyMessage)
@@ -97,38 +143,13 @@ namespace Chisel.Editor.Tools.MotionsTool
             }
             return HotkeyInterceptResult.Continue;
         }
-
-        public override void MouseEnter(ViewportBase viewport, ViewportEvent e)
-        {
-            //
-        }
-
-        public override void MouseLeave(ViewportBase viewport, ViewportEvent e)
-        {
-            //
-        }
-
-        public override void MouseClick(ViewportBase viewport, ViewportEvent e)
-        {
-            // Not used
-        }
-
+        
         public override void MouseDoubleClick(ViewportBase viewport, ViewportEvent e)
         {
             // Not used
         }
-
-        public override void MouseUp(ViewportBase viewport, ViewportEvent e)
-        {
-            //
-        }
-
+        
         public override void MouseWheel(ViewportBase viewport, ViewportEvent e)
-        {
-            //
-        }
-
-        public override void MouseMove(ViewportBase viewport, ViewportEvent e)
         {
             //
         }
@@ -142,10 +163,18 @@ namespace Chisel.Editor.Tools.MotionsTool
         {
             //
         }
+        
 
-        public override void UpdateFrame(ViewportBase viewport, FrameInfo frame)
+        protected override Color BoxColour
         {
-            //
+            get { return Color.Green; }
         }
+
+        protected override Color FillColour
+        {
+            get { return Color.FromArgb(Chisel.Settings.View.SelectionBoxBackgroundOpacity, Color.ForestGreen); }
+        }
+
+        #endregion
     }
 }
