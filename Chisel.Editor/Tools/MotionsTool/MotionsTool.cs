@@ -3,13 +3,17 @@ using Chisel.Editor.Properties;
 using Chisel.Settings;
 using Chisel.UI;
 using Chisel.Common.Mediator;
+using Chisel.Editor.Documents;
+using Chisel.Editor.History;
+using Chisel.Editor.Actions.MapObjects.Selection;
+using System.Linq;
+
 
 namespace Chisel.Editor.Tools.MotionsTool
 {
     class MotionsTool : BaseBoxTool
     {
         private readonly MotionsToolForm _form;
-        
         //private readonly TextureToolSidebarPanel _sidebarPanel;
 
         public MotionsTool()
@@ -25,11 +29,23 @@ namespace Chisel.Editor.Tools.MotionsTool
             
             _form.OnShow();
         }
-
+        
         public override void ToolDeselected(bool preventHistory)
         {
+            var selected = Document.Selection.GetSelectedFaces().ToList();
+
+            if (!preventHistory)
+            {
+                Document.History.AddHistoryItem(new HistoryAction("Switch selection mode", new ChangeToObjectSelectionMode(GetType(), selected)));
+                var currentSelection = Document.Selection.GetSelectedFaces().Select(x => x.Parent);
+                Document.Selection.SwitchToObjectSelection();
+                var newSelection = Document.Selection.GetSelectedObjects();
+                Document.RenderSelection(currentSelection.Union(newSelection));
+            }
+
             _form.Clear();
             _form.Hide();
+            Mediator.UnsubscribeAll(this);
         }
         
         public override void DocumentChanged()
@@ -37,9 +53,14 @@ namespace Chisel.Editor.Tools.MotionsTool
             _form.SetDocument(Document);
         }
 
+        protected override void Render3D(Viewport3D viewport)
+        {
+            base.Render3D(viewport);
+        }
+
         protected override void Render2D(Viewport2D viewport)
         {
-            if (!_form.InAnimation)
+            if(!_form.MotionSelected)
             {
                 base.Render2D(viewport);
                 return;
@@ -164,7 +185,6 @@ namespace Chisel.Editor.Tools.MotionsTool
             //
         }
         
-
         protected override Color BoxColour
         {
             get { return Color.Green; }
@@ -174,6 +194,8 @@ namespace Chisel.Editor.Tools.MotionsTool
         {
             get { return Color.FromArgb(Chisel.Settings.View.SelectionBoxBackgroundOpacity, Color.ForestGreen); }
         }
+
+        
 
         #endregion
     }

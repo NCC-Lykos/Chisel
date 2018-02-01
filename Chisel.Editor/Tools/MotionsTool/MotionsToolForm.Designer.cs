@@ -272,6 +272,8 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.KeyFrameData.Name = "KeyFrameData";
             this.KeyFrameData.Size = new System.Drawing.Size(563, 159);
             this.KeyFrameData.TabIndex = 26;
+            this.KeyFrameData.CurrentCellChanged += new System.EventHandler(this.CurrentKeyframeChanged);
+            //this.MotionsList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.MotionSelectionChanged);
             // 
             // btnAnimate
             // 
@@ -306,6 +308,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.Controls.Add(this.AddMotion);
             this.Controls.Add(this.grpRaw);
             this.Controls.Add(this.MotionsList);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MotionsToolForm";

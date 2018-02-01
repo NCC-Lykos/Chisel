@@ -699,6 +699,7 @@ namespace Chisel.DataStructures.MapObjects
             else if (Parent.MetaData.Get<string>("ModelId") != null && (int.Parse(Parent.MetaData.Get<string>("ModelId")) > 0))
             {
                 WireframeColor = Color.FromArgb(255, 255, 255, 255);//White
+                SetOpacity();
                 IgnoreTexture = false;
             }
             else if (!WireframeColor.IsEmpty)
