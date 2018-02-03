@@ -650,10 +650,11 @@ namespace Chisel.Providers.Map
                     model.RawModelLines.Add(line);
                     split = line.Split(' ');
                     MotionKeyFrames k = new MotionKeyFrames((float)Convert.ToDouble(split[0]), model);
-                    Coordinate c = new Coordinate(Convert.ToDecimal(split[1]),
-                                                  -Convert.ToDecimal(split[3]),
-                                                  Convert.ToDecimal(split[2]));
-                    k.SetRotation(c);
+                    Quaternion q = new Quaternion( Convert.ToDecimal(split[2]), 
+                                                  -Convert.ToDecimal(split[4]),
+                                                   Convert.ToDecimal(split[3]),
+                                                  -Convert.ToDecimal(split[1]));
+                    k.SetRotation(q);
                     model.KeyFrames.Add(k);
                 }
 

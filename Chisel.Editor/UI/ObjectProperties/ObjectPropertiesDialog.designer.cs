@@ -58,6 +58,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.Angles = new Chisel.Editor.UI.AngleControl();
             this.OutputsTab = new System.Windows.Forms.TabPage();
             this.OutputDelete = new System.Windows.Forms.Button();
             this.OutputPaste = new System.Windows.Forms.Button();
@@ -93,6 +94,19 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.FlagsTab = new System.Windows.Forms.TabPage();
             this.FlagsTable = new System.Windows.Forms.CheckedListBox();
             this.SolidTab = new System.Windows.Forms.TabPage();
+            this.grpModels = new System.Windows.Forms.GroupBox();
+            this.btnMotionsSelectAll = new System.Windows.Forms.Button();
+            this.cboModels = new System.Windows.Forms.ComboBox();
+            this.btnCreateMotion = new System.Windows.Forms.Button();
+            this.lblModelID = new System.Windows.Forms.Label();
+            this.txtModelID = new System.Windows.Forms.TextBox();
+            this.grpMetaData = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.txtName = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtType = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtHullSize = new System.Windows.Forms.TextBox();
             this.btnMakeSame = new System.Windows.Forms.Button();
             this.CustomFlags = new System.Windows.Forms.CheckedListBox();
             this.grpGBSPSubType = new System.Windows.Forms.GroupBox();
@@ -114,20 +128,10 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.VisgroupTab = new System.Windows.Forms.TabPage();
             this.EditVisgroupsButton = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
+            this.VisgroupPanel = new Chisel.Editor.Visgroups.VisgroupPanel();
             this.btnCancel = new System.Windows.Forms.Button();
             this.OkButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.lblModelID = new System.Windows.Forms.Label();
-            this.txtModelID = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtHullSize = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.txtType = new System.Windows.Forms.TextBox();
-            this.Angles = new Chisel.Editor.UI.AngleControl();
-            this.VisgroupPanel = new Chisel.Editor.Visgroups.VisgroupPanel();
-            this.label13 = new System.Windows.Forms.Label();
-            this.txtName = new System.Windows.Forms.TextBox();
             this.Tabs.SuspendLayout();
             this.ClassInfoTab.SuspendLayout();
             this.OutputsTab.SuspendLayout();
@@ -136,10 +140,11 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.InputsTab.SuspendLayout();
             this.FlagsTab.SuspendLayout();
             this.SolidTab.SuspendLayout();
+            this.grpModels.SuspendLayout();
+            this.grpMetaData.SuspendLayout();
             this.grpGBSPSubType.SuspendLayout();
             this.grpGBSPType.SuspendLayout();
             this.VisgroupTab.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // Tabs
@@ -376,6 +381,16 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.label1.TabIndex = 1;
             this.label1.Text = "Class:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // Angles
+            // 
+            this.Angles.Location = new System.Drawing.Point(553, 6);
+            this.Angles.Name = "Angles";
+            this.Angles.ShowLabel = false;
+            this.Angles.ShowTextBox = true;
+            this.Angles.Size = new System.Drawing.Size(115, 46);
+            this.Angles.TabIndex = 0;
+            this.Angles.AngleChangedEvent += new Chisel.Editor.UI.AngleControl.AngleChangedEventHandler(this.AnglesChanged);
             // 
             // OutputsTab
             // 
@@ -674,7 +689,8 @@ namespace Chisel.Editor.UI.ObjectProperties
             // 
             // SolidTab
             // 
-            this.SolidTab.Controls.Add(this.groupBox2);
+            this.SolidTab.Controls.Add(this.grpModels);
+            this.SolidTab.Controls.Add(this.grpMetaData);
             this.SolidTab.Controls.Add(this.btnMakeSame);
             this.SolidTab.Controls.Add(this.CustomFlags);
             this.SolidTab.Controls.Add(this.grpGBSPSubType);
@@ -686,6 +702,133 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.SolidTab.TabIndex = 5;
             this.SolidTab.Text = "Solid Properties";
             this.SolidTab.UseVisualStyleBackColor = true;
+            // 
+            // grpModels
+            // 
+            this.grpModels.Controls.Add(this.btnMotionsSelectAll);
+            this.grpModels.Controls.Add(this.cboModels);
+            this.grpModels.Controls.Add(this.btnCreateMotion);
+            this.grpModels.Controls.Add(this.lblModelID);
+            this.grpModels.Controls.Add(this.txtModelID);
+            this.grpModels.Enabled = false;
+            this.grpModels.Location = new System.Drawing.Point(118, 296);
+            this.grpModels.Name = "grpModels";
+            this.grpModels.Size = new System.Drawing.Size(241, 73);
+            this.grpModels.TabIndex = 14;
+            this.grpModels.TabStop = false;
+            this.grpModels.Text = "GBSP Motions (Models) Metadata";
+            // 
+            // btnMotionsSelectAll
+            // 
+            this.btnMotionsSelectAll.Location = new System.Drawing.Point(160, 44);
+            this.btnMotionsSelectAll.Name = "btnMotionsSelectAll";
+            this.btnMotionsSelectAll.Size = new System.Drawing.Size(75, 23);
+            this.btnMotionsSelectAll.TabIndex = 12;
+            this.btnMotionsSelectAll.Text = "Select All";
+            this.btnMotionsSelectAll.UseVisualStyleBackColor = true;
+            this.btnMotionsSelectAll.Click += new System.EventHandler(this.MotionsSelectAllClicked);
+            // 
+            // cboModels
+            // 
+            this.cboModels.FormattingEnabled = true;
+            this.cboModels.Location = new System.Drawing.Point(9, 19);
+            this.cboModels.Name = "cboModels";
+            this.cboModels.Size = new System.Drawing.Size(145, 21);
+            this.cboModels.TabIndex = 11;
+            this.cboModels.SelectedIndexChanged += new System.EventHandler(this.ModelsSelectionChanged);
+            // 
+            // btnCreateMotion
+            // 
+            this.btnCreateMotion.Location = new System.Drawing.Point(160, 17);
+            this.btnCreateMotion.Name = "btnCreateMotion";
+            this.btnCreateMotion.Size = new System.Drawing.Size(75, 23);
+            this.btnCreateMotion.TabIndex = 10;
+            this.btnCreateMotion.Text = "Create New";
+            this.btnCreateMotion.UseVisualStyleBackColor = true;
+            // 
+            // lblModelID
+            // 
+            this.lblModelID.AutoSize = true;
+            this.lblModelID.Location = new System.Drawing.Point(7, 49);
+            this.lblModelID.Name = "lblModelID";
+            this.lblModelID.Size = new System.Drawing.Size(50, 13);
+            this.lblModelID.TabIndex = 9;
+            this.lblModelID.Text = "Model ID";
+            // 
+            // txtModelID
+            // 
+            this.txtModelID.Enabled = false;
+            this.txtModelID.Location = new System.Drawing.Point(63, 46);
+            this.txtModelID.Name = "txtModelID";
+            this.txtModelID.Size = new System.Drawing.Size(91, 20);
+            this.txtModelID.TabIndex = 1;
+            this.txtModelID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // grpMetaData
+            // 
+            this.grpMetaData.Controls.Add(this.label13);
+            this.grpMetaData.Controls.Add(this.txtName);
+            this.grpMetaData.Controls.Add(this.label12);
+            this.grpMetaData.Controls.Add(this.txtType);
+            this.grpMetaData.Controls.Add(this.label2);
+            this.grpMetaData.Controls.Add(this.txtHullSize);
+            this.grpMetaData.Location = new System.Drawing.Point(237, 6);
+            this.grpMetaData.Name = "grpMetaData";
+            this.grpMetaData.Size = new System.Drawing.Size(141, 284);
+            this.grpMetaData.TabIndex = 13;
+            this.grpMetaData.TabStop = false;
+            this.grpMetaData.Text = "GBSP Metadata";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 73);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(35, 13);
+            this.label13.TabIndex = 15;
+            this.label13.Text = "Name";
+            // 
+            // txtName
+            // 
+            this.txtName.Location = new System.Drawing.Point(62, 70);
+            this.txtName.Name = "txtName";
+            this.txtName.Size = new System.Drawing.Size(73, 20);
+            this.txtName.TabIndex = 14;
+            this.txtName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 47);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(31, 13);
+            this.label12.TabIndex = 13;
+            this.label12.Text = "Type";
+            // 
+            // txtType
+            // 
+            this.txtType.Location = new System.Drawing.Point(62, 44);
+            this.txtType.Name = "txtType";
+            this.txtType.Size = new System.Drawing.Size(73, 20);
+            this.txtType.TabIndex = 12;
+            this.txtType.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 21);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(48, 13);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Hull Size";
+            // 
+            // txtHullSize
+            // 
+            this.txtHullSize.Location = new System.Drawing.Point(62, 18);
+            this.txtHullSize.Name = "txtHullSize";
+            this.txtHullSize.Size = new System.Drawing.Size(73, 20);
+            this.txtHullSize.TabIndex = 10;
+            this.txtHullSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // btnMakeSame
             // 
@@ -718,7 +861,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.grpGBSPSubType.Controls.Add(this.chkHollow);
             this.grpGBSPSubType.Location = new System.Drawing.Point(118, 6);
             this.grpGBSPSubType.Name = "grpGBSPSubType";
-            this.grpGBSPSubType.Size = new System.Drawing.Size(113, 363);
+            this.grpGBSPSubType.Size = new System.Drawing.Size(113, 284);
             this.grpGBSPSubType.TabIndex = 3;
             this.grpGBSPSubType.TabStop = false;
             this.grpGBSPSubType.Text = "GBSP Sub Options";
@@ -918,6 +1061,21 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.label11.Text = "Member of group:";
             this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // VisgroupPanel
+            // 
+            this.VisgroupPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.VisgroupPanel.DisableAutomatic = true;
+            this.VisgroupPanel.HideAutomatic = false;
+            this.VisgroupPanel.Location = new System.Drawing.Point(6, 26);
+            this.VisgroupPanel.Name = "VisgroupPanel";
+            this.VisgroupPanel.ShowCheckboxes = true;
+            this.VisgroupPanel.ShowHidden = false;
+            this.VisgroupPanel.Size = new System.Drawing.Size(662, 319);
+            this.VisgroupPanel.SortAutomaticFirst = false;
+            this.VisgroupPanel.TabIndex = 2;
+            // 
             // btnCancel
             // 
             this.btnCancel.Location = new System.Drawing.Point(619, 424);
@@ -948,124 +1106,6 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.ApplyButtonClicked);
             // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.label13);
-            this.groupBox2.Controls.Add(this.txtName);
-            this.groupBox2.Controls.Add(this.label12);
-            this.groupBox2.Controls.Add(this.txtType);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.txtHullSize);
-            this.groupBox2.Controls.Add(this.lblModelID);
-            this.groupBox2.Controls.Add(this.txtModelID);
-            this.groupBox2.Location = new System.Drawing.Point(237, 6);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(122, 363);
-            this.groupBox2.TabIndex = 13;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "GBSP Metadata";
-            // 
-            // lblModelID
-            // 
-            this.lblModelID.AutoSize = true;
-            this.lblModelID.Enabled = false;
-            this.lblModelID.Location = new System.Drawing.Point(6, 21);
-            this.lblModelID.Name = "lblModelID";
-            this.lblModelID.Size = new System.Drawing.Size(50, 13);
-            this.lblModelID.TabIndex = 9;
-            this.lblModelID.Text = "Model ID";
-            // 
-            // txtModelID
-            // 
-            this.txtModelID.Enabled = false;
-            this.txtModelID.Location = new System.Drawing.Point(62, 18);
-            this.txtModelID.Name = "txtModelID";
-            this.txtModelID.Size = new System.Drawing.Size(54, 20);
-            this.txtModelID.TabIndex = 1;
-            this.txtModelID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Enabled = false;
-            this.label2.Location = new System.Drawing.Point(6, 43);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(48, 13);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "Hull Size";
-            // 
-            // txtHullSize
-            // 
-            this.txtHullSize.Enabled = false;
-            this.txtHullSize.Location = new System.Drawing.Point(62, 40);
-            this.txtHullSize.Name = "txtHullSize";
-            this.txtHullSize.Size = new System.Drawing.Size(54, 20);
-            this.txtHullSize.TabIndex = 10;
-            this.txtHullSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Enabled = false;
-            this.label12.Location = new System.Drawing.Point(6, 66);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(31, 13);
-            this.label12.TabIndex = 13;
-            this.label12.Text = "Type";
-            // 
-            // txtType
-            // 
-            this.txtType.Enabled = false;
-            this.txtType.Location = new System.Drawing.Point(62, 63);
-            this.txtType.Name = "txtType";
-            this.txtType.Size = new System.Drawing.Size(54, 20);
-            this.txtType.TabIndex = 12;
-            this.txtType.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // Angles
-            // 
-            this.Angles.Location = new System.Drawing.Point(553, 6);
-            this.Angles.Name = "Angles";
-            this.Angles.ShowLabel = false;
-            this.Angles.ShowTextBox = true;
-            this.Angles.Size = new System.Drawing.Size(115, 46);
-            this.Angles.TabIndex = 0;
-            this.Angles.AngleChangedEvent += new Chisel.Editor.UI.AngleControl.AngleChangedEventHandler(this.AnglesChanged);
-            // 
-            // VisgroupPanel
-            // 
-            this.VisgroupPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.VisgroupPanel.DisableAutomatic = true;
-            this.VisgroupPanel.HideAutomatic = false;
-            this.VisgroupPanel.Location = new System.Drawing.Point(6, 26);
-            this.VisgroupPanel.Name = "VisgroupPanel";
-            this.VisgroupPanel.ShowCheckboxes = true;
-            this.VisgroupPanel.ShowHidden = false;
-            this.VisgroupPanel.Size = new System.Drawing.Size(662, 319);
-            this.VisgroupPanel.SortAutomaticFirst = false;
-            this.VisgroupPanel.TabIndex = 2;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Enabled = false;
-            this.label13.Location = new System.Drawing.Point(6, 89);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(35, 13);
-            this.label13.TabIndex = 15;
-            this.label13.Text = "Name";
-            // 
-            // txtName
-            // 
-            this.txtName.Enabled = false;
-            this.txtName.Location = new System.Drawing.Point(62, 86);
-            this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(54, 20);
-            this.txtName.TabIndex = 14;
-            this.txtName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
             // ObjectPropertiesDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1093,13 +1133,15 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.InputsTab.ResumeLayout(false);
             this.FlagsTab.ResumeLayout(false);
             this.SolidTab.ResumeLayout(false);
+            this.grpModels.ResumeLayout(false);
+            this.grpModels.PerformLayout();
+            this.grpMetaData.ResumeLayout(false);
+            this.grpMetaData.PerformLayout();
             this.grpGBSPSubType.ResumeLayout(false);
             this.grpGBSPSubType.PerformLayout();
             this.grpGBSPType.ResumeLayout(false);
             this.grpGBSPType.PerformLayout();
             this.VisgroupTab.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
 		}
@@ -1186,7 +1228,7 @@ namespace Chisel.Editor.UI.ObjectProperties
         private System.Windows.Forms.CheckBox chkSolid;
         private System.Windows.Forms.CheckedListBox CustomFlags;
         private System.Windows.Forms.Button btnMakeSame;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox grpMetaData;
         private System.Windows.Forms.Label lblModelID;
         private System.Windows.Forms.TextBox txtModelID;
         private System.Windows.Forms.Label label12;
@@ -1195,5 +1237,9 @@ namespace Chisel.Editor.UI.ObjectProperties
         private System.Windows.Forms.TextBox txtHullSize;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox txtName;
+        private System.Windows.Forms.GroupBox grpModels;
+        private System.Windows.Forms.Button btnMotionsSelectAll;
+        private System.Windows.Forms.ComboBox cboModels;
+        private System.Windows.Forms.Button btnCreateMotion;
     }
 }

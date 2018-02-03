@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 using Chisel.Common.Mediator;
 using Chisel.DataStructures.MapObjects;
@@ -17,15 +16,16 @@ namespace Chisel.Editor.Tools.MotionsTool
 {
     public partial class MotionsToolForm : UI.HotkeyForm
     {
-        public Documents.Document _document { get; set; }
+        public Document _document { get; set; }
         public bool InAnimation = false;
         public List<Solid> Solids;
         public Coordinate SolidsOrigin;
         public Coordinate MotionsOrigin;
         public bool MotionSelected = false;
         public float CurrentKeyFrame;
-        private bool _loadingKeyFrame = false;
-        //private TransformFlags flags;
+        private bool _freeze = false;
+        private TransformFlags flags;
+        private DataStructures.Geometric.Quaternion PrevRotation;
 
         public void SetDocument(Document Document)
         {
@@ -46,36 +46,38 @@ namespace Chisel.Editor.Tools.MotionsTool
             txtOrigX.Text = null;
             txtOrigY.Text = null;
             txtOrigZ.Text = null;
+            rdoMove.Checked = rdoRotate.Checked = false;
+            rdoMove.Enabled = rdoRotate.Enabled = false;
+            btnAnimate.Enabled = btnStopAnimation.Enabled = false;
+            flags = 0;
         }
 
-        public void Clear()
+        public void Clear(bool KeepSelection = false)
         {
-            btnStopAnimation.Enabled = false;
-            btnAnimate.Enabled = true;
-
             MotionsList.Items.Clear();
-            
-            _document.Selection.Clear();
-            _document.RenderAll();
-            Mediator.Publish(EditorMediator.SelectionChanged);
 
+            if (!KeepSelection)
+            { 
+                _document.Selection.Clear();
+                _document.RenderAll();
+                Mediator.Publish(EditorMediator.SelectionChanged);
+            }
+            
             Solids = null;
             SolidsOrigin = null;
             MotionsOrigin = null;
             MotionSelected = false;
+            PrevRotation = null;
 
-            _loadingKeyFrame = true;
+            _freeze = true;
             KeyFrameData.Rows.Clear();
             KeyFrameData.Columns.Clear();
-            _loadingKeyFrame = false;
+            _freeze = false;
             ClearText();
         }
 
-        private void PopulateMotions()
+        private void PopulateMotions(int MotionID = 0)
         {
-            List<Motion> motions = _document.Map.Motions;
-            foreach(Motion m in motions) MotionsList.Items.Add(m.Name, CheckState.Unchecked);
-
             KeyFrameData.AllowUserToDeleteRows = false;
             KeyFrameData.AllowUserToAddRows = false;
             KeyFrameData.AllowUserToOrderColumns = false;
@@ -91,22 +93,52 @@ namespace Chisel.Editor.Tools.MotionsTool
             KeyFrameData.Columns.Add("RotX", "Rot X");
             KeyFrameData.Columns.Add("RotY", "Rot Y");
             KeyFrameData.Columns.Add("RotZ", "Rot Z");
-            KeyFrameData.Columns.Add("RotD", "Rot D");
+            KeyFrameData.Columns.Add("RotW", "Rot W");
 
-            foreach(DataGridViewColumn c in KeyFrameData.Columns) c.Width = 65;
+            foreach (DataGridViewColumn c in KeyFrameData.Columns) c.Width = 65;
+
+            PrevRotation = new DataStructures.Geometric.Quaternion(0, 0, 0, -1);//No Rotation
+            List<Motion> motions = _document.Map.Motions;
+            foreach (Motion m in motions)
+            {
+                CheckState chk = CheckState.Unchecked;
+                if (m.ID == MotionID) chk = CheckState.Checked;
+                MotionsList.Items.Add(m.Name, chk);
+            }
+        }
+        
+        private int SelectionMotionID()
+        {
+            int result = 0;
+            var Objects = _document.Selection.GetSelectedObjects();
+
+            //TODO: allow if multiple faces are selected and all are the same objectID to select object
+            if (!Objects.All(x => x is Solid) || Objects.Count() != 1) return result;
+            foreach(Solid s in Objects) result = Convert.ToInt32(s.MetaData.Get<string>("ModelId"));
+            
+            return result;
         }
         
         public void OnShow()
         {
-            Clear();
-            PopulateMotions();
+            var MotionID = SelectionMotionID();
+            Clear(MotionID != 0);
+            PopulateMotions(MotionID);
         }
 
-        private TransformFlags GetFlags()
+        private void SetTransformFlags()
         {
-            TransformFlags flags = _document.Map.GetTransformFlags();
-            flags |= TransformFlags.Translate;
-            return flags;
+            if (rdoMove.Checked)
+            {
+                flags = _document.Map.GetTransformFlags();
+                flags |= TransformFlags.Translate;
+            }
+            else
+            {
+                flags = _document.Map.GetTransformFlags();
+                flags |= TransformFlags.Rotation;
+            }
+            
         }
 
         private void Assert(bool b, string message = "Assert failed.")
@@ -123,7 +155,7 @@ namespace Chisel.Editor.Tools.MotionsTool
                 //Keyframe
                 _document.PerformAction("Transform selection",
                                          new Edit(Solids,
-                                         new TransformEditOperation(ResetTransform(), GetFlags())));
+                                         new TransformEditOperation(ResetTransform(), flags)));
                 foreach (Solid s in Solids) s.SetHighlights();
 
                 _document.Selection.Clear();
@@ -141,12 +173,22 @@ namespace Chisel.Editor.Tools.MotionsTool
 
         private IUnitTransformation ResetTransform()
         {
-            Coordinate c = _document.Selection.GetSelectionBoundingBox().Center;
-            c = SolidsOrigin - c;
+            var mov = Matrix.Translation(-_document.Selection.GetSelectionBoundingBox().Center);
             
-            Matrix4 mat = Matrix4.CreateTranslation((float)c.X, (float)c.Y, (float)c.Z); ;
-            
-            return new UnitMatrixMult(mat);
+
+            OpenTK.Quaternion rev = new OpenTK.Quaternion((float)PrevRotation.X,
+                                                          (float)PrevRotation.Y,
+                                                          (float)PrevRotation.Z,
+                                                          (float)PrevRotation.W);
+            rev.Invert();
+            var q = new DataStructures.Geometric.Quaternion(0, 0, 0, -1);
+            var rot = Matrix.Rotation(q);
+            var fin = Matrix.Translation(SolidsOrigin);
+            PrevRotation = new DataStructures.Geometric.Quaternion((decimal)rev.X, (decimal)rev.Y,
+                                                                   (decimal)rev.Z, (decimal)rev.W);
+            var prev = Matrix.Rotation(PrevRotation);
+            PrevRotation = q;
+            return new UnitMatrixMult(fin * (rot * prev) * mov);
         }
 
         private Coordinate GetKeyframeMov()
@@ -160,24 +202,39 @@ namespace Chisel.Editor.Tools.MotionsTool
             return c;
         }
 
-        private IUnitTransformation MotionOriginTransform()
+        private DataStructures.Geometric.Quaternion GetKeyframeRot(bool prev = false)
         {
-            Coordinate c = _document.Selection.GetSelectionBoundingBox().Center;
-            c = (MotionsOrigin) - c;
+            int index = KeyFrameData.CurrentCell.RowIndex;
+            if (prev) index -= 1;
+            var x = Convert.ToDecimal(KeyFrameData.Rows[index].Cells[4].Value.ToString());
+            var y = Convert.ToDecimal(KeyFrameData.Rows[index].Cells[5].Value.ToString());
+            var z = Convert.ToDecimal(KeyFrameData.Rows[index].Cells[6].Value.ToString());
+            var w = Convert.ToDecimal(KeyFrameData.Rows[index].Cells[7].Value.ToString());
 
-            Matrix4 mat = Matrix4.CreateTranslation((float)c.X, (float)c.Y, (float)c.Z); ;
-
-            return new UnitMatrixMult(mat);
+            DataStructures.Geometric.Quaternion q = new DataStructures.Geometric.Quaternion(x,y,z,w);
+            
+            return q;
         }
-
+        
         private IUnitTransformation KeyFrameTransform()
         {
-            Coordinate c = _document.Selection.GetSelectionBoundingBox().Center;
-            c = (MotionsOrigin + GetKeyframeMov()) - c;
+            var mov = Matrix.Translation(-_document.Selection.GetSelectionBoundingBox().Center); // Move to zero
+            OpenTK.Quaternion rev = new OpenTK.Quaternion((float)PrevRotation.X, 
+                                                          (float)PrevRotation.Y,
+                                                          (float)PrevRotation.Z,
+                                                          (float)PrevRotation.W);
+            rev.Invert();
+            PrevRotation = new DataStructures.Geometric.Quaternion((decimal)rev.X, (decimal)rev.Y,
+                                                                   (decimal)rev.Z, (decimal)rev.W);
+            var prev = Matrix.Rotation(PrevRotation);
 
-            Matrix4 mat = Matrix4.CreateTranslation((float)c.X, (float)c.Y, (float)c.Z); ;
-
-            return new UnitMatrixMult(mat);
+            DataStructures.Geometric.Quaternion q = GetKeyframeRot();
+            
+            var rot = Matrix.Rotation(q); // Do rotation
+            var fin = Matrix.Translation(SolidsOrigin + GetKeyframeMov()); // Move to final origin
+            
+            PrevRotation = q;
+            return new UnitMatrixMult(fin * (rot * prev) * mov);
         }
         
         private void UpdateFields(int i)
@@ -194,19 +251,19 @@ namespace Chisel.Editor.Tools.MotionsTool
             txtOrigY.Text = orig.Y.ToString();
             txtOrigZ.Text = orig.Z.ToString();
             
-            _loadingKeyFrame = true;
+            _freeze = true;
             KeyFrameData.Rows.Clear();
 
             int CurrentRow = 0;
             foreach (MotionKeyFrames k in _document.Map.Motions[i].KeyFrames)
             {
-                KeyFrameData.Rows.Add(k.KeyTime, k.traX, k.traY, k.traZ, k.rotX, k.rotY, k.rotZ, k.rotD);
+                KeyFrameData.Rows.Add(k.KeyTime, k.traX, k.traY, k.traZ, k.rotX, k.rotY, k.rotZ, k.rotW);
                 if (k.KeyTime == CurrentKeyFrame) CurrentRow = KeyFrameData.Rows.Count - 1;
             }
             KeyFrameData.ClearSelection();
             KeyFrameData.CurrentCell = KeyFrameData.Rows[CurrentRow].Cells[0];
             KeyFrameData.Rows[CurrentRow].Selected = true;
-            _loadingKeyFrame = false;
+            _freeze = false;
         }
 
         private void UpdateOrigin()
@@ -219,14 +276,10 @@ namespace Chisel.Editor.Tools.MotionsTool
         private void Update(int i)
         {
             UpdateFields(i);
-            //Motion Origin
-            _document.PerformAction("Transform selection",
-                                     new Edit(Solids,
-                                     new TransformEditOperation(MotionOriginTransform(), GetFlags())));
             //Keyframe
             _document.PerformAction("Transform selection",
                                      new Edit(Solids,
-                                     new TransformEditOperation(KeyFrameTransform(), GetFlags())));
+                                     new TransformEditOperation(KeyFrameTransform(), flags)));
 
             foreach (Solid s in Solids) foreach (Face f in s.Faces) f.Texture.Opacity *= 0.5m;
             
@@ -240,16 +293,18 @@ namespace Chisel.Editor.Tools.MotionsTool
                 foreach (int i in MotionsList.CheckedIndices) MotionsList.SetItemCheckState(i, CheckState.Unchecked);
                 Update(e.Index);
                 MotionSelected = true;
+                btnAnimate.Enabled = true;
             }
             else
             {
                 ResetSolids();
                 
                 ClearText();
-                _loadingKeyFrame = true;
+                _freeze = true;
                 KeyFrameData.Rows.Clear();
-                _loadingKeyFrame = false;
+                _freeze = false;
                 MotionSelected = false;
+                btnAnimate.Enabled = false;
             }
         }
 
@@ -266,20 +321,30 @@ namespace Chisel.Editor.Tools.MotionsTool
         
         private void AnimateClicked(object sender, EventArgs e)
         {
-            InAnimation = true;
-            btnStopAnimation.Enabled = true;
+            InAnimation = btnStopAnimation.Enabled = rdoMove.Enabled = rdoRotate.Enabled = true;
             btnAnimate.Enabled = false;
+            rdoMove.Checked = true;
+            SetTransformFlags();
+        }
+
+        private void StopAnimationClicked(object sender, EventArgs e)
+        {
+            InAnimation = btnStopAnimation.Enabled = rdoMove.Enabled = rdoRotate.Enabled = false;
+            rdoMove.Checked = rdoRotate.Checked = false;
+            btnAnimate.Enabled = true;
+            flags = 0;
         }
 
         private void CurrentKeyframeChanged(object sender,EventArgs e)
         {
-            if (_loadingKeyFrame) return;
+            if (_freeze) return;
             CurrentKeyFrame = (float)KeyFrameData.Rows[KeyFrameData.CurrentCell.RowIndex].Cells[0].Value;
+            txtCurrentKey.Text = CurrentKeyFrame.ToString();
             if (Solids != null)
             {
                 _document.PerformAction("Transform selection",
                                          new Edit(Solids,
-                                         new TransformEditOperation(KeyFrameTransform(), GetFlags())));
+                                         new TransformEditOperation(KeyFrameTransform(), flags)));
             }
         }
     }

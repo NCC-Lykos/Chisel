@@ -14,7 +14,7 @@ namespace Chisel.DataStructures.MapObjects
         public float rotX { get; set; }
         public float rotY { get; set; }
         public float rotZ { get; set; }
-        public float rotD = 0.0f;
+        public float rotW { get; set; }
         /*Translation*/
         public float traX { get; set; }
         public float traY { get; set; }
@@ -34,11 +34,12 @@ namespace Chisel.DataStructures.MapObjects
             traX = (float)translation.X; traY = (float)translation.Y; traZ = (float)translation.Z;
         }
 
-        public void SetRotation(Coordinate c)
+        public void SetRotation(Quaternion q)
         {
-            rotX = (float)c.X;
-            rotY = (float)c.Y;
-            rotZ = (float)c.Z;
+            rotX = (float)q.X;
+            rotY = (float)q.Y;
+            rotZ = (float)q.Z;
+            rotW = (float)q.W;
         }
 
         public void SetTranslation(Coordinate c)
