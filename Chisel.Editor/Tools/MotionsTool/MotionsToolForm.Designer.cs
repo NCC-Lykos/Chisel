@@ -118,12 +118,13 @@ namespace Chisel.Editor.Tools.MotionsTool
             // 
             // btnUpdateMotion
             // 
-            this.btnUpdateMotion.Location = new System.Drawing.Point(509, 52);
+            this.btnUpdateMotion.Location = new System.Drawing.Point(509, 25);
             this.btnUpdateMotion.Name = "btnUpdateMotion";
-            this.btnUpdateMotion.Size = new System.Drawing.Size(60, 23);
+            this.btnUpdateMotion.Size = new System.Drawing.Size(60, 50);
             this.btnUpdateMotion.TabIndex = 30;
-            this.btnUpdateMotion.Text = "Update Motion";
+            this.btnUpdateMotion.Text = "Update Motion Data";
             this.btnUpdateMotion.UseVisualStyleBackColor = true;
+            this.btnUpdateMotion.Click += new System.EventHandler(this.UpdateMotionDataClicked);
             // 
             // txtOrigX
             // 
@@ -149,9 +150,11 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.btnSetOriginCenter.TabIndex = 4;
             this.btnSetOriginCenter.Text = "Set Origin to center of Solids";
             this.btnSetOriginCenter.UseVisualStyleBackColor = true;
+            this.btnSetOriginCenter.Click += new System.EventHandler(this.SetOriginCenterClicked);
             // 
             // txtCurrentKey
             // 
+            this.txtCurrentKey.Enabled = false;
             this.txtCurrentKey.Location = new System.Drawing.Point(166, 51);
             this.txtCurrentKey.Name = "txtCurrentKey";
             this.txtCurrentKey.Size = new System.Drawing.Size(48, 20);
@@ -207,6 +210,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.AddMotion.TabIndex = 2;
             this.AddMotion.Text = "Add";
             this.AddMotion.UseVisualStyleBackColor = true;
+            this.AddMotion.Click += new System.EventHandler(this.AddMotionClicked);
             // 
             // RemoveMotion
             // 
@@ -216,6 +220,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.RemoveMotion.TabIndex = 3;
             this.RemoveMotion.Text = "Remove";
             this.RemoveMotion.UseVisualStyleBackColor = true;
+            this.RemoveMotion.Click += new System.EventHandler(this.RemoveMotionClicked);
             // 
             // grpEditKeyframes
             // 
@@ -239,6 +244,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.btnSetRotation.TabIndex = 33;
             this.btnSetRotation.Text = "Set Rotation";
             this.btnSetRotation.UseVisualStyleBackColor = true;
+            this.btnSetRotation.Click += new System.EventHandler(this.SetRotationClicked);
             // 
             // btnSetMovement
             // 
@@ -248,6 +254,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.btnSetMovement.TabIndex = 32;
             this.btnSetMovement.Text = "Set Movement";
             this.btnSetMovement.UseVisualStyleBackColor = true;
+            this.btnSetMovement.Click += new System.EventHandler(this.SetMovementClicked);
             // 
             // btnRemoveKeyframe
             // 
@@ -257,6 +264,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.btnRemoveKeyframe.TabIndex = 31;
             this.btnRemoveKeyframe.Text = "Remove Key";
             this.btnRemoveKeyframe.UseVisualStyleBackColor = true;
+            this.btnRemoveKeyframe.Click += new System.EventHandler(this.RemoveKeyFrameClicked);
             // 
             // btnAddKeyFrame
             // 
@@ -266,6 +274,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.btnAddKeyFrame.TabIndex = 30;
             this.btnAddKeyFrame.Text = "Add Key";
             this.btnAddKeyFrame.UseVisualStyleBackColor = true;
+            this.btnAddKeyFrame.Click += new System.EventHandler(this.AddKeyFrameClicked);
             // 
             // KeyFrameData
             // 
@@ -340,7 +349,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.Name = "MotionsToolForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Motions (Models) Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnClosing);
             this.grpRaw.ResumeLayout(false);

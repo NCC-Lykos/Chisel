@@ -6,11 +6,10 @@ namespace Chisel.DataStructures.MapObjects
     public class Motion
     {
         public const int ItemsNeeded = 6;
-        public const int NameChecksum = 2379; //ignored in RF
-
-
+        public const int NameChecksum = 2379; //ignored in G3d
+        
         public string Name { get; set; }
-        public int ID { get; set; }
+        public long ID { get; set; }
         public double CurrentKeyTime { get; set; }  //Default is max key time.
         public Matrix Transform { get; set; } //Transform from Origin, center of solids
 
@@ -18,10 +17,21 @@ namespace Chisel.DataStructures.MapObjects
 
         public List<string> RawModelLines = new List<string>();
 
-        public Motion(int id)
+        public Motion(long id)
         {
             ID = id;
+            Name = "Motion_" + id.ToString();
             KeyFrames = new List<MotionKeyFrames>();
+        }
+
+        public void SetBlank()
+        {
+            CurrentKeyTime = 0;
+            Transform = Matrix.Translation(Coordinate.Zero);
+            MotionKeyFrames k = new MotionKeyFrames(0, this);
+            k.SetTranslation(new Coordinate(0.000000m, 0.000000m, 0.000000m));
+            k.SetRotation(new Quaternion(0.000000m, 0.000000m, 0.000000m, -1.000000m));
+            KeyFrames.Add(k);
         }
 
         public void SetOrigin(Coordinate c)

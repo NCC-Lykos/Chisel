@@ -10,15 +10,9 @@ namespace Chisel.DataStructures.MapObjects
         public Motion Parent { get; set; }
 
         public float KeyTime { get; set; }
-        /*Rotation*/
-        public float rotX { get; set; }
-        public float rotY { get; set; }
-        public float rotZ { get; set; }
-        public float rotW { get; set; }
+        Quaternion q { get; set; }
         /*Translation*/
-        public float traX { get; set; }
-        public float traY { get; set; }
-        public float traZ { get; set; }
+        Coordinate c { get; set; }
 
         public MotionKeyFrames(float keytime, Motion parent)
         {
@@ -26,49 +20,52 @@ namespace Chisel.DataStructures.MapObjects
             KeyTime = keytime;
         }
 
-        public MotionKeyFrames(Coordinate rotation,Coordinate translation, Motion parent)
+        public MotionKeyFrames(Quaternion rotation,Coordinate translation, Motion parent)
         {
             Parent = parent;
-
-            rotX = (float)rotation.X; rotY = (float)rotation.Y; rotZ = (float)rotation.Z;
-            traX = (float)translation.X; traY = (float)translation.Y; traZ = (float)translation.Z;
+            q = rotation;
+            c = translation;
         }
 
-        public void SetRotation(Quaternion q)
+        public Quaternion GetRotation()
         {
-            rotX = (float)q.X;
-            rotY = (float)q.Y;
-            rotZ = (float)q.Z;
-            rotW = (float)q.W;
+            return q;
+        }
+        public Coordinate GetTranslation()
+        {
+            return c;
         }
 
-        public void SetTranslation(Coordinate c)
+        public void SetRotation(Quaternion rot)
         {
-            traX = (float)c.X;
-            traY = (float)c.Y;
-            traZ = (float)c.Z;
+            q = rot;
+        }
+        public void SetTranslation(Coordinate tra)
+        {
+            c = tra;
         }
 
         protected MotionKeyFrames(SerializationInfo info, StreamingContext context)
         {
-            rotX = (float)info.GetDecimal("rotX");
-            rotY = (float)info.GetDecimal("rotY");
-            rotZ = (float)info.GetDecimal("rotZ");
-
-            traX = (float)info.GetDecimal("traX");
-            rotY = (float)info.GetDecimal("rotY");
-            rotZ = (float)info.GetDecimal("rotZ");
+            q = new Quaternion(info.GetDecimal("qX"), 
+                               info.GetDecimal("qY"),
+                               info.GetDecimal("qZ"), 
+                               info.GetDecimal("qW"));
+            
+            c.X = info.GetDecimal("cX");
+            c.Y = info.GetDecimal("cY");
+            c.Y = info.GetDecimal("cZ");
         }
-
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("rotX", rotX);
-            info.AddValue("rotY", rotX);
-            info.AddValue("rotZ", rotX);
+            info.AddValue("qX", q.X);
+            info.AddValue("qY", q.Y);
+            info.AddValue("qZ", q.Z);
+            info.AddValue("qW", q.W);
 
-            info.AddValue("rotX", rotX);
-            info.AddValue("rotY", rotX);
-            info.AddValue("rotZ", rotX);
+            info.AddValue("qX", q.X);
+            info.AddValue("qY", q.Y);
+            info.AddValue("qZ", q.Z);
         }
     }
     

@@ -745,6 +745,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             this.btnCreateMotion.TabIndex = 10;
             this.btnCreateMotion.Text = "Create New";
             this.btnCreateMotion.UseVisualStyleBackColor = true;
+            this.btnCreateMotion.Click += new System.EventHandler(this.CreateMotionClicked);
             // 
             // lblModelID
             // 

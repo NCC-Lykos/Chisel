@@ -10,7 +10,7 @@ using Chisel.DataStructures.Transformations;
 using Chisel.Editor.Documents;
 using Chisel.Editor.Actions.MapObjects.Operations;
 using Chisel.Editor.Actions.MapObjects.Operations.EditOperations;
-using OpenTK;
+using Chisel.Editor.UI.ObjectProperties;
 
 namespace Chisel.Editor.Tools.MotionsTool
 {
@@ -25,7 +25,8 @@ namespace Chisel.Editor.Tools.MotionsTool
         public float CurrentKeyFrame;
         private bool _freeze = false;
         private TransformFlags flags;
-        private DataStructures.Geometric.Quaternion PrevRotation;
+        private Quaternion PrevRotation;
+        private int CurrentMotionIndex;
 
         public void SetDocument(Document Document)
         {
@@ -95,9 +96,11 @@ namespace Chisel.Editor.Tools.MotionsTool
             KeyFrameData.Columns.Add("RotZ", "Rot Z");
             KeyFrameData.Columns.Add("RotW", "Rot W");
 
+            RemoveMotion.Enabled = grpEditKeyframes.Enabled = grpRaw.Enabled = false;
+
             foreach (DataGridViewColumn c in KeyFrameData.Columns) c.Width = 65;
 
-            PrevRotation = new DataStructures.Geometric.Quaternion(0, 0, 0, -1);//No Rotation
+            PrevRotation = new Quaternion(0, 0, 0, -1);//No Rotation
             List<Motion> motions = _document.Map.Motions;
             foreach (Motion m in motions)
             {
@@ -202,7 +205,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             return c;
         }
 
-        private DataStructures.Geometric.Quaternion GetKeyframeRot(bool prev = false)
+        private Quaternion GetKeyframeRot(bool prev = false)
         {
             int index = KeyFrameData.CurrentCell.RowIndex;
             if (prev) index -= 1;
@@ -236,46 +239,73 @@ namespace Chisel.Editor.Tools.MotionsTool
             PrevRotation = q;
             return new UnitMatrixMult(fin * (rot * prev) * mov);
         }
-        
-        private void UpdateFields(int i)
-        {
-            SetSolid(_document.Map.WorldSpawn.GetChildren().OfType<Solid>().Where(x => x.MetaData.Get<string>("ModelId") == _document.Map.Motions[i].ID.ToString()).ToList());
-            CurrentKeyFrame = (float)_document.Map.Motions[i].CurrentKeyTime;
-            txtMotionName.Text = _document.Map.Motions[i].Name.ToString();
-            txtMotionID.Text = _document.Map.Motions[i].ID.ToString();
-            txtCurrentKey.Text = CurrentKeyFrame.ToString();
-
-            var orig = _document.Map.Motions[i].GetOrigin();
-            MotionsOrigin = orig;
-            txtOrigX.Text = orig.X.ToString();
-            txtOrigY.Text = orig.Y.ToString();
-            txtOrigZ.Text = orig.Z.ToString();
-            
-            _freeze = true;
-            KeyFrameData.Rows.Clear();
-
-            int CurrentRow = 0;
-            foreach (MotionKeyFrames k in _document.Map.Motions[i].KeyFrames)
-            {
-                KeyFrameData.Rows.Add(k.KeyTime, k.traX, k.traY, k.traZ, k.rotX, k.rotY, k.rotZ, k.rotW);
-                if (k.KeyTime == CurrentKeyFrame) CurrentRow = KeyFrameData.Rows.Count - 1;
-            }
-            KeyFrameData.ClearSelection();
-            KeyFrameData.CurrentCell = KeyFrameData.Rows[CurrentRow].Cells[0];
-            KeyFrameData.Rows[CurrentRow].Selected = true;
-            _freeze = false;
-        }
 
         private void UpdateOrigin()
         {
             _document.Selection.Select(Solids);
             Mediator.Publish(EditorMediator.SelectionChanged);
             SolidsOrigin = _document.Selection.GetSelectionBoundingBox().Center;
+            if (MotionsOrigin == SolidsOrigin) btnSetOriginCenter.Enabled = false;
+            else btnSetOriginCenter.Enabled = true;
         }
 
-        private void Update(int i)
+        private void UpdateKeyFrameList(Motion m, float Key = -1)
         {
-            UpdateFields(i);
+            _freeze = true;
+            KeyFrameData.Rows.Clear();
+
+            int CurrentRow = -1;
+            if (Key == -1) Key = CurrentKeyFrame;
+            foreach (MotionKeyFrames k in m.KeyFrames)
+            {
+                var rot = k.GetRotation();
+                var tra = k.GetTranslation();
+                KeyFrameData.Rows.Add(k.KeyTime, tra.X, tra.Y, tra.Z, rot.X, rot.Y, rot.Z, rot.W);
+                if (k.KeyTime == Key) CurrentRow += KeyFrameData.Rows.Count;
+            }
+            if (CurrentRow == -1) CurrentRow += KeyFrameData.Rows.Count;
+            
+            KeyFrameData.ClearSelection();
+            KeyFrameData.CurrentCell = KeyFrameData.Rows[CurrentRow].Cells[0];
+            KeyFrameData.Rows[CurrentRow].Selected = true;
+            CurrentKeyFrame = (float)KeyFrameData.Rows[CurrentRow].Cells[0].Value;
+            txtCurrentKey.Text = KeyFrameData.Rows[CurrentRow].Cells[0].Value.ToString();
+            m.CurrentKeyTime = CurrentKeyFrame;
+            _freeze = false;
+        }
+
+        private bool UpdateFields(int i)
+        {
+            var s = _document.Map.WorldSpawn.GetChildren().OfType<Solid>().Where(x => x.MetaData.Get<string>("ModelId") == _document.Map.Motions[i].ID.ToString()).ToList();
+            if (s.Count() == 0)
+            {
+                MessageBox.Show("This motion has no brushes attached to it. Set brushes to this motion in the Object Editor", 
+                                "No Brushes in motion",
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Error);
+                return false;
+            }
+
+            var orig = _document.Map.Motions[i].GetOrigin();
+            MotionsOrigin = orig;
+            txtOrigX.Text = orig.X.ToString();
+            txtOrigY.Text = orig.Y.ToString();
+            txtOrigZ.Text = orig.Z.ToString();
+
+            SetSolid(s);
+            
+            CurrentKeyFrame = (float)_document.Map.Motions[i].CurrentKeyTime;
+            txtMotionName.Text = _document.Map.Motions[i].Name.ToString();
+            txtMotionID.Text = _document.Map.Motions[i].ID.ToString();
+            
+            UpdateKeyFrameList(_document.Map.Motions[i]);
+
+            return true;
+        }
+        
+        private bool Update(int i)
+        {
+            if (!UpdateFields(i)) return false;
             //Keyframe
             _document.PerformAction("Transform selection",
                                      new Edit(Solids,
@@ -284,28 +314,89 @@ namespace Chisel.Editor.Tools.MotionsTool
             foreach (Solid s in Solids) foreach (Face f in s.Faces) f.Texture.Opacity *= 0.5m;
             
             _document.RenderAll();
+            return true;
+        }
+
+        private float GetMaxKeyFrame()
+        {
+            float MaxTime = 0;
+            foreach (DataGridViewRow r in KeyFrameData.Rows) if ((float)r.Cells[0].Value > MaxTime) MaxTime = (float)r.Cells[0].Value;
+            return MaxTime;
+        }
+
+        private float PromptKeyTime()
+        {
+            var time = GetMaxKeyFrame() + 0.01f;
+            var f = new NewKeyFrame(time);
+            f.ShowDialog();
+            return f.Time;
+        }
+
+        private bool KeyFrameAdd(Coordinate c = null, Quaternion q = null)
+        {
+            if (c == null) c = new Coordinate(0.000000m, 0.000000m, 0.000000m);
+            if (q == null) q = new Quaternion(0.000000m, 0.000000m, 0.000000m, -1.000000m);
+
+            var time = PromptKeyTime();
+
+            if (time < 0) return false;
+
+            Motion m = _document.Map.Motions[CurrentMotionIndex];
+            
+            List<MotionKeyFrames> KeyFrames = m.KeyFrames;
+            foreach (MotionKeyFrames k in KeyFrames) if (time == k.KeyTime) time += 0.1f;
+            MotionKeyFrames NewFrame = new MotionKeyFrames(time, m);
+
+            NewFrame.SetTranslation(c);
+            NewFrame.SetRotation(q);
+
+            KeyFrames.Add(NewFrame);
+            KeyFrames.OrderBy(x => x.KeyTime);
+            
+            UpdateKeyFrameList(m,time);
+            
+            return true;
+        }
+
+        private void KeyFrameRemove()
+        {
+            Motion m = _document.Map.Motions[CurrentMotionIndex];
+            List<MotionKeyFrames> KeyFrames = m.KeyFrames;
+            MotionKeyFrames del = null;
+            foreach(MotionKeyFrames k in KeyFrames) if (k.KeyTime == CurrentKeyFrame) del = k;
+            if (del != null && KeyFrames.Count > 1) KeyFrames.Remove(del);
+
+            UpdateKeyFrameList(m);
         }
 
         private void MotionSelectionChanged(object sender, ItemCheckEventArgs e)
         {
+            if (_freeze) return;
+            bool r;
             if (e.NewValue == CheckState.Checked)
             {
                 foreach (int i in MotionsList.CheckedIndices) MotionsList.SetItemCheckState(i, CheckState.Unchecked);
-                Update(e.Index);
-                MotionSelected = true;
-                btnAnimate.Enabled = true;
+                r = Update(e.Index);
             }
-            else
+            else r = false;
+
+            if (!r)
             {
+                //if (e.NewValue == CheckState.Checked) e.NewValue = CheckState.Unchecked;
                 ResetSolids();
-                
                 ClearText();
                 _freeze = true;
                 KeyFrameData.Rows.Clear();
                 _freeze = false;
-                MotionSelected = false;
-                btnAnimate.Enabled = false;
+                RemoveMotion.Enabled = false;
             }
+            else CurrentMotionIndex = e.Index;
+
+            if (e.NewValue == CheckState.Checked) RemoveMotion.Enabled = true;
+            else RemoveMotion.Enabled = false;
+
+            MotionSelected = btnAnimate.Enabled = r;
+            grpEditKeyframes.Enabled = grpRaw.Enabled = r;
         }
 
         private void OnClosing(object sender, FormClosingEventArgs e)
@@ -326,7 +417,6 @@ namespace Chisel.Editor.Tools.MotionsTool
             rdoMove.Checked = true;
             SetTransformFlags();
         }
-
         private void StopAnimationClicked(object sender, EventArgs e)
         {
             InAnimation = btnStopAnimation.Enabled = rdoMove.Enabled = rdoRotate.Enabled = false;
@@ -346,6 +436,66 @@ namespace Chisel.Editor.Tools.MotionsTool
                                          new Edit(Solids,
                                          new TransformEditOperation(KeyFrameTransform(), flags)));
             }
+        }
+
+        private void AddMotionClicked(object sender, EventArgs e)
+        {
+            var i = _document.Map.IDGenerator.GetNextMotionID();
+            var f = new NewMotion(i);
+            f.ShowDialog();
+            var name = f.Name;
+            Motion m = new Motion(i);
+            m.Name = name;
+            m.SetBlank();
+            _document.Map.Motions.Add(m);
+
+            _document.Selection.Clear();
+            if (name != null) Mediator.Publish(EditorMediator.SelectionChanged);
+
+            Clear(false);
+            PopulateMotions();
+        }
+        private void RemoveMotionClicked(object sender, EventArgs e) {
+            
+            _document.Map.Motions.Remove(_document.Map.Motions[MotionsList.SelectedIndex]);
+
+            Mediator.Publish(EditorMediator.DocumentTreeStructureChanged);
+            Clear(false);
+            PopulateMotions();
+        }
+
+        private void AddKeyFrameClicked(object sender, EventArgs e) {
+            KeyFrameAdd();
+        }
+        private void RemoveKeyFrameClicked(object sender, EventArgs e) {
+            KeyFrameRemove();
+        }
+        private void SetRotationClicked(object sender, EventArgs e) {
+        }
+        private void SetMovementClicked(object sender, EventArgs e) {
+        }
+
+        private void SetOriginCenterClicked(object sender, EventArgs e)
+        {
+            MotionsOrigin = SolidsOrigin;
+            
+            _document.Map.Motions[CurrentMotionIndex].SetOrigin(MotionsOrigin);
+            txtOrigX.Text = MotionsOrigin.X.ToString();
+            txtOrigY.Text = MotionsOrigin.Y.ToString();
+            txtOrigZ.Text = MotionsOrigin.Z.ToString();
+            btnSetOriginCenter.Enabled = false;
+        }
+
+        private void UpdateMotionDataClicked(object s, EventArgs e)
+        {
+            _document.Map.Motions[CurrentMotionIndex].Name = txtMotionName.Text;
+            MotionsOrigin = new Coordinate(Convert.ToDecimal(txtOrigX.Text),
+                                           Convert.ToDecimal(txtOrigY.Text),
+                                           Convert.ToDecimal(txtOrigZ.Text));
+            _document.Map.Motions[CurrentMotionIndex].SetOrigin(MotionsOrigin);
+            long CurrentMotion = _document.Map.Motions[CurrentMotionIndex].ID;
+            Clear(false);
+            PopulateMotions((int)CurrentMotion);
         }
     }
 }

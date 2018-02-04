@@ -197,7 +197,7 @@ namespace Chisel.Editor.UI.ObjectProperties
                         ((Solid)Objects[x]).SetHighlights();
                     }
                 }
-                else MessageBox.Show("Indeterminate checkboxes found, No changes saved.", "Indeterminate", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else MessageBox.Show("Indeterminate checkboxes found, No flag changes saved.", "Indeterminate", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 
                 if (!DiffGBSPMotions) foreach (Solid s in Objects) s.MetaData.Set<string>("ModelId", txtModelID.Text);
                 else MessageBox.Show("Multiple Motions, No Motions changes saved.", "Motions", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -409,8 +409,8 @@ namespace Chisel.Editor.UI.ObjectProperties
 
         private class Item
         {
-            public string Name; public int Value;
-            public Item(string name, int value) { Name = name; Value = value; }
+            public string Name; public long Value;
+            public Item(string name, long value) { Name = name; Value = value; }
             public override string ToString() { return Name; }
         }
 
@@ -1097,6 +1097,24 @@ namespace Chisel.Editor.UI.ObjectProperties
             Document.Selection.Select(sel);
             Mediator.Publish(EditorMediator.SelectionChanged);
             Document.RenderAll();
+        }
+
+        private void CreateMotionClicked(object sender, EventArgs e)
+        {
+            var i = Document.Map.IDGenerator.GetNextMotionID();
+            var f = new NewMotion(i);
+            f.ShowDialog();
+            var name = f.Name;
+            Motion m = new Motion(i);
+            m.Name = name;
+            m.SetBlank();
+            Document.Map.Motions.Add(m);
+            
+            Document.Selection.Clear();
+            Document.Selection.Select(Objects);
+            if(name != null) Mediator.Publish(EditorMediator.SelectionChanged);
+            RefreshData();
+            cboModels.SelectedIndex = cboModels.Items.Count -1 ;
         }
     }    
 }
