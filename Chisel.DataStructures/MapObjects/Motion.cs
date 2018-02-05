@@ -30,7 +30,7 @@ namespace Chisel.DataStructures.MapObjects
             Transform = Matrix.Translation(Coordinate.Zero);
             MotionKeyFrames k = new MotionKeyFrames(0, this);
             k.SetTranslation(new Coordinate(0.000000m, 0.000000m, 0.000000m));
-            k.SetRotation(new Quaternion(0.000000m, 0.000000m, 0.000000m, -1.000000m));
+            k.SetRotation(new Quaternion(0.000000m, 0.000000m, 0.000000m, 1.000000m));
             KeyFrames.Add(k);
         }
 

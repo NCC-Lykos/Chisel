@@ -10,12 +10,25 @@ using Chisel.DataStructures.Transformations;
 using Chisel.Editor.Documents;
 using Chisel.Editor.Actions.MapObjects.Operations;
 using Chisel.Editor.Actions.MapObjects.Operations.EditOperations;
+using Chisel.Editor.Tools.SelectTool.TransformationTools;
 using Chisel.Editor.UI.ObjectProperties;
 
 namespace Chisel.Editor.Tools.MotionsTool
 {
     public partial class MotionsToolForm : UI.HotkeyForm
     {
+        public delegate void ChangeAnimateTypeEventHandler(object sender, Type transformationToolType);
+
+        public event ChangeAnimateTypeEventHandler ChangeAnimateType;
+
+        protected virtual void OnChangeAnimateType(Type transformationToolType)
+        {
+            if (ChangeAnimateType != null)
+            {
+                ChangeAnimateType(this, transformationToolType);
+            }
+        }
+
         public Document _document { get; set; }
         public bool InAnimation = false;
         public List<Solid> Solids;
@@ -96,9 +109,9 @@ namespace Chisel.Editor.Tools.MotionsTool
             KeyFrameData.Columns.Add("RotZ", "Rot Z");
             KeyFrameData.Columns.Add("RotW", "Rot W");
 
-            RemoveMotion.Enabled = grpEditKeyframes.Enabled = grpRaw.Enabled = false;
+            btnRemoveMotion.Enabled = grpEditKeyframes.Enabled = grpRaw.Enabled = false;
 
-            foreach (DataGridViewColumn c in KeyFrameData.Columns) c.Width = 65;
+            foreach (DataGridViewColumn c in KeyFrameData.Columns) c.Width = 60;
 
             PrevRotation = new Quaternion(0, 0, 0, -1);//No Rotation
             List<Motion> motions = _document.Map.Motions;
@@ -227,11 +240,11 @@ namespace Chisel.Editor.Tools.MotionsTool
                                                           (float)PrevRotation.Z,
                                                           (float)PrevRotation.W);
             rev.Invert();
-            PrevRotation = new DataStructures.Geometric.Quaternion((decimal)rev.X, (decimal)rev.Y,
+            PrevRotation = new Quaternion((decimal)rev.X, (decimal)rev.Y,
                                                                    (decimal)rev.Z, (decimal)rev.W);
             var prev = Matrix.Rotation(PrevRotation);
 
-            DataStructures.Geometric.Quaternion q = GetKeyframeRot();
+            Quaternion q = GetKeyframeRot();
             
             var rot = Matrix.Rotation(q); // Do rotation
             var fin = Matrix.Translation(SolidsOrigin + GetKeyframeMov()); // Move to final origin
@@ -329,33 +342,78 @@ namespace Chisel.Editor.Tools.MotionsTool
             var time = GetMaxKeyFrame() + 0.01f;
             var f = new NewKeyFrame(time);
             f.ShowDialog();
+            if (f.cancel) f.Time = -f.Time;
             return f.Time;
         }
 
-        private bool KeyFrameAdd(Coordinate c = null, Quaternion q = null)
+        private bool KeyFrameAdd(bool prompt = true, Coordinate c = null, Quaternion q = null)
         {
-            if (c == null) c = new Coordinate(0.000000m, 0.000000m, 0.000000m);
-            if (q == null) q = new Quaternion(0.000000m, 0.000000m, 0.000000m, -1.000000m);
+            if (prompt) {
+                if (c == null) c = new Coordinate(0.000000m, 0.000000m, 0.000000m);
+                if (q == null) q = new Quaternion(0.000000m, 0.000000m, 0.000000m, 1.000000m);
+            }
+            else //if we are not prompting user has clicked animation
+            {
+                if (c == null) c = new Coordinate((decimal)KeyFrameData.CurrentRow.Cells[1].Value,
+                                                  (decimal)KeyFrameData.CurrentRow.Cells[2].Value,
+                                                  (decimal)KeyFrameData.CurrentRow.Cells[3].Value);
 
-            var time = PromptKeyTime();
+                if (q == null) q = new Quaternion((decimal)KeyFrameData.CurrentRow.Cells[4].Value,
+                                                  (decimal)KeyFrameData.CurrentRow.Cells[5].Value,
+                                                  (decimal)KeyFrameData.CurrentRow.Cells[6].Value,
+                                                  (decimal)KeyFrameData.CurrentRow.Cells[7].Value);
+            }
+            
 
+
+            float time;
+            if (prompt) time = PromptKeyTime();
+            else time = (float)KeyFrameData.CurrentRow.Cells[0].Value;
+            
             if (time < 0) return false;
 
             Motion m = _document.Map.Motions[CurrentMotionIndex];
             
             List<MotionKeyFrames> KeyFrames = m.KeyFrames;
-            foreach (MotionKeyFrames k in KeyFrames) if (time == k.KeyTime) time += 0.1f;
+            foreach (MotionKeyFrames k in KeyFrames) if (time == k.KeyTime) time += 0.01f;
             MotionKeyFrames NewFrame = new MotionKeyFrames(time, m);
 
             NewFrame.SetTranslation(c);
             NewFrame.SetRotation(q);
 
             KeyFrames.Add(NewFrame);
-            KeyFrames.OrderBy(x => x.KeyTime);
+            m.KeyFrames = KeyFrames.OrderBy(x => x.KeyTime).ToList();
             
             UpdateKeyFrameList(m,time);
-            
+            _document.PerformAction("Transform selection",
+                                         new Edit(Solids,
+                                         new TransformEditOperation(KeyFrameTransform(), flags)));
             return true;
+        }
+
+        public void KeyFrameEdit(float time = -1, Coordinate c = null, Quaternion q = null)
+        {
+            if (c == null) c = new Coordinate(0.000000m, 0.000000m, 0.000000m);
+            if (q == null) q = new Quaternion(0.000000m, 0.000000m, 0.000000m, -1.000000m);
+            if (time < 0) time = (float)KeyFrameData.CurrentRow.Cells[0].Value;
+
+            
+            Motion m = _document.Map.Motions[CurrentMotionIndex];
+
+            List<MotionKeyFrames> KeyFrames = m.KeyFrames;
+            foreach (MotionKeyFrames k in KeyFrames)
+            {
+                if (time == k.KeyTime)
+                {
+                    k.SetRotation(q);
+                    k.SetTranslation(c);
+                }
+            }
+
+            UpdateKeyFrameList(m, time);
+            _document.PerformAction("Transform selection",
+                                         new Edit(Solids,
+                                         new TransformEditOperation(KeyFrameTransform(), flags)));
         }
 
         private void KeyFrameRemove()
@@ -367,6 +425,9 @@ namespace Chisel.Editor.Tools.MotionsTool
             if (del != null && KeyFrames.Count > 1) KeyFrames.Remove(del);
 
             UpdateKeyFrameList(m);
+            _document.PerformAction("Transform selection",
+                                         new Edit(Solids,
+                                         new TransformEditOperation(KeyFrameTransform(), flags)));
         }
 
         private void MotionSelectionChanged(object sender, ItemCheckEventArgs e)
@@ -388,12 +449,12 @@ namespace Chisel.Editor.Tools.MotionsTool
                 _freeze = true;
                 KeyFrameData.Rows.Clear();
                 _freeze = false;
-                RemoveMotion.Enabled = false;
+                btnRemoveMotion.Enabled = false;
             }
             else CurrentMotionIndex = e.Index;
 
-            if (e.NewValue == CheckState.Checked) RemoveMotion.Enabled = true;
-            else RemoveMotion.Enabled = false;
+            if (e.NewValue == CheckState.Checked) btnRemoveMotion.Enabled = true;
+            else btnRemoveMotion.Enabled = false;
 
             MotionSelected = btnAnimate.Enabled = r;
             grpEditKeyframes.Enabled = grpRaw.Enabled = r;
@@ -412,14 +473,21 @@ namespace Chisel.Editor.Tools.MotionsTool
         
         private void AnimateClicked(object sender, EventArgs e)
         {
+            KeyFrameAdd(false);
+
             InAnimation = btnStopAnimation.Enabled = rdoMove.Enabled = rdoRotate.Enabled = true;
-            btnAnimate.Enabled = false;
+            btnAnimate.Enabled = grpEditKeyframes.Enabled = grpRaw.Enabled = false;
+            MotionsList.Enabled = btnAddMotion.Enabled = btnRemoveMotion.Enabled = false;
             rdoMove.Checked = true;
+
             SetTransformFlags();
         }
+
         private void StopAnimationClicked(object sender, EventArgs e)
         {
             InAnimation = btnStopAnimation.Enabled = rdoMove.Enabled = rdoRotate.Enabled = false;
+            btnAnimate.Enabled = grpEditKeyframes.Enabled = grpRaw.Enabled = true;
+            MotionsList.Enabled = btnAddMotion.Enabled = btnRemoveMotion.Enabled = true;
             rdoMove.Checked = rdoRotate.Checked = false;
             btnAnimate.Enabled = true;
             flags = 0;
@@ -455,6 +523,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             Clear(false);
             PopulateMotions();
         }
+
         private void RemoveMotionClicked(object sender, EventArgs e) {
             
             _document.Map.Motions.Remove(_document.Map.Motions[MotionsList.SelectedIndex]);
@@ -467,12 +536,18 @@ namespace Chisel.Editor.Tools.MotionsTool
         private void AddKeyFrameClicked(object sender, EventArgs e) {
             KeyFrameAdd();
         }
+
         private void RemoveKeyFrameClicked(object sender, EventArgs e) {
             KeyFrameRemove();
         }
-        private void SetRotationClicked(object sender, EventArgs e) {
-        }
-        private void SetMovementClicked(object sender, EventArgs e) {
+        
+        private void SetKeyFrameClicked(object sender, EventArgs e) {
+            var f = new KeyFrameEdit(CurrentKeyFrame);
+            f.ShowDialog();
+            if (f.change)
+            {
+                KeyFrameEdit(CurrentKeyFrame, f.c, f.q);
+            }
         }
 
         private void SetOriginCenterClicked(object sender, EventArgs e)
@@ -496,6 +571,16 @@ namespace Chisel.Editor.Tools.MotionsTool
             long CurrentMotion = _document.Map.Motions[CurrentMotionIndex].ID;
             Clear(false);
             PopulateMotions((int)CurrentMotion);
+        }
+
+        private void AnimateTypeChanged(object s, EventArgs e)
+        {
+            RadioButton radioButton = s as RadioButton;
+            if (radioButton.Checked == false) return;
+            string button = (string)radioButton.Tag;
+            
+            if (button == "Move") OnChangeAnimateType(typeof(MoveTool));
+            if (button == "Rotate") OnChangeAnimateType(typeof(RotateTool));
         }
     }
 }

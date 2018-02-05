@@ -55,11 +55,10 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.label3 = new System.Windows.Forms.Label();
             this.txtMotionName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.AddMotion = new System.Windows.Forms.Button();
-            this.RemoveMotion = new System.Windows.Forms.Button();
+            this.btnAddMotion = new System.Windows.Forms.Button();
+            this.btnRemoveMotion = new System.Windows.Forms.Button();
             this.grpEditKeyframes = new System.Windows.Forms.GroupBox();
-            this.btnSetRotation = new System.Windows.Forms.Button();
-            this.btnSetMovement = new System.Windows.Forms.Button();
+            this.btnSetKeyFrame = new System.Windows.Forms.Button();
             this.btnRemoveKeyframe = new System.Windows.Forms.Button();
             this.btnAddKeyFrame = new System.Windows.Forms.Button();
             this.KeyFrameData = new System.Windows.Forms.DataGridView();
@@ -202,30 +201,29 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.label1.TabIndex = 0;
             this.label1.Text = "Name";
             // 
-            // AddMotion
+            // btnAddMotion
             // 
-            this.AddMotion.Location = new System.Drawing.Point(12, 321);
-            this.AddMotion.Name = "AddMotion";
-            this.AddMotion.Size = new System.Drawing.Size(54, 23);
-            this.AddMotion.TabIndex = 2;
-            this.AddMotion.Text = "Add";
-            this.AddMotion.UseVisualStyleBackColor = true;
-            this.AddMotion.Click += new System.EventHandler(this.AddMotionClicked);
+            this.btnAddMotion.Location = new System.Drawing.Point(12, 321);
+            this.btnAddMotion.Name = "btnAddMotion";
+            this.btnAddMotion.Size = new System.Drawing.Size(54, 23);
+            this.btnAddMotion.TabIndex = 2;
+            this.btnAddMotion.Text = "Add";
+            this.btnAddMotion.UseVisualStyleBackColor = true;
+            this.btnAddMotion.Click += new System.EventHandler(this.AddMotionClicked);
             // 
-            // RemoveMotion
+            // btnRemoveMotion
             // 
-            this.RemoveMotion.Location = new System.Drawing.Point(72, 321);
-            this.RemoveMotion.Name = "RemoveMotion";
-            this.RemoveMotion.Size = new System.Drawing.Size(60, 23);
-            this.RemoveMotion.TabIndex = 3;
-            this.RemoveMotion.Text = "Remove";
-            this.RemoveMotion.UseVisualStyleBackColor = true;
-            this.RemoveMotion.Click += new System.EventHandler(this.RemoveMotionClicked);
+            this.btnRemoveMotion.Location = new System.Drawing.Point(72, 321);
+            this.btnRemoveMotion.Name = "btnRemoveMotion";
+            this.btnRemoveMotion.Size = new System.Drawing.Size(60, 23);
+            this.btnRemoveMotion.TabIndex = 3;
+            this.btnRemoveMotion.Text = "Remove";
+            this.btnRemoveMotion.UseVisualStyleBackColor = true;
+            this.btnRemoveMotion.Click += new System.EventHandler(this.RemoveMotionClicked);
             // 
             // grpEditKeyframes
             // 
-            this.grpEditKeyframes.Controls.Add(this.btnSetRotation);
-            this.grpEditKeyframes.Controls.Add(this.btnSetMovement);
+            this.grpEditKeyframes.Controls.Add(this.btnSetKeyFrame);
             this.grpEditKeyframes.Controls.Add(this.btnRemoveKeyframe);
             this.grpEditKeyframes.Controls.Add(this.btnAddKeyFrame);
             this.grpEditKeyframes.Controls.Add(this.KeyFrameData);
@@ -236,25 +234,15 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.grpEditKeyframes.TabStop = false;
             this.grpEditKeyframes.Text = "Keyframe Data";
             // 
-            // btnSetRotation
+            // btnSetKeyFrame
             // 
-            this.btnSetRotation.Location = new System.Drawing.Point(377, 187);
-            this.btnSetRotation.Name = "btnSetRotation";
-            this.btnSetRotation.Size = new System.Drawing.Size(93, 23);
-            this.btnSetRotation.TabIndex = 33;
-            this.btnSetRotation.Text = "Set Rotation";
-            this.btnSetRotation.UseVisualStyleBackColor = true;
-            this.btnSetRotation.Click += new System.EventHandler(this.SetRotationClicked);
-            // 
-            // btnSetMovement
-            // 
-            this.btnSetMovement.Location = new System.Drawing.Point(476, 187);
-            this.btnSetMovement.Name = "btnSetMovement";
-            this.btnSetMovement.Size = new System.Drawing.Size(93, 23);
-            this.btnSetMovement.TabIndex = 32;
-            this.btnSetMovement.Text = "Set Movement";
-            this.btnSetMovement.UseVisualStyleBackColor = true;
-            this.btnSetMovement.Click += new System.EventHandler(this.SetMovementClicked);
+            this.btnSetKeyFrame.Location = new System.Drawing.Point(465, 187);
+            this.btnSetKeyFrame.Name = "btnSetKeyFrame";
+            this.btnSetKeyFrame.Size = new System.Drawing.Size(104, 23);
+            this.btnSetKeyFrame.TabIndex = 32;
+            this.btnSetKeyFrame.Text = "Set Keyframe";
+            this.btnSetKeyFrame.UseVisualStyleBackColor = true;
+            this.btnSetKeyFrame.Click += new System.EventHandler(this.SetKeyFrameClicked);
             // 
             // btnRemoveKeyframe
             // 
@@ -281,6 +269,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.KeyFrameData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.KeyFrameData.Location = new System.Drawing.Point(6, 19);
             this.KeyFrameData.Name = "KeyFrameData";
+            this.KeyFrameData.ReadOnly = true;
             this.KeyFrameData.Size = new System.Drawing.Size(563, 162);
             this.KeyFrameData.TabIndex = 26;
             this.KeyFrameData.CurrentCellChanged += new System.EventHandler(this.CurrentKeyframeChanged);
@@ -315,8 +304,10 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.rdoMove.Size = new System.Drawing.Size(52, 17);
             this.rdoMove.TabIndex = 33;
             this.rdoMove.TabStop = true;
+            this.rdoMove.Tag = "Move";
             this.rdoMove.Text = "Move";
             this.rdoMove.UseVisualStyleBackColor = true;
+            this.rdoMove.CheckedChanged += new System.EventHandler(this.AnimateTypeChanged);
             // 
             // rdoRotate
             // 
@@ -326,8 +317,10 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.rdoRotate.Size = new System.Drawing.Size(65, 17);
             this.rdoRotate.TabIndex = 34;
             this.rdoRotate.TabStop = true;
+            this.rdoRotate.Tag = "Rotate";
             this.rdoRotate.Text = "Rotation";
             this.rdoRotate.UseVisualStyleBackColor = true;
+            this.rdoRotate.CheckedChanged += new System.EventHandler(this.AnimateTypeChanged);
             // 
             // MotionsToolForm
             // 
@@ -339,8 +332,8 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.Controls.Add(this.btnStopAnimation);
             this.Controls.Add(this.btnAnimate);
             this.Controls.Add(this.grpEditKeyframes);
-            this.Controls.Add(this.RemoveMotion);
-            this.Controls.Add(this.AddMotion);
+            this.Controls.Add(this.btnRemoveMotion);
+            this.Controls.Add(this.btnAddMotion);
             this.Controls.Add(this.grpRaw);
             this.Controls.Add(this.MotionsList);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -372,11 +365,10 @@ namespace Chisel.Editor.Tools.MotionsTool
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtMotionName;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button AddMotion;
-        private System.Windows.Forms.Button RemoveMotion;
+        private System.Windows.Forms.Button btnAddMotion;
+        private System.Windows.Forms.Button btnRemoveMotion;
         private System.Windows.Forms.GroupBox grpEditKeyframes;
-        private System.Windows.Forms.Button btnSetRotation;
-        private System.Windows.Forms.Button btnSetMovement;
+        private System.Windows.Forms.Button btnSetKeyFrame;
         private System.Windows.Forms.Button btnRemoveKeyframe;
         private System.Windows.Forms.Button btnAddKeyFrame;
         private System.Windows.Forms.DataGridView KeyFrameData;

@@ -336,6 +336,12 @@
     <Compile Include="Tools\BrushTool.cs" />
     <Compile Include="Tools\ClipTool.cs" />
     <Compile Include="Tools\MotionsTool\MotionsTool.cs" />
+    <Compile Include="Tools\MotionsTool\KeyFrameEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tools\MotionsTool\KeyFrameEdit.Designer.cs">
+      <DependentUpon>KeyFrameEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tools\MotionsTool\NewKeyframe.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -348,6 +354,7 @@
     <Compile Include="Tools\SelectTool\SelectToolSidebarPanel.Designer.cs">
       <DependentUpon>SelectToolSidebarPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tools\SelectTool\TransformationTools\MoveTool.cs" />
     <Compile Include="Tools\SketchTool.cs" />
     <Compile Include="Tools\TextureTool\TextureToolSidebarPanel.cs">
       <SubType>UserControl</SubType>
@@ -728,6 +735,9 @@
     </Compile>
     <EmbeddedResource Include="Settings\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tools\MotionsTool\KeyFrameEdit.resx">
+      <DependentUpon>KeyFrameEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\MotionsTool\NewKeyframe.resx">
       <DependentUpon>NewKeyframe.cs</DependentUpon>

@@ -7,6 +7,7 @@ namespace Chisel.Editor.Tools.MotionsTool
     {
         public float Time;
         private float _id;
+        public bool cancel;
         public NewKeyFrame(float ID)
         {
             InitializeComponent();
@@ -14,9 +15,9 @@ namespace Chisel.Editor.Tools.MotionsTool
             txtName.Text = _id.ToString();
             SetName();
         }
-        private void SetName(bool hide = false, bool blank = false)
+        private void SetName(bool hide = false)
         {
-            if (!blank) Time = (float)Convert.ToDecimal(txtName.Text);
+            if (!cancel) Time = (float)Convert.ToDecimal(txtName.Text);
             else Time = _id;
             Hide();
         }
@@ -39,7 +40,8 @@ namespace Chisel.Editor.Tools.MotionsTool
 
         private void CancelClicked(object s, EventArgs e)
         {
-            SetName(true, true);
+            cancel = true;
+            SetName(true);
         }
     }
 }
