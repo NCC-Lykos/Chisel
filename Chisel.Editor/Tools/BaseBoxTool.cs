@@ -562,7 +562,10 @@ namespace Chisel.Editor.Tools
 
         public override void Render(ViewportBase viewport)
         {
-            if (viewport is Viewport2D) Render2D((Viewport2D)viewport);
+            if (viewport is Viewport2D)
+            {
+                Render2D((Viewport2D)viewport);
+            }
             if (viewport is Viewport3D) Render3D((Viewport3D)viewport);
         }
 

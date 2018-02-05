@@ -81,7 +81,7 @@ namespace Chisel.Editor.Menu
 
             Add("Edit", new MenuSplitter { IsVisible = mapOpen });
             Add("Edit", new SimpleMenuBuilder("Object Properties", HotkeysMediator.ObjectProperties) { Image = Resources.Menu_ObjectProperties, IsVisible = mapOpen, ShowInToolStrip = true });
-            Add("Edit", new SimpleMenuBuilder("Motions Editor", HotkeysMediator.MotionsEditor) { Image = Resources.Menu_ObjectProperties, IsVisible = mapOpen, ShowInToolStrip = true });
+            //Add("Edit", new SimpleMenuBuilder("Motions Editor", HotkeysMediator.MotionsEditor) { Image = Resources.Menu_ObjectProperties, IsVisible = mapOpen, ShowInToolStrip = true });
 
             Add("Map", new SimpleMenuBuilder("Snap to Grid", HotkeysMediator.ToggleSnapToGrid) { Image = Resources.Menu_SnapToGrid, IsVisible = mapOpen, IsChecked = () => mapOpen() && DocumentManager.CurrentDocument.Map.SnapToGrid, ShowInToolStrip = true });
             Add("Map", new SimpleMenuBuilder("Show 2D Grid", HotkeysMediator.ToggleShow2DGrid) { Image = Resources.Menu_Show2DGrid, IsVisible = mapOpen, IsChecked = () => mapOpen() && DocumentManager.CurrentDocument.Map.Show2DGrid, ShowInToolStrip = true });

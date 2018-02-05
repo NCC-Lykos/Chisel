@@ -27,7 +27,6 @@ using Chisel.Editor.Tools;
 using Chisel.Editor.Tools.SelectTool;
 using Chisel.Editor.UI;
 using Chisel.Editor.UI.ObjectProperties;
-using Chisel.Editor.UI.MotionsEditor;
 using Chisel.Editor.Visgroups;
 using Chisel.Extensions;
 using Chisel.Providers.Texture;
@@ -79,8 +78,7 @@ namespace Chisel.Editor.Documents
             Mediator.Subscribe(HotkeysMediator.SelectionClear, this);
             Mediator.Subscribe(HotkeysMediator.SelectAll, this);
             Mediator.Subscribe(HotkeysMediator.ObjectProperties, this);
-            Mediator.Subscribe(HotkeysMediator.MotionsEditor, this);
-
+            
             Mediator.Subscribe(HotkeysMediator.QuickHideSelected, this);
             Mediator.Subscribe(HotkeysMediator.QuickHideUnselected, this);
             Mediator.Subscribe(HotkeysMediator.QuickHideShowAll, this);
@@ -101,6 +99,7 @@ namespace Chisel.Editor.Documents
             Mediator.Subscribe(HotkeysMediator.ReplaceTextures, this);
             Mediator.Subscribe(HotkeysMediator.SnapSelectionToGrid, this);
             Mediator.Subscribe(HotkeysMediator.SnapSelectionToGridIndividually, this);
+            
             Mediator.Subscribe(HotkeysMediator.AlignXMax, this);
             Mediator.Subscribe(HotkeysMediator.AlignXMin, this);
             Mediator.Subscribe(HotkeysMediator.AlignYMax, this);
@@ -367,12 +366,6 @@ namespace Chisel.Editor.Documents
             pd.Show(Editor.Instance);
         }
 
-        public void MotionsEditor()
-        {
-            var pd = new MotionsEditorDialog(_document);
-            pd.Show(Editor.Instance);
-        }
-
         public void SwitchTool(HotkeyTool tool)
         {
             if (ToolManager.ActiveTool != null && ToolManager.ActiveTool.GetHotkeyToolType() == tool) tool = HotkeyTool.Selection;
@@ -618,8 +611,13 @@ namespace Chisel.Editor.Documents
                 {
                     case TransformType.Rotate:
                         var mov = Matrix.Translation(-box.Center); // Move to zero
-                        var rot = Matrix.Rotation(Quaternion.EulerAngles(value * DMath.PI / 180)); // Do rotation
+
+                        var q = Quaternion.EulerAngles(value * DMath.PI / 180);
+                        q = q.Normalise();
+                        var rot = Matrix.Rotation(q); // Do rotation
                         var fin = Matrix.Translation(box.Center); // Move to final origin
+                        var xx = fin * rot;
+                        xx *= mov;
                         transform = new UnitMatrixMult(fin * rot * mov);
                         //TODO(SVK): Find better implementation than to throw in WorldSpawn
                         _document.Map.WorldSpawn.SelCenter = box.Center;

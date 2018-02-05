@@ -43,9 +43,10 @@ namespace Chisel.Editor.UI.ObjectProperties
 
         private bool _populating;
 
+        #region GBSPDiffs
         private bool GBSPMultiple = false;
         private bool GBSPMultipleCustom = false;
-
+        
         private bool DiffGBSPSolid;
         private bool DiffGBSPWindow;
         private bool DiffGBSPClip;
@@ -56,6 +57,13 @@ namespace Chisel.Editor.UI.ObjectProperties
         private bool DiffGBSPArea;
         private bool DiffGBSPFlocking;
         private bool DiffGBSPSheet;
+
+        private bool DiffGBSPMotions;
+        private bool DiffGBSPHullSize;
+        private bool DiffGBSPType;
+        private bool DiffGBSPName;
+        #endregion
+        
         private List<int> addvis;
 
         public ObjectPropertiesDialog(Documents.Document document)
@@ -189,10 +197,19 @@ namespace Chisel.Editor.UI.ObjectProperties
                         ((Solid)Objects[x]).SetHighlights();
                     }
                 }
-                else
-                {
-                    MessageBox.Show("Indeterminate checkboxes found, No changes saved.", "Indeterminate", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                else MessageBox.Show("Indeterminate checkboxes found, No flag changes saved.", "Indeterminate", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                if (!DiffGBSPMotions) foreach (Solid s in Objects) s.MetaData.Set<string>("ModelId", txtModelID.Text);
+                else MessageBox.Show("Multiple Motions, No Motions changes saved.", "Motions", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (!DiffGBSPHullSize) foreach (Solid s in Objects) s.MetaData.Set<string>("HullSize", txtHullSize.Text);
+                else MessageBox.Show("Multiple HullSizes, No HullSizes changes saved.", "HullSizes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (!DiffGBSPType) foreach (Solid s in Objects) s.MetaData.Set<string>("Type", txtType.Text);
+                else MessageBox.Show("Multiple Types, No Types changes saved.", "Types", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (!DiffGBSPName) foreach (Solid s in Objects) s.ClassName = txtName.Text;
+                else MessageBox.Show("Multiple Names, No Namesschanges saved.", "Names", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             
             Class.BackColor = Color.White;
@@ -390,6 +407,44 @@ namespace Chisel.Editor.UI.ObjectProperties
             base.OnClosed(e);
         }
 
+        private class Item
+        {
+            public string Name; public long Value;
+            public Item(string name, long value) { Name = name; Value = value; }
+            public override string ToString() { return Name; }
+        }
+
+        private void PopulateMotions()
+        {
+            cboModels.Items.Clear();
+            cboModels.Items.Add(new Item("*None*",0));
+
+            List<Motion> motions = Document.Map.Motions;
+            int i = 0; bool match = false;
+            foreach (Motion m in motions)
+            {
+                cboModels.Items.Add(new Item(m.Name, m.ID));
+
+                if (m.ID.ToString() != txtModelID.Text && !match) i++;
+                else match = true;
+            }
+            switch (txtModelID.Text)
+            {
+                case "*Multiple*":
+                    i = -1;
+                    break;
+                case "0":
+                    i = 0;
+                    break;
+                default:
+                    if (!match) i = 0;
+                    else i++;
+                    break;
+            }
+            cboModels.SelectedIndex = i;
+            cboModels.DropDownStyle = ComboBoxStyle.DropDownList;
+        }
+
         private void RefreshSolid()
         {
             if (!Objects.All(x => x is Solid)) return;
@@ -407,20 +462,7 @@ namespace Chisel.Editor.UI.ObjectProperties
             }
 
             _populating = true;
-            if(Objects.Count == 1)
-            {
-                txtModelID.Text = ((Solid)Objects[0]).MetaData.Get<string>("ModelId");
-                txtHullSize.Text = ((Solid)Objects[0]).MetaData.Get<string>("HullSize");
-                txtType.Text = ((Solid)Objects[0]).MetaData.Get<string>("Type");
-                txtName.Text = ((Solid)Objects[0]).ClassName;
-            }
-            else
-            {
-                txtModelID.Text = "";
-                txtHullSize.Text = "";
-                txtType.Text = "";
-                txtName.Text = "";
-            }
+
             UInt32 f;
             for (int x = 0; x < Objects.Count; x++)
             {
@@ -440,11 +482,34 @@ namespace Chisel.Editor.UI.ObjectProperties
                     chkFlocking.Checked = ((f & (UInt32)SolidFlags.flocking) != 0);
                     chkSheet.Checked    = ((f & (UInt32)SolidFlags.sheet) != 0);
 
+                    txtModelID.Text = ((Solid)Objects[0]).MetaData.Get<string>("ModelId");
+                    txtHullSize.Text = ((Solid)Objects[0]).MetaData.Get<string>("HullSize");
+                    txtType.Text = ((Solid)Objects[0]).MetaData.Get<string>("Type");
+                    txtName.Text = ((Solid)Objects[0]).ClassName;
+                    
+                    grpMetaData.Enabled = grpModels.Enabled = true;
+                    
                     for (int i = 0; i < fCustom.Count; i++)
                     {
-                        if (((UInt32)f & fCustom[keys[i]]) != 0) CustomFlags.SetItemCheckState(i, CheckState.Checked);
+                        if ((f & fCustom[keys[i]]) != 0) CustomFlags.SetItemCheckState(i, CheckState.Checked);
                     }
-                }
+
+                    DiffGBSPSolid= false;
+                    DiffGBSPWindow= false;
+                    DiffGBSPClip= false;
+                    DiffGBSPHint= false;
+                    DiffGBSPEmpty= false;
+                    DiffGBSPWavy= false;
+                    DiffGBSPDetail= false;
+                    DiffGBSPArea= false;
+                    DiffGBSPFlocking= false;
+                    DiffGBSPSheet= false;
+
+                    DiffGBSPMotions = false;
+                    DiffGBSPHullSize = false;
+                    DiffGBSPType = false;
+                    DiffGBSPName = false;
+    }
                 else
                 {
                     if (chkSolid.Checked  != ((f & (UInt32)SolidFlags.solid)  != 0)) DiffGBSPSolid = true;
@@ -453,17 +518,23 @@ namespace Chisel.Editor.UI.ObjectProperties
                     if (chkHint.Checked   != ((f & (UInt32)SolidFlags.hint)   != 0)) DiffGBSPHint = true;
                     if (chkEmpty.Checked  != ((f & (UInt32)SolidFlags.empty)  != 0)) DiffGBSPEmpty = true;
 
-                    if (chkWavy.Checked     != ((f & (UInt32)SolidFlags.wavy) != 0)) DiffGBSPWavy = true;
-                    if (chkDetail.Checked   != ((f & (UInt32)SolidFlags.detail) != 0)) DiffGBSPDetail = true;
-                    if (chkArea.Checked     != ((f & (UInt32)SolidFlags.area) != 0)) DiffGBSPArea = true;
+                    if (chkWavy.Checked     != ((f & (UInt32)SolidFlags.wavy) != 0))     DiffGBSPWavy = true;
+                    if (chkDetail.Checked   != ((f & (UInt32)SolidFlags.detail) != 0))   DiffGBSPDetail = true;
+                    if (chkArea.Checked     != ((f & (UInt32)SolidFlags.area) != 0))     DiffGBSPArea = true;
                     if (chkFlocking.Checked != ((f & (UInt32)SolidFlags.flocking) != 0)) DiffGBSPFlocking = true;
-                    if (chkSheet.Checked    != ((f & (UInt32)SolidFlags.sheet) != 0)) DiffGBSPSheet = true;
+                    if (chkSheet.Checked    != ((f & (UInt32)SolidFlags.sheet) != 0))    DiffGBSPSheet = true;
+
+                    if (txtModelID.Text  != ((Solid)Objects[x]).MetaData.Get<string>("ModelId"))  DiffGBSPMotions = true;
+                    if (txtHullSize.Text != ((Solid)Objects[x]).MetaData.Get<string>("HullSize")) DiffGBSPHullSize = true;
+                    if (txtType.Text     != ((Solid)Objects[x]).MetaData.Get<string>("Type"))     DiffGBSPType = true;
+                    if (txtName.Text     != ((Solid)Objects[x]).ClassName)                        DiffGBSPName = true;
+
                     for (int i = 0; i < fCustom.Count; i++)
                     {
                         if (!(CustomFlags.GetItemCheckState(i) == CheckState.Indeterminate))
                         {
                             bool c = (CustomFlags.GetItemCheckState(i) == CheckState.Checked) ? true : false;
-                            if ((((UInt32)f & fCustom[keys[i]]) != 0) != c)
+                            if (((f & fCustom[keys[i]]) != 0) != c)
                             {
                                 CustomFlags.SetItemCheckState(i, CheckState.Indeterminate);
                                 GBSPMultipleCustom = true;
@@ -472,7 +543,11 @@ namespace Chisel.Editor.UI.ObjectProperties
                     }
                 }
             }
-
+            
+            if (DiffGBSPMotions)  txtModelID.Text  = "*Multiple*";
+            if (DiffGBSPHullSize) txtHullSize.Text = "*Multiple*"; 
+            if (DiffGBSPType)     txtType.Text     = "*Multiple*";
+            if (DiffGBSPName)     txtName.Text     = "*Multiple*";
 
             if (DiffGBSPSolid || DiffGBSPWindow || DiffGBSPClip || DiffGBSPHint || DiffGBSPEmpty || GBSPMultipleCustom)
             {
@@ -505,7 +580,9 @@ namespace Chisel.Editor.UI.ObjectProperties
                 else if (chkEmpty.Checked)  { GBSPTypesChecked(SolidFlags.empty,  false); }
             }
             if (GBSPMultiple || GBSPMultipleCustom) btnMakeSame.Enabled = true;
-            
+
+            PopulateMotions();
+            SetSelectAll();
         }
 
         private void RefreshData()
@@ -997,6 +1074,47 @@ namespace Chisel.Editor.UI.ObjectProperties
         {
             grpGBSPType.Enabled = grpGBSPSubType.Enabled = CustomFlags.Enabled = true;
             btnMakeSame.Enabled = false;
+        }
+
+        private void SetSelectAll()
+        {
+            if (txtModelID.Text == "0") btnMotionsSelectAll.Enabled = false;
+            else if (txtModelID.Text == "*Multiple*") btnMotionsSelectAll.Enabled = false;
+            else btnMotionsSelectAll.Enabled = true;
+        }
+
+        private void ModelsSelectionChanged(object sender, EventArgs e)
+        {
+            if (_populating) return;
+            txtModelID.Text = ((Item)cboModels.SelectedItem).Value.ToString();
+
+            SetSelectAll();
+        }
+
+        private void MotionsSelectAllClicked(object sender, EventArgs e)
+        {
+            var sel = Document.Map.WorldSpawn.GetChildren().OfType<Solid>().Where(x => x.MetaData.Get<string>("ModelId").ToString() == txtModelID.Text).ToList();
+            Document.Selection.Select(sel);
+            Mediator.Publish(EditorMediator.SelectionChanged);
+            Document.RenderAll();
+        }
+
+        private void CreateMotionClicked(object sender, EventArgs e)
+        {
+            var i = Document.Map.IDGenerator.GetNextMotionID();
+            var f = new NewMotion(i);
+            f.ShowDialog();
+            var name = f.Name;
+            Motion m = new Motion(i);
+            m.Name = name;
+            m.SetBlank();
+            Document.Map.Motions.Add(m);
+            
+            Document.Selection.Clear();
+            Document.Selection.Select(Objects);
+            if(name != null) Mediator.Publish(EditorMediator.SelectionChanged);
+            RefreshData();
+            cboModels.SelectedIndex = cboModels.Items.Count -1 ;
         }
     }    
 }

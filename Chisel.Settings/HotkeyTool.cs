@@ -12,6 +12,7 @@ namespace Chisel.Settings
         VM,
         Cordon,
         Camera,
-        Sketch
+        Sketch,
+        Motions
     }
 }

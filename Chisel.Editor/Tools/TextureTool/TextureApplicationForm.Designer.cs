@@ -73,6 +73,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.RecentTexturesList = new Chisel.Editor.UI.TextureListPanel();
             this.SelectedTexturesList = new Chisel.Editor.UI.TextureListPanel();
             this.gbspGroup = new System.Windows.Forms.GroupBox();
+            this.LightValue = new System.Windows.Forms.NumericUpDown();
             this.TranslucencyValue = new System.Windows.Forms.NumericUpDown();
             this.chkSheet = new System.Windows.Forms.CheckBox();
             this.chkVisible = new System.Windows.Forms.CheckBox();
@@ -114,7 +115,6 @@ namespace Chisel.Editor.Tools.TextureTool
             this.txtUY = new System.Windows.Forms.TextBox();
             this.txtVX = new System.Windows.Forms.TextBox();
             this.txtUX = new System.Windows.Forms.TextBox();
-            this.LightValue = new System.Windows.Forms.NumericUpDown();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RotationValue)).BeginInit();
@@ -125,10 +125,10 @@ namespace Chisel.Editor.Tools.TextureTool
             ((System.ComponentModel.ISupportInitialize)(this.ShiftYValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LightmapValue)).BeginInit();
             this.gbspGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LightValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TranslucencyValue)).BeginInit();
             this.grpGBSPAdvanced.SuspendLayout();
             this.grpTexUV.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.LightValue)).BeginInit();
             this.SuspendLayout();
             // 
             // label11
@@ -438,7 +438,7 @@ namespace Chisel.Editor.Tools.TextureTool
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 243F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 250F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.ScaleXValue, 1, 1);
@@ -696,6 +696,24 @@ namespace Chisel.Editor.Tools.TextureTool
             this.gbspGroup.TabIndex = 39;
             this.gbspGroup.TabStop = false;
             this.gbspGroup.Text = "GBSP";
+            // 
+            // LightValue
+            // 
+            this.LightValue.Enabled = false;
+            this.LightValue.Location = new System.Drawing.Point(95, 39);
+            this.LightValue.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.LightValue.Name = "LightValue";
+            this.LightValue.Size = new System.Drawing.Size(58, 20);
+            this.LightValue.TabIndex = 41;
+            this.LightValue.Value = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
             // 
             // TranslucencyValue
             // 
@@ -1119,24 +1137,6 @@ namespace Chisel.Editor.Tools.TextureTool
             this.txtUX.Size = new System.Drawing.Size(70, 20);
             this.txtUX.TabIndex = 2;
             // 
-            // LightValue
-            // 
-            this.LightValue.Enabled = false;
-            this.LightValue.Location = new System.Drawing.Point(95, 39);
-            this.LightValue.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.LightValue.Name = "LightValue";
-            this.LightValue.Size = new System.Drawing.Size(58, 20);
-            this.LightValue.TabIndex = 41;
-            this.LightValue.Value = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            // 
             // TextureApplicationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1187,12 +1187,12 @@ namespace Chisel.Editor.Tools.TextureTool
             ((System.ComponentModel.ISupportInitialize)(this.LightmapValue)).EndInit();
             this.gbspGroup.ResumeLayout(false);
             this.gbspGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LightValue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TranslucencyValue)).EndInit();
             this.grpGBSPAdvanced.ResumeLayout(false);
             this.grpGBSPAdvanced.PerformLayout();
             this.grpTexUV.ResumeLayout(false);
             this.grpTexUV.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.LightValue)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

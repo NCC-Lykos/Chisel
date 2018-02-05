@@ -156,7 +156,14 @@ namespace Chisel.DataStructures.MapObjects
             var maxObjectId = all.Max(x => x.ID);
             var faces = all.OfType<Solid>().SelectMany(x => x.Faces).ToList();
             var maxFaceId = faces.Any() ? faces.Max(x => x.ID) : 0;
-            IDGenerator.Reset(maxObjectId, maxFaceId);
+
+            long maxMotionId = 0;
+            foreach(Motion m in this.Motions)
+            {
+                if (maxMotionId < m.ID) maxMotionId = m.ID;
+            }
+
+            IDGenerator.Reset(maxObjectId, maxFaceId, maxMotionId);
 
             // todo visgroups
             // WorldSpawn.ForEach(x => x.IsVisgroupHidden, x => x.IsVisgroupHidden = true, true);

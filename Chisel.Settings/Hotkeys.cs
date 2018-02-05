@@ -39,7 +39,7 @@ namespace Chisel.Settings
                                     new HotkeyDefinition("Redo", "Redo the last undone action", HotkeysMediator.HistoryRedo, "Ctrl+Y"),
 
                                     new HotkeyDefinition("Show Object Properties", "Open the object properties dialog for the currently selected items", HotkeysMediator.ObjectProperties, "Alt+Enter"),
-                                    new HotkeyDefinition("Show Motions Editor", "Open the models editor.", HotkeysMediator.MotionsEditor, "Alt+M"),
+                                    //new HotkeyDefinition("Show Motions Editor", "Open the models editor.", HotkeysMediator.MotionsEditor, "Alt+M"),
 
                                     new HotkeyDefinition("Copy", "Copy the current selection", HotkeysMediator.OperationsCopy, "Ctrl+C", "Ctrl+Ins"),
                                     new HotkeyDefinition("Cut", "Cut the current selection", HotkeysMediator.OperationsCut, "Ctrl+X", "Shift+Del"),
@@ -60,6 +60,7 @@ namespace Chisel.Settings
 
                                     new HotkeyDefinition("Create New Visgroup", "Create a new visgroup", HotkeysMediator.VisgroupCreateNew, "Alt+V"),
                                     
+                                    new HotkeyDefinition("Center All Views on Selection", "Center all viewports on the current selection", HotkeysMediator.CenterAllViewsOnSelection, "Ctrl+Alt+E"),
                                     new HotkeyDefinition("Center 2D View on Selection", "Center the 2D viewports on the current selection", HotkeysMediator.Center2DViewsOnSelection, "Ctrl+E"),
                                     new HotkeyDefinition("Center 3D View on Selection", "Center the 3D viewport on the current selection", HotkeysMediator.Center3DViewsOnSelection, "Ctrl+Shift+E"),
                                     
@@ -89,6 +90,8 @@ namespace Chisel.Settings
                                     new HotkeyDefinition("Clip Tool", "Switch to the clipping tool", HotkeysMediator.SwitchTool, HotkeyTool.Clip, "Shift+X"),
                                     new HotkeyDefinition("Vertex Manipulation Tool", "Switch to the vertex manipulation tool", HotkeysMediator.SwitchTool, HotkeyTool.VM, "Shift+V"),
                                     new HotkeyDefinition("Cordon Tool", "Switch to the cordon tool", HotkeysMediator.SwitchTool, HotkeyTool.Cordon, "Shift+K"),
+                                    new HotkeyDefinition("Motions Tool", "Switch to the motions tool.", HotkeysMediator.SwitchTool, HotkeyTool.Motions, "Alt+M"),
+
                                     
                                     new HotkeyDefinition("Apply Current Texture", "Apply the current texture to the selection.", HotkeysMediator.ApplyCurrentTextureToSelection, "Shift+T"),
                                     

@@ -345,7 +345,7 @@ namespace Chisel.Providers.Map
                 hidden.Children.Add(ret);
                 ret = hidden;
             }
-
+            
             return ret;
         }
 
