@@ -119,7 +119,12 @@ namespace Chisel.Editor.Tools.MotionsTool
 
             btnRemoveMotion.Enabled = grpEditKeyframes.Enabled = grpRaw.Enabled = false;
 
-            foreach (DataGridViewColumn c in KeyFrameData.Columns) c.Width = 65;
+            foreach (DataGridViewColumn c in KeyFrameData.Columns)
+            {
+                c.Width = 65;
+                c.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+            KeyFrameData.RowHeadersWidth = 34;
             KeyFrameData.Columns[0].Width = 55;
 
             PrevRotation = new Quaternion(0, 0, 0, -1);//No Rotation
@@ -159,7 +164,7 @@ namespace Chisel.Editor.Tools.MotionsTool
 
         public void Notify(string message, object data) {}
 
-        private void ResetSolids()
+        public void ResetSolids()
         {
             if (Solids != null && Solids.Count != 0)
             {
@@ -332,9 +337,9 @@ namespace Chisel.Editor.Tools.MotionsTool
             return MaxTime;
         }
 
-        private float PromptKeyTime()
+        private float PromptKeyTime(float time = -1)
         {
-            var time = GetMaxKeyFrame() + 0.01f;
+            if(time < 0) time = GetMaxKeyFrame() + 0.01f;
             var f = new NewKeyFrame(time);
             f.ShowDialog();
             if (f.cancel) f.Time = -f.Time;
@@ -455,7 +460,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             grpEditKeyframes.Enabled = grpRaw.Enabled = r;
         }
 
-        private void OnClosing(object sender, FormClosingEventArgs e)
+        public void OnClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
             {
@@ -485,6 +490,23 @@ namespace Chisel.Editor.Tools.MotionsTool
             MotionsList.Enabled = btnAddMotion.Enabled = btnRemoveMotion.Enabled = true;
             btnAnimate.Enabled = true;
             flags = 0;
+
+            float oldtime = (float)KeyFrameData.CurrentRow.Cells[0].Value;
+            float newtime = PromptKeyTime(oldtime);
+
+            if(newtime != oldtime && !(newtime < 0))
+            {
+                Motion m = _document.Map.Motions[CurrentMotionIndex];
+                List<MotionKeyFrames> KeyFrames = m.KeyFrames;
+                foreach (MotionKeyFrames k in KeyFrames) if (k.KeyTime == oldtime) k.KeyTime = newtime;
+                m.KeyFrames = KeyFrames.OrderBy(x => x.KeyTime).ToList();
+                UpdateKeyFrameList(m, newtime);
+                _document.PerformAction("Transform selection",
+                                             new Edit(Solids,
+                                             new TransformEditOperation(KeyFrameTransform(), flags)));
+            }
+            
+
             OnStopAnimate();
         }
 
@@ -568,5 +590,22 @@ namespace Chisel.Editor.Tools.MotionsTool
             PopulateMotions((int)CurrentMotion);
         }
         
+        private void EditKeyTimeClicked(object s, EventArgs e)
+        {
+            float oldtime = (float)KeyFrameData.CurrentRow.Cells[0].Value;
+            float newtime = PromptKeyTime(oldtime);
+
+            if (newtime != oldtime && !(newtime < 0))
+            {
+                Motion m = _document.Map.Motions[CurrentMotionIndex];
+                List<MotionKeyFrames> KeyFrames = m.KeyFrames;
+                foreach (MotionKeyFrames k in KeyFrames) if (k.KeyTime == oldtime) k.KeyTime = newtime;
+                m.KeyFrames = KeyFrames.OrderBy(x => x.KeyTime).ToList();
+                UpdateKeyFrameList(m, newtime);
+                _document.PerformAction("Transform selection",
+                                             new Edit(Solids,
+                                             new TransformEditOperation(KeyFrameTransform(), flags)));
+            }
+        }
     }
 }

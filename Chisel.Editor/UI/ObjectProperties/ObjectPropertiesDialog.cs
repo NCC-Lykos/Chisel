@@ -1087,7 +1087,7 @@ namespace Chisel.Editor.UI.ObjectProperties
         {
             if (_populating) return;
             txtModelID.Text = ((Item)cboModels.SelectedItem).Value.ToString();
-
+            DiffGBSPMotions = false;
             SetSelectAll();
         }
 
