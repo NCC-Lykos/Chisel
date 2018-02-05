@@ -95,6 +95,7 @@ namespace Chisel.Editor.Tools.MotionsTool
                 var newSelection = Document.Selection.GetSelectedObjects();
                 Document.RenderSelection(currentSelection.Union(newSelection));
             }
+            if (_form._document != null) _form.ResetSolids();
 
             ResetState();
             _form.Clear();

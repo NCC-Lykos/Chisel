@@ -64,6 +64,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.KeyFrameData = new System.Windows.Forms.DataGridView();
             this.btnAnimate = new System.Windows.Forms.Button();
             this.btnStopAnimation = new System.Windows.Forms.Button();
+            this.btnEditKeyTime = new System.Windows.Forms.Button();
             this.grpRaw.SuspendLayout();
             this.grpEditKeyframes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.KeyFrameData)).BeginInit();
@@ -221,6 +222,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             // 
             // grpEditKeyframes
             // 
+            this.grpEditKeyframes.Controls.Add(this.btnEditKeyTime);
             this.grpEditKeyframes.Controls.Add(this.btnSetKeyFrame);
             this.grpEditKeyframes.Controls.Add(this.btnRemoveKeyframe);
             this.grpEditKeyframes.Controls.Add(this.btnAddKeyFrame);
@@ -294,6 +296,16 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.btnStopAnimation.UseVisualStyleBackColor = true;
             this.btnStopAnimation.Click += new System.EventHandler(this.StopAnimationClicked);
             // 
+            // btnEditKeyTime
+            // 
+            this.btnEditKeyTime.Location = new System.Drawing.Point(355, 187);
+            this.btnEditKeyTime.Name = "btnEditKeyTime";
+            this.btnEditKeyTime.Size = new System.Drawing.Size(104, 23);
+            this.btnEditKeyTime.TabIndex = 33;
+            this.btnEditKeyTime.Text = "Edit Key Time";
+            this.btnEditKeyTime.UseVisualStyleBackColor = true;
+            this.btnEditKeyTime.Click += new System.EventHandler(this.EditKeyTimeClicked);
+            // 
             // MotionsToolForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -348,5 +360,6 @@ namespace Chisel.Editor.Tools.MotionsTool
         private TextBox txtOrigY;
         private Button btnAnimate;
         private Button btnStopAnimation;
+        private Button btnEditKeyTime;
     }
 }

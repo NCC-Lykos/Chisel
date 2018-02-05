@@ -538,12 +538,11 @@ namespace Chisel.Providers.Map
                 model.Name = name;
                 model.RawModelLines.Add(nameline);
                 model.RawModelLines.Add(idline);
-                
-                for(int x = 0; x < 16; x++)
+                char tab = '\u0009';
+                for (int x = 0; x < 16; x++)
                 {
                     line = rdr.ReadLine();
                     model.RawModelLines.Add(line);
-                    char tab = '\u0009';
                     line = line.Replace(tab.ToString(),"").Trim();
                     if (!line.StartsWith("Transform"))
                     {
@@ -634,8 +633,9 @@ namespace Chisel.Providers.Map
                     }
 
                 }
-                
+
                 //At Rotation
+                line = line.Replace(tab.ToString(), "").Trim();
                 Assert(line.StartsWith("Rotation"));
 
                 line = rdr.ReadLine();
@@ -663,6 +663,7 @@ namespace Chisel.Providers.Map
                     model.RawModelLines.Add(line);
                 }
 
+                line = line.Replace(tab.ToString(), "").Trim();
                 Assert(line.StartsWith("Keys"));
                 split = line.Split(' ');
                 Assert(Convert.ToInt32(split[1]) == KeyCount);
@@ -930,21 +931,21 @@ namespace Chisel.Providers.Map
                              m.Transform.Values[3].ToString("0.000000") + " " +
                              m.Transform.Values[11].ToString("0.000000") + " " +
                              (-m.Transform.Values[7]).ToString("0.000000"));
-                wr.WriteLine("\tMotion 1");
-                wr.WriteLine("\tMOTN 0.F0");
-                wr.WriteLine("\tNameID ");
-                wr.WriteLine("\tMaintainNames 1");
-                wr.WriteLine("\tPathCount 1");
-                wr.WriteLine("\tNameChecksum 2379");
-                wr.WriteLine("\tEvents 0");
-                wr.WriteLine("\tNameArray 1");
-                wr.WriteLine("\tSBLK 0.F0");
-                wr.WriteLine("\tStrings 1");
-                wr.WriteLine("\tPathInfo");
-                wr.WriteLine("\tPathArray 1");
-                wr.WriteLine("\tPATH 0.F2");
-                wr.WriteLine("\tRotation 1 4");
-                wr.WriteLine("\tKeys " + m.KeyFrames.Count() + " 1 0 0");
+                wr.WriteLine("Motion 1");
+                wr.WriteLine("MOTN 0.F0");
+                wr.WriteLine("NameID ");
+                wr.WriteLine("MaintainNames 1");
+                wr.WriteLine("PathCount 1");
+                wr.WriteLine("NameChecksum 2379");
+                wr.WriteLine("Events 0");
+                wr.WriteLine("NameArray 1");
+                wr.WriteLine("SBLK 0.F0");
+                wr.WriteLine("Strings 1");
+                wr.WriteLine("PathInfo");
+                wr.WriteLine("PathArray 1");
+                wr.WriteLine("PATH 0.F2");
+                wr.WriteLine("Rotation 1 4");
+                wr.WriteLine("Keys " + m.KeyFrames.Count() + " 1 0 0");
                 foreach (MotionKeyFrames k in m.KeyFrames)
                 {
                     Quaternion q = k.GetRotation();
@@ -954,8 +955,8 @@ namespace Chisel.Providers.Map
                                  q.Z.ToString("0.000000") + " " +
                                  (-q.Y).ToString("0.000000"));
                 }
-                wr.WriteLine("\tTranslation 1 1");
-                wr.WriteLine("\tKeys " + m.KeyFrames.Count() + " 1 0 0");
+                wr.WriteLine("Translation 1 1");
+                wr.WriteLine("Keys " + m.KeyFrames.Count() + " 1 0 0");
                 foreach (MotionKeyFrames k in m.KeyFrames)
                 {
                     Coordinate c = k.GetTranslation();
