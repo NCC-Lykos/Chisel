@@ -239,14 +239,14 @@ namespace Chisel.Editor
         }
 
         private string _updateExecutable = null;
-        private const string GithubReleasesApiUrl = "https://api.github.com/repos/LogicAndTrick/Chisel/releases?page=1&per_page=1";
-        private const string ChiselWebsiteUpdateSource = "http://Chisel-editor.com/version.txt";
+        private const string GithubReleasesApiUrl = "https://api.github.com/repos/NCC-Lykos/Chisel/releases?page=1&per_page=1";
+        private const string ChiselWebsiteUpdateSource = "http://cdn.neocron.com/chisel-editor/version.txt";
 
         private UpdateReleaseDetails GetLatestReleaseDetails()
         {
             using (var wc = new WebClient())
             {
-                wc.Headers.Add(HttpRequestHeader.UserAgent, "LogicAndTrick/Chisel-Editor");
+                wc.Headers.Add(HttpRequestHeader.UserAgent, "NCC-Lykos/Chisel-Editor");
                 var str = wc.DownloadString(GithubReleasesApiUrl);
                 return new UpdateReleaseDetails(str);
             }

@@ -48,7 +48,7 @@ namespace Chisel.Editor.UI
             var tcs = new TaskCompletionSource<bool>();
             var wc = new WebClient();
 
-            wc.Headers.Add(HttpRequestHeader.UserAgent, "LogicAndTrick/Chisel");
+            wc.Headers.Add(HttpRequestHeader.UserAgent, "NCC-Lykos/Chisel");
             wc.Headers.Remove(HttpRequestHeader.Accept);
             wc.Headers.Add(HttpRequestHeader.Accept, "application/octet-stream");
 
