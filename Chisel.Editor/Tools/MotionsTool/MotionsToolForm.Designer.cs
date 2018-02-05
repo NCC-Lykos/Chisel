@@ -64,8 +64,6 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.KeyFrameData = new System.Windows.Forms.DataGridView();
             this.btnAnimate = new System.Windows.Forms.Button();
             this.btnStopAnimation = new System.Windows.Forms.Button();
-            this.rdoMove = new System.Windows.Forms.RadioButton();
-            this.rdoRotate = new System.Windows.Forms.RadioButton();
             this.grpRaw.SuspendLayout();
             this.grpEditKeyframes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.KeyFrameData)).BeginInit();
@@ -288,7 +286,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             // btnStopAnimation
             // 
             this.btnStopAnimation.Enabled = false;
-            this.btnStopAnimation.Location = new System.Drawing.Point(347, 12);
+            this.btnStopAnimation.Location = new System.Drawing.Point(218, 12);
             this.btnStopAnimation.Name = "btnStopAnimation";
             this.btnStopAnimation.Size = new System.Drawing.Size(72, 23);
             this.btnStopAnimation.TabIndex = 32;
@@ -296,39 +294,11 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.btnStopAnimation.UseVisualStyleBackColor = true;
             this.btnStopAnimation.Click += new System.EventHandler(this.StopAnimationClicked);
             // 
-            // rdoMove
-            // 
-            this.rdoMove.AutoSize = true;
-            this.rdoMove.Location = new System.Drawing.Point(218, 15);
-            this.rdoMove.Name = "rdoMove";
-            this.rdoMove.Size = new System.Drawing.Size(52, 17);
-            this.rdoMove.TabIndex = 33;
-            this.rdoMove.TabStop = true;
-            this.rdoMove.Tag = "Move";
-            this.rdoMove.Text = "Move";
-            this.rdoMove.UseVisualStyleBackColor = true;
-            this.rdoMove.CheckedChanged += new System.EventHandler(this.AnimateTypeChanged);
-            // 
-            // rdoRotate
-            // 
-            this.rdoRotate.AutoSize = true;
-            this.rdoRotate.Location = new System.Drawing.Point(276, 15);
-            this.rdoRotate.Name = "rdoRotate";
-            this.rdoRotate.Size = new System.Drawing.Size(65, 17);
-            this.rdoRotate.TabIndex = 34;
-            this.rdoRotate.TabStop = true;
-            this.rdoRotate.Tag = "Rotate";
-            this.rdoRotate.Text = "Rotation";
-            this.rdoRotate.UseVisualStyleBackColor = true;
-            this.rdoRotate.CheckedChanged += new System.EventHandler(this.AnimateTypeChanged);
-            // 
             // MotionsToolForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(720, 350);
-            this.Controls.Add(this.rdoRotate);
-            this.Controls.Add(this.rdoMove);
             this.Controls.Add(this.btnStopAnimation);
             this.Controls.Add(this.btnAnimate);
             this.Controls.Add(this.grpEditKeyframes);
@@ -350,7 +320,6 @@ namespace Chisel.Editor.Tools.MotionsTool
             this.grpEditKeyframes.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.KeyFrameData)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -379,7 +348,5 @@ namespace Chisel.Editor.Tools.MotionsTool
         private TextBox txtOrigY;
         private Button btnAnimate;
         private Button btnStopAnimation;
-        private RadioButton rdoMove;
-        private RadioButton rdoRotate;
     }
 }

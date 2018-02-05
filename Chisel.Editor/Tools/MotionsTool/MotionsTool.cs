@@ -46,14 +46,18 @@ namespace Chisel.Editor.Tools.MotionsTool
                              new MoveTool(),
                              new RotateTool()
                          };
-            
+
             _form = new MotionsToolForm();
-            
+
             _form.ChangeAnimateType += (sender, type) =>
             {
                 var tool = _tools.FirstOrDefault(x => x.GetType() == type);
-                if (tool != null) SetCurrentTool(tool);
+                SetCurrentTool(tool);
                 SelectionChanged();
+            };
+            _form.AnimationStop += (sender, b) =>
+            {
+                ResetState();
             };
         }
 
@@ -69,7 +73,16 @@ namespace Chisel.Editor.Tools.MotionsTool
 
             _form.OnShow();
         }
-        
+
+        private void ResetState()
+        {
+            _currentTool = null;
+            _lastTool = null;
+            State.Action = BoxAction.ReadyToDraw;
+            State.BoxStart = null;
+            State.BoxEnd = null;
+        }
+
         public override void ToolDeselected(bool preventHistory)
         {
             var selected = Document.Selection.GetSelectedFaces().ToList();
@@ -82,7 +95,8 @@ namespace Chisel.Editor.Tools.MotionsTool
                 var newSelection = Document.Selection.GetSelectedObjects();
                 Document.RenderSelection(currentSelection.Union(newSelection));
             }
-            
+
+            ResetState();
             _form.Clear();
             _form.Hide();
             Mediator.UnsubscribeAll(this);
@@ -138,7 +152,7 @@ namespace Chisel.Editor.Tools.MotionsTool
         {
             if (transformation.HasValue)
             {
-                ExecuteTransform("Manipulate", CreateMatrixMultTransformation(transformation.Value), false);
+                //ExecuteTransform("Manipulate", CreateMatrixMultTransformation(transformation.Value), false);
             }
 
             Document.EndSelectionTransform();
@@ -153,6 +167,7 @@ namespace Chisel.Editor.Tools.MotionsTool
 
         #region Transform
         
+        /*
         private void ExecuteTransform(string transformationName, IUnitTransformation transform, bool clone)
         {
             if (clone) transformationName += "-clone";
@@ -186,6 +201,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             // Execute the action
             Document.PerformAction(name, action);
         }
+        */
 
         private IUnitTransformation CreateMatrixMultTransformation(Matrix4 mat)
         {
@@ -496,11 +512,15 @@ namespace Chisel.Editor.Tools.MotionsTool
                 Matrix4 m = (Matrix4)transformation;
                 Vector3 c = m.ExtractTranslation();
                 OpenTK.Quaternion q = m.ExtractRotation();
-
-                TotalRotation *= q;
-                TotalTranslation += new Coordinate((decimal)c.X, (decimal)c.Y, (decimal)c.Z);
-
-
+                if (_currentTool.GetType() == typeof(MoveTool))
+                {
+                    TotalTranslation += new Coordinate((decimal)c.X, (decimal)c.Y, (decimal)c.Z);
+                }
+                else if (_currentTool.GetType() == typeof(RotateTool))
+                {
+                    q.Invert();
+                    TotalRotation *= q;
+                }
                 _form.KeyFrameEdit(-1,TotalTranslation, ToGeometric(TotalRotation));
 
                 //var createClone = KeyboardState.Shift && State.Handle == ResizeHandle.Center;
@@ -558,7 +578,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             {
                 var translate = vp.Expand(nudge);
                 var transformation = Matrix4.CreateTranslation((float)translate.X, (float)translate.Y, (float)translate.Z);
-                ExecuteTransform("Nudge", CreateMatrixMultTransformation(transformation), KeyboardState.Shift);
+                //ExecuteTransform("Nudge", CreateMatrixMultTransformation(transformation), KeyboardState.Shift);
                 SelectionChanged();
             }
             base.KeyDown(viewport, e);

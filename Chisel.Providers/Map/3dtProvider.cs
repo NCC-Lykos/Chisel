@@ -518,7 +518,6 @@ namespace Chisel.Providers.Map
             FileStream fs = (FileStream)rdr.BaseStream;
             List<Motion> models = new List<Motion>();
             
-            
             for (int i = 0; i < numMotions; ++i)
             {
                 string line = null;
@@ -636,7 +635,7 @@ namespace Chisel.Providers.Map
 
                 }
                 
-                //At Rotation  TODO
+                //At Rotation
                 Assert(line.StartsWith("Rotation"));
 
                 line = rdr.ReadLine();
@@ -835,8 +834,7 @@ namespace Chisel.Providers.Map
                     WriteFace(face, wr);
             }
         }
-
-
+        
         private void WriteEntity(Entity entity, StreamWriter wr)
         {
             WriteProperty("CEntity", "", wr);
@@ -909,10 +907,63 @@ namespace Chisel.Providers.Map
         }
         private void WriteMotions(List<Motion> motions, StreamWriter wr)
         {
-            foreach (var motion in motions)
+            foreach (var m in motions)
             {
-                foreach (var line in motion.RawModelLines)
-                    wr.WriteLine(line);
+                //foreach (var line in motion.RawModelLines) wr.WriteLine(line);
+                
+                wr.WriteLine("Model \"" + m.Name + "\"");
+                wr.WriteLine("\tModelId " + m.ID);
+                wr.WriteLine("\tCurrentKeyTime " + m.CurrentKeyTime.ToString("0.000000"));
+                wr.WriteLine("\tTransform");
+                wr.WriteLine(m.Transform.Values[0].ToString("0.000000") + " " +
+                             m.Transform.Values[1].ToString("0.000000") + " " +
+                             m.Transform.Values[2].ToString("0.000000") + " " +
+
+                             m.Transform.Values[4].ToString("0.000000") + " " +
+                             m.Transform.Values[5].ToString("0.000000") + " " +
+                             m.Transform.Values[6].ToString("0.000000") + " " +
+
+                             m.Transform.Values[8].ToString("0.000000") + " " +
+                             m.Transform.Values[9].ToString("0.000000") + " " +
+                             m.Transform.Values[10].ToString("0.000000") + " " +
+
+                             m.Transform.Values[3].ToString("0.000000") + " " +
+                             m.Transform.Values[11].ToString("0.000000") + " " +
+                             (-m.Transform.Values[7]).ToString("0.000000"));
+                wr.WriteLine("\tMotion 1");
+                wr.WriteLine("\tMOTN 0.F0");
+                wr.WriteLine("\tNameID ");
+                wr.WriteLine("\tMaintainNames 1");
+                wr.WriteLine("\tPathCount 1");
+                wr.WriteLine("\tNameChecksum 2379");
+                wr.WriteLine("\tEvents 0");
+                wr.WriteLine("\tNameArray 1");
+                wr.WriteLine("\tSBLK 0.F0");
+                wr.WriteLine("\tStrings 1");
+                wr.WriteLine("\tPathInfo");
+                wr.WriteLine("\tPathArray 1");
+                wr.WriteLine("\tPATH 0.F2");
+                wr.WriteLine("\tRotation 1 4");
+                wr.WriteLine("\tKeys " + m.KeyFrames.Count() + " 1 0 0");
+                foreach (MotionKeyFrames k in m.KeyFrames)
+                {
+                    Quaternion q = k.GetRotation();
+                    wr.WriteLine(k.KeyTime.ToString("0.000000") + " " +
+                                 (-q.W).ToString("0.000000") + " " +
+                                 q.X.ToString("0.000000") + " " +
+                                 q.Z.ToString("0.000000") + " " +
+                                 (-q.Y).ToString("0.000000"));
+                }
+                wr.WriteLine("\tTranslation 1 1");
+                wr.WriteLine("\tKeys " + m.KeyFrames.Count() + " 1 0 0");
+                foreach (MotionKeyFrames k in m.KeyFrames)
+                {
+                    Coordinate c = k.GetTranslation();
+                    wr.WriteLine(k.KeyTime.ToString("0.000000") + " " +
+                                 c.X.ToString("0.000000") + " " +
+                                 c.Z.ToString("0.000000") + " " +
+                                 (-c.Y).ToString("0.000000"));
+                }
             }
         }
         

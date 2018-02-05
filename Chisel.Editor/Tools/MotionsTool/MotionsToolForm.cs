@@ -18,14 +18,24 @@ namespace Chisel.Editor.Tools.MotionsTool
     public partial class MotionsToolForm : UI.HotkeyForm
     {
         public delegate void ChangeAnimateTypeEventHandler(object sender, Type transformationToolType);
+        public delegate void StopAnimateEventHandler(object sender, Type b);
 
         public event ChangeAnimateTypeEventHandler ChangeAnimateType;
+        public event StopAnimateEventHandler AnimationStop;
 
         protected virtual void OnChangeAnimateType(Type transformationToolType)
         {
             if (ChangeAnimateType != null)
             {
                 ChangeAnimateType(this, transformationToolType);
+            }
+        } 
+
+        protected virtual void OnStopAnimate()
+        {
+            if (AnimationStop != null)
+            {
+                AnimationStop(this, typeof(bool));
             }
         }
 
@@ -60,8 +70,6 @@ namespace Chisel.Editor.Tools.MotionsTool
             txtOrigX.Text = null;
             txtOrigY.Text = null;
             txtOrigZ.Text = null;
-            rdoMove.Checked = rdoRotate.Checked = false;
-            rdoMove.Enabled = rdoRotate.Enabled = false;
             btnAnimate.Enabled = btnStopAnimation.Enabled = false;
             flags = 0;
         }
@@ -111,7 +119,8 @@ namespace Chisel.Editor.Tools.MotionsTool
 
             btnRemoveMotion.Enabled = grpEditKeyframes.Enabled = grpRaw.Enabled = false;
 
-            foreach (DataGridViewColumn c in KeyFrameData.Columns) c.Width = 60;
+            foreach (DataGridViewColumn c in KeyFrameData.Columns) c.Width = 65;
+            KeyFrameData.Columns[0].Width = 55;
 
             PrevRotation = new Quaternion(0, 0, 0, -1);//No Rotation
             List<Motion> motions = _document.Map.Motions;
@@ -140,21 +149,7 @@ namespace Chisel.Editor.Tools.MotionsTool
             var MotionID = SelectionMotionID();
             Clear(MotionID != 0);
             PopulateMotions(MotionID);
-        }
-
-        private void SetTransformFlags()
-        {
-            if (rdoMove.Checked)
-            {
-                flags = _document.Map.GetTransformFlags();
-                flags |= TransformFlags.Translate;
-            }
-            else
-            {
-                flags = _document.Map.GetTransformFlags();
-                flags |= TransformFlags.Rotation;
-            }
-            
+            flags = _document.Map.GetTransformFlags() | TransformFlags.Translate | TransformFlags.Rotation;
         }
 
         private void Assert(bool b, string message = "Assert failed.")
@@ -475,22 +470,22 @@ namespace Chisel.Editor.Tools.MotionsTool
         {
             KeyFrameAdd(false);
 
-            InAnimation = btnStopAnimation.Enabled = rdoMove.Enabled = rdoRotate.Enabled = true;
+            InAnimation = btnStopAnimation.Enabled = true;
             btnAnimate.Enabled = grpEditKeyframes.Enabled = grpRaw.Enabled = false;
             MotionsList.Enabled = btnAddMotion.Enabled = btnRemoveMotion.Enabled = false;
-            rdoMove.Checked = true;
 
-            SetTransformFlags();
+            OnChangeAnimateType(typeof(MoveTool));
+            
         }
 
         private void StopAnimationClicked(object sender, EventArgs e)
         {
-            InAnimation = btnStopAnimation.Enabled = rdoMove.Enabled = rdoRotate.Enabled = false;
+            InAnimation = btnStopAnimation.Enabled = false;
             btnAnimate.Enabled = grpEditKeyframes.Enabled = grpRaw.Enabled = true;
             MotionsList.Enabled = btnAddMotion.Enabled = btnRemoveMotion.Enabled = true;
-            rdoMove.Checked = rdoRotate.Checked = false;
             btnAnimate.Enabled = true;
             flags = 0;
+            OnStopAnimate();
         }
 
         private void CurrentKeyframeChanged(object sender,EventArgs e)
@@ -572,15 +567,6 @@ namespace Chisel.Editor.Tools.MotionsTool
             Clear(false);
             PopulateMotions((int)CurrentMotion);
         }
-
-        private void AnimateTypeChanged(object s, EventArgs e)
-        {
-            RadioButton radioButton = s as RadioButton;
-            if (radioButton.Checked == false) return;
-            string button = (string)radioButton.Tag;
-            
-            if (button == "Move") OnChangeAnimateType(typeof(MoveTool));
-            if (button == "Rotate") OnChangeAnimateType(typeof(RotateTool));
-        }
+        
     }
 }
